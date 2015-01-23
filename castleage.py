@@ -96,9 +96,9 @@ class Player:
 				self.save_response_if_necessary()
 				arena_duel_victory = self.check_arena_duel_result() # parse response: 1. victory or defeat, 2. current token, arena level, updated duel data in target (used when victory), update ArenaEnemy list (used when defeat)
 				if self.target is None:
-					print '%s lv%d rank%d   V.S.   previous one ===> KO I guess' % (self.name, self.level, self.arena_level)
+					print '[%s lv%d rank%d] V.S. [ previous one ] ===> KO I guess' % (self.name, self.level, self.arena_level)
 				else:
-					print '%s lv%d rank%d   V.S.   %s lv%d rank%d ===> %s' % (self.name, self.level, self.arena_level, self.target.name, self.target.level, self.target.arena_level, arena_duel_victory)
+					print '[%s lv%d rank%d] V.S. [%s lv%d rank%d] ===> %s' % (self.name, self.level, self.arena_level, self.target.name, self.target.level, self.target.arena_level, ('Defeat', 'Victory')[arena_duel_victory])
 
 				time.sleep(5)
 
