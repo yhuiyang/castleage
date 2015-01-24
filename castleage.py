@@ -57,20 +57,18 @@ class Player:
 		self.target = None
 
 		# requests stuff
-		self.session = requests.Session()
+		self.session = MySession()
 		self.session.headers.update({'User-Agent': AGENT})
 		self.response = None
 
 		# debug stuff
 		self.save_arena_enemy_duel_data = False
-		self.save_response_text = False
 		self.verbose = False
 
 	def arena_duel(self):
 
 		# try retrieving home page to check if we've logined, and login if necessary...
 		self.response = self.session.get(URL_HOME)
-		self.save_response_if_necessary()
 		if self.is_login_required() and not self.execute_login():
 			print 'Login is required, but we have failed to login, check login procedure!'
 			return
@@ -82,7 +80,6 @@ class Player:
 
 		# retrieve arena page
 		self.response = self.session.get(URL_ARENA)
-		self.save_response_if_necessary()
 		if not self.load_arena_data():
 			print 'Fail to load arena data, can not duel anyone...'
 			return
@@ -93,7 +90,6 @@ class Player:
 				if not arena_duel_victory or self.target is None: # defeat or init
 					self.target = self.choose_arena_enemy()
 				self.response = self.session.post(URL_ARENA, data=self.target.duel_data)
-				self.save_response_if_necessary()
 				arena_duel_victory = self.check_arena_duel_result() # parse response: 1. victory or defeat, 2. current token, arena level, updated duel data in target (used when victory), update ArenaEnemy list (used when defeat)
 				if self.target is None:
 					print '[%s lv%d rank%d] V.S. [ previous one ] ===> KO I guess' % (self.name, self.level, self.arena_level)
@@ -124,7 +120,6 @@ class Player:
 		}
 
 		self.response = self.session.post(URL_LOGIN, data=login_data)	
-		self.save_response_if_necessary()
 		return self.is_response_page_logined()
 
 	def is_response_page_logined(self):
@@ -142,7 +137,6 @@ class Player:
 		user_stat_ready = False
 		if self.level is None or self.name is None or self.fbid is None:
 			self.response = self.session.get(URL_KEEP)
-			self.save_response_if_necessary()
 			if self.response.status_code == requests.codes.ok:
 				keep_page_etree = etree.HTML(self.response.text)
 				keep_page_fbid = selector_keep_page_fbid(keep_page_etree)
@@ -372,15 +366,6 @@ class Player:
 
 		return victory
 
-	def save_response_if_necessary(self):
-
-		if self.save_response_text and self.response is not None and self.response.status_code == requests.codes.ok:
-
-			conn = sqlite3.connect('debug.sqlite')
-			conn.execute('INSERT INTO response_history(response) VALUES (?)', (self.response.text,))
-			conn.commit()
-			conn.close()
-
 
 class ArenaEnemy:
 
@@ -390,3 +375,31 @@ class ArenaEnemy:
 		self.army = army
 		self.arena_level = arena_level
 		self.duel_data = duel_data
+
+
+class MySession(requests.Session):
+
+	def __init__(self, store_response=False):
+
+		super(MySession, self).__init__()
+		self.store_response = store_response
+
+	def get(self, url, **kwargs):
+
+		r = super(MySession, self).get(url, **kwargs)
+		self.store_response_if_necessary('GET', url, None, r)
+		return r
+
+	def post(self, url, data=None, json=None, **kwargs):
+
+		r = super(MySession, self).post(url, data, json, **kwargs)
+		self.store_response_if_necessary('POST', url, data, r)
+		return r
+
+	def store_response_if_necessary(self, method, url, data, response):
+
+		if self.store_response and response is not None and response.status_code == requests.codes.ok:
+			conn = sqlite3.connect('debug.sqlite')
+			conn.execute('INSERT INTO response_history(response, method, url, data) VALUES (?, ?, ?, ?)', (response.text, method, url, str(data) if data is not None else ""))
+			conn.commit()
+			conn.close()
