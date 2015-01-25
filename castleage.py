@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests, sqlite3, time
+import requests, sqlite3, time, random
 from lxml import etree
 from lxml.cssselect import CSSSelector
 
@@ -93,10 +93,11 @@ class Player:
                 arena_duel_victory = self.check_arena_duel_result() # parse response: 1. victory or defeat, 2. current token, arena level, updated duel data in target (used when victory), update ArenaEnemy list (used when defeat)
                 if self.target is None:
                     print '[%s lv%d rank%d] V.S. [ previous one ] ===> KO I guess' % (self.name, self.level, self.arena_level)
+                    break # some strange thing will happen after this happens, so break it now, do duel later...
                 else:
                     print '[%s lv%d rank%d] V.S. [%s lv%d rank%d] ===> %s' % (self.name, self.level, self.arena_level, self.target.name, self.target.level, self.target.arena_level, ('Defeat', 'Victory')[arena_duel_victory])
 
-                time.sleep(5)
+                time.sleep(float(random.randint(3000, 6000))/1000.0)
 
 
     def is_login_required(self):

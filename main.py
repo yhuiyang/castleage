@@ -12,19 +12,22 @@ conn.close()
 
 while True:
 
-	try:
-		print datetime.now()
+    try:
+        print datetime.now()
 
-		for player in players:
-			try:
-				player.arena_duel()
-			except requests.exceptions.ConnectionError as e:
-				print e
+        for player in players:
+            try:
+                player.arena_duel()
+            except requests.exceptions.ConnectionError as e:
+                if player is not None and player.name is not None:
+                    print player.name, e
+                else:
+                    print e
 
-		sleep_time = random.randint(180, 250)
-		print 'Sleep %d seconds...\n' % sleep_time
-		time.sleep(sleep_time)
+        sleep_time = random.randint(180, 250)
+        print 'Sleep %d seconds...\n' % sleep_time
+        time.sleep(sleep_time)
 
-	except KeyboardInterrupt:
-		print 'Bye Bye!!!'
-		break
+    except KeyboardInterrupt:
+        print 'Bye Bye!!!'
+        break
