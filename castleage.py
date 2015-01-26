@@ -228,14 +228,14 @@ class Player:
 
                 # arena_level
                 arena_lvl_img = duel_button.getparent().getparent().getprevious()[0]
-                for lvl in range(1, 9):
+                for lvl in range(1, len(arena_rank_class_mapping)):
                     trophy_name = str(lvl) + '.gif'
                     if arena_lvl_img.get('src').endswith(trophy_name):
                         arena_lvl = lvl
                         break
                 else:
                     print 'Enemy arena rank level is unknown. rank: %s' % arena_lvl_img.get('src')
-                    arena_lvl = 8
+                    arena_lvl = len(arena_rank_class_mapping) - 1
 
                 self.enemies.append(ArenaEnemy(enemy_name, enemy_level, enemy_army, arena_lvl, duel_data))
 
