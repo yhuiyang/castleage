@@ -12,13 +12,13 @@ This is the requirement to use this script:
 ## How to use the script?
 
 ### Create database file used by script.
-$ sqlite3 castleage.sqlite
-sqlite> .read gen_table.sql
-sqlite> INSERT INTO config VALUES('YourEmail', 'YourPassword', 0, 0);
+	$ sqlite3 castleage.sqlite
+	sqlite> .read gen_table.sql
+	sqlite> INSERT INTO config VALUES('YourEmail', 'YourPassword', 0, 0);
 
 It is allowed to create multiple accounts.
 
 ### Run it.
-$ python main.py
+	$ python main.py
 
 Enjoy it!
