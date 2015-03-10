@@ -15,6 +15,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public Q_SLOTS:
+    void onAddAccount();
+    void onRemoveAccount(const QString& email);
+
 private:
     Ui::MainWindow *ui;
 };
