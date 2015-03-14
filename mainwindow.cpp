@@ -1,6 +1,7 @@
 #include <QDebug>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "newaccountdialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,7 +20,13 @@ MainWindow::~MainWindow()
 //
 void MainWindow::onAddAccount()
 {
-    qDebug() << "Add Account clicked";
+    NewAccountDialog dlg(this);
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        qDebug() << dlg.getEmail();
+        qDebug() << dlg.getPassword();
+    }
+
 }
 
 void MainWindow::onRemoveAccount(const QString &email)
