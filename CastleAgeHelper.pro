@@ -4,20 +4,23 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = CastleAgeHelper
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
     mainwindow.cpp \
-    newaccountdialog.cpp
+    newaccountdialog.cpp \
+    sqliteopenhelper.cpp
 
 HEADERS  += mainwindow.h \
-    newaccountdialog.h
+    newaccountdialog.h \
+    sqliteopenhelper.h
 
 FORMS    += mainwindow.ui \
     newaccountdialog.ui
