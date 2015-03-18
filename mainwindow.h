@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 
+class QSqlDatabase;
+class SQLiteOpenHelper;
+
 namespace Ui {
 class MainWindow;
 }
@@ -17,10 +20,15 @@ public:
 
 public Q_SLOTS:
     void onAddAccount();
-    void onRemoveAccount(const QString& email);
+    void onRemoveAccount();
+    void onCreateDatabase(QSqlDatabase &db);
+    void onUpgradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
+    void onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
 
 private:
     Ui::MainWindow *ui;
+    SQLiteOpenHelper *mSQLiteOpenHelper;
+    QString mSqlQueryStringRetrieveAcctountList;
 };
 
 #endif // MAINWINDOW_H
