@@ -13,6 +13,8 @@ TEMPLATE = app
 
 CONFIG += c++11
 
+QMAKE_CXXFLAGS_DEBUG += -ggdb
+
 SOURCES += main.cpp\
     mainwindow.cpp \
     newaccountdialog.cpp \
