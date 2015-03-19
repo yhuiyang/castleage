@@ -24,10 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     /* populate the account list */
-    mSqlQueryStringRetrieveAcctountList = "SELECT email, password FROM Accounts ORDER BY timestamp";
-    QSqlQueryModel *model = new QSqlQueryModel(this);
-    model->setQuery(mSqlQueryStringRetrieveAcctountList);
-    ui->listAccount->setModel(model);
+    populateAccounts();
+
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +35,21 @@ MainWindow::~MainWindow()
     {
         delete mSQLiteOpenHelper;
         mSQLiteOpenHelper = nullptr;
+    }
+}
+
+//
+// Helper methods
+//
+void MainWindow::populateAccounts()
+{
+    QSqlQuery q;
+    if (q.exec("SELECT email FROM Accounts ORDER BY timestamp"))
+    {
+        QStringList l;
+        while (q.next())
+            l << q.value("email").toString();
+        ui->listAccount->addItems(l);
     }
 }
 
@@ -53,46 +66,40 @@ void MainWindow::onAddAccount()
         q.bindValue(":email", dlg.getEmail());
         q.bindValue(":password", dlg.getPassword());
         if (q.exec())
-        {
-            /* not sure what is correct way to refresh account list and keep selected item. */
-            int selectedCount = ui->listAccount->selectionModel()->selectedIndexes().count();
-            QModelIndex selected = ui->listAccount->selectionModel()->currentIndex();
-            QSqlQueryModel *m = qobject_cast<QSqlQueryModel *>(ui->listAccount->model());
-            m->setQuery(mSqlQueryStringRetrieveAcctountList);
-            if (selectedCount > 0)
-                ui->listAccount->selectionModel()->setCurrentIndex(selected, QItemSelectionModel::Select);
-        }
+            ui->listAccount->addItem(dlg.getEmail());
     }
 
 }
 
 void MainWindow::onRemoveAccount()
 {
-    int selectedCount = ui->listAccount->selectionModel()->selectedIndexes().count();
-    if (selectedCount > 0)
-    {
-        QModelIndexList selectedIndexList = ui->listAccount->selectionModel()->selectedIndexes();
-        QString email = selectedIndexList.at(0).data().toString();
+    /* QListWidget::currentItem() return 1st item before we really select one, so don't use it, use our cached one. */
+    if (mSelectedAccountItem == nullptr)
+        return;
 
-        QMessageBox dlg(QMessageBox::Question,
-                        "Confirm remove account",
-                        "Are you sure you want to remove account: " + email,
-                        QMessageBox::Yes | QMessageBox::No,
-                        this);
-        //dlg.setInformativeText("infomative text");
-        //dlg.setDetailedText("detail text");
-        if (dlg.exec() == QMessageBox::Yes)
+    QMessageBox dlg(QMessageBox::Question,
+                    "Confirm remove account",
+                    "Are you sure you want to remove account: " + mSelectedAccountItem->text(),
+                    QMessageBox::Yes | QMessageBox::No,
+                    this);
+    //dlg.setInformativeText("Add informative text here");
+    //dlg.setDetailedText("Add detail text here");
+    if (dlg.exec() == QMessageBox::Yes)
+    {
+        QSqlQuery q;
+        q.prepare("DELETE FROM Accounts WHERE email = :email");
+        q.bindValue(":email", mSelectedAccountItem->text());
+        if (q.exec())
         {
-            QSqlQuery q;
-            q.prepare("DELETE FROM Accounts WHERE email = :email");
-            q.bindValue(":email", email);
-            if (q.exec())
-            {
-                QSqlQueryModel *m = qobject_cast<QSqlQueryModel *>(ui->listAccount->model());
-                m->setQuery(mSqlQueryStringRetrieveAcctountList);
-            }
+            delete mSelectedAccountItem;
+            /* do NOT set mSeleectedAccountItem to nullptr here,
+             * onAccountSelectionChanged() will assign another selected item to it, if there exists one. */
         }
+        else
+            qDebug() << "Failed to delete account: " << mSelectedAccountItem->text();
     }
+
+    return;
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
@@ -123,3 +130,7 @@ void MainWindow::onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVe
     Q_UNUSED(codeVersion);
 }
 
+void MainWindow::onAccountSelectionChanged()
+{
+    mSelectedAccountItem = ui->listAccount->currentItem();
+}

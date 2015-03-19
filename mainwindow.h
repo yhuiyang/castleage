@@ -5,6 +5,7 @@
 
 class QSqlDatabase;
 class SQLiteOpenHelper;
+class QListWidgetItem;
 
 namespace Ui {
 class MainWindow;
@@ -24,11 +25,15 @@ public Q_SLOTS:
     void onCreateDatabase(QSqlDatabase &db);
     void onUpgradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
+    void onAccountSelectionChanged();
+
+private:
+    void populateAccounts();
 
 private:
     Ui::MainWindow *ui;
     SQLiteOpenHelper *mSQLiteOpenHelper;
-    QString mSqlQueryStringRetrieveAcctountList;
+    QListWidgetItem *mSelectedAccountItem;
 };
 
 #endif // MAINWINDOW_H

@@ -87,7 +87,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QListView" name="listAccount">
+      <widget class="QListWidget" name="listAccount">
        <property name="editTriggers">
         <set>QAbstractItemView::NoEditTriggers</set>
        </property>
@@ -409,9 +409,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>listAccount</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onAccountSelectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAddAccount()</slot>
   <slot>onRemoveAccount()</slot>
+  <slot>onAccountSelectionChanged()</slot>
  </slots>
 </ui>
