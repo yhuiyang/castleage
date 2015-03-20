@@ -29,6 +29,10 @@
     </property>
     <addaction name="actionAddAccount"/>
     <addaction name="actionRemoveAccount"/>
+    <addaction name="separator"/>
+    <addaction name="actionReloadSelectedAccount"/>
+    <addaction name="actionReloadAllAccounts"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -50,6 +54,9 @@
    </attribute>
    <addaction name="actionAddAccount"/>
    <addaction name="actionRemoveAccount"/>
+   <addaction name="separator"/>
+   <addaction name="actionReloadSelectedAccount"/>
+   <addaction name="actionReloadAllAccounts"/>
    <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -340,7 +347,7 @@
   <action name="actionAddAccount">
    <property name="icon">
     <iconset>
-     <normalon>:/toolbar/res/AddAccount.png</normalon>
+     <normalon>:/toolbar/res/AccountAdd.png</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -353,7 +360,7 @@
   <action name="actionRemoveAccount">
    <property name="icon">
     <iconset>
-     <normalon>:/toolbar/res/RemoveAccount.png</normalon>
+     <normalon>:/toolbar/res/AccountRemove.png</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -371,6 +378,32 @@
   <action name="actionAboutCastleAgeHelper">
    <property name="text">
     <string>About Castle Age Helper</string>
+   </property>
+  </action>
+  <action name="actionReloadSelectedAccount">
+   <property name="icon">
+    <iconset>
+     <normalon>:/toolbar/res/AccountStatReload.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Reload Selected</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload stats for selected account</string>
+   </property>
+  </action>
+  <action name="actionReloadAllAccounts">
+   <property name="icon">
+    <iconset>
+     <normalon>:/toolbar/res/AccountStatsReload.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Reload All</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload stats for all accounts</string>
    </property>
   </action>
  </widget>
@@ -425,10 +458,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionReloadSelectedAccount</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onReloadSelectedAccount()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionReloadAllAccounts</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onReloadAllAccounts()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAddAccount()</slot>
   <slot>onRemoveAccount()</slot>
   <slot>onAccountSelectionChanged()</slot>
+  <slot>onReloadSelectedAccount()</slot>
+  <slot>onReloadAllAccounts()</slot>
  </slots>
 </ui>

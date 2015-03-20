@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/toolbar">
-        <file>res/AddAccount.png</file>
-        <file>res/RemoveAccount.png</file>
+        <file>res/AccountAdd.png</file>
+        <file>res/AccountRemove.png</file>
+        <file>res/AccountStatReload.png</file>
+        <file>res/AccountStatsReload.png</file>
     </qresource>
 </RCC>

@@ -102,6 +102,19 @@ void MainWindow::onRemoveAccount()
     return;
 }
 
+void MainWindow::onReloadSelectedAccount()
+{
+    if (this->mSelectedAccountItem != nullptr)
+    {
+        qDebug() << "Reload stats for account:" << this->mSelectedAccountItem->text();
+    }
+}
+
+void MainWindow::onReloadAllAccounts()
+{
+    qDebug() << "Reload stats for all accounts.";
+}
+
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
 {
     QSqlQuery q(db);
