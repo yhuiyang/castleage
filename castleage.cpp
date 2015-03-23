@@ -159,7 +159,7 @@ bool CastleAgeRequestManager::parseUserStats(const QByteArray &data)
     elem = _page.mainFrame()->findFirstElement("div#main_sts_container div[title^=\"Your XP:\"] a[href=\"keep.php\"] > div");
     if (!elem.isNull())
     {
-        stats.insert(UserStatKeys::Level, elem.toPlainText().mid(6));
+        stats.insert(UserStatKeys::Level, elem.toPlainText().mid(7));
     }
     else
         result = false;
