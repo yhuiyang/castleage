@@ -1,1 +1,4 @@
 CastleAgeHelper.pro.user
+
+# mac-specific
+.DS_Store
