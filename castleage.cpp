@@ -19,7 +19,7 @@ CastleAgeRequestManager::CastleAgeRequestManager(QString email, QString password
 
     /* init variables used internally */
     _state = Ready;
-    _queryType = Idle;
+    _activeAction = Idle;
 
     /* setup QWebPage. */
     _page.settings()->setAttribute(QWebSettings::AutoLoadImages, false);
@@ -351,13 +351,13 @@ void CastleAgeRequestManager::onFinished(QNetworkReply *reply)
         QByteArray rawData = reply->readAll();
         bool handled;
 
-        switch (_queryType)
+        switch (_activeAction)
         {
-        case UserStats:
+        case QueryUserStats:
             handled = parseUserStats(ungzip(rawData));
             break;
         default:
-            qDebug() << "Not handled for queryType" << _queryType;
+            qDebug() << "Not handler for current active action" << _activeAction;
             break;
         }
 
@@ -384,6 +384,6 @@ void CastleAgeRequestManager::retrieveStats()
     _activeUrl = URL_BASE.resolved(QUrl("keep.php"));
     QNetworkRequest request(_activeUrl);
     this->get(request);
-    _queryType = UserStats;
+    _activeAction = QueryUserStats;
     _state = WaitQueryResponse;
 }

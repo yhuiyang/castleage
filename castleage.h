@@ -17,10 +17,10 @@ class CastleAgeRequestManager : public QNetworkAccessManager
         WaitLoginResponse,
     };
 
-    enum QueryType
+    enum CastleAgeAction
     {
         Idle,
-        UserStats,
+        QueryUserStats,
     };
 
 public:
@@ -52,7 +52,7 @@ private:
     QWebPage _page;
     enum State _state;
     QUrl _activeUrl;
-    enum QueryType _queryType;
+    enum CastleAgeAction _activeAction;
 };
 
 #endif // CASTLEAGE_H
