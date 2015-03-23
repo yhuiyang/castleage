@@ -13,14 +13,17 @@ class CastleAgeRequestManager : public QNetworkAccessManager
     enum State
     {
         Ready,
-        WaitQueryResponse,
+        WaitActionResponse,
         WaitLoginResponse,
     };
 
     enum CastleAgeAction
     {
         Idle,
+        GetBase = 0x10000,
         QueryUserStats,
+
+        PostBase = 0x20000,
     };
 
 public:
@@ -53,6 +56,7 @@ private:
     enum State _state;
     QUrl _activeUrl;
     enum CastleAgeAction _activeAction;
+    QStringList _activePayload;
 };
 
 #endif // CASTLEAGE_H

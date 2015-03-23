@@ -299,7 +299,7 @@ void CastleAgeRequestManager::onFinished(QNetworkReply *reply)
         if (redirectUrl.isRelative())
             redirectUrl = reply->url().resolved(redirectUrl);
 
-        if (_state == WaitQueryResponse) // expect redirecting to login page
+        if (_state == WaitActionResponse) // expect redirecting to login page
         {
             if (redirectUrl != URL_BASE.resolved(QUrl("connect_login.php")))
             {
@@ -329,11 +329,16 @@ void CastleAgeRequestManager::onFinished(QNetworkReply *reply)
                 return;
             }
 
-            /* re-send previous query */
+            /* re-send previous action */
             qDebug() << "login successfully, re-send previous query:" << _activeUrl.toString();
             QNetworkRequest request(_activeUrl);
-            this->get(request);
-            _state = WaitQueryResponse;
+            if ((_activeAction & 0xF0000) == CastleAgeAction::GetBase)
+                this->get(request);
+            else if ((_activeAction & 0xF0000) == CastleAgeAction::PostBase)
+                this->post(request, _activePayload);
+            else
+                qDebug() << "Don't remember what is sent in the past...";
+            _state = WaitActionResponse;
         }
 
         return;
@@ -346,7 +351,7 @@ void CastleAgeRequestManager::onFinished(QNetworkReply *reply)
         _state = Ready;
         return;
     }
-    else if (_state == WaitQueryResponse)
+    else if (_state == WaitActionResponse)
     {
         QByteArray rawData = reply->readAll();
         bool handled;
@@ -385,5 +390,5 @@ void CastleAgeRequestManager::retrieveStats()
     QNetworkRequest request(_activeUrl);
     this->get(request);
     _activeAction = QueryUserStats;
-    _state = WaitQueryResponse;
+    _state = WaitActionResponse;
 }
