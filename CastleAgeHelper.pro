@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui sql
+QT       += core gui sql network webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -15,14 +15,19 @@ CONFIG += c++11
 
 QMAKE_CXXFLAGS_DEBUG += -ggdb
 
+LIBS += -lz
+
 SOURCES += main.cpp\
     mainwindow.cpp \
     newaccountdialog.cpp \
-    sqliteopenhelper.cpp
+    sqliteopenhelper.cpp \
+    castleage.cpp
 
 HEADERS  += mainwindow.h \
     newaccountdialog.h \
-    sqliteopenhelper.h
+    sqliteopenhelper.h \
+    castleage.h \
+    constant.h
 
 FORMS    += mainwindow.ui \
     newaccountdialog.ui
