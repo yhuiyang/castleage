@@ -2,10 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "constant.h"
 
 class QSqlDatabase;
 class SQLiteOpenHelper;
 class QListWidgetItem;
+class CastleAgeRequestManager;
 
 namespace Ui {
 class MainWindow;
@@ -28,14 +30,19 @@ public Q_SLOTS:
     void onUpgradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onAccountSelectionChanged();
+    void onStatsAvailable(QString email, QHash<UserStatKeys, QString> &stats);
 
 private:
     void populateAccounts();
+    void initRequestManagers();
+    CastleAgeRequestManager* createRequestManager(const QString &email, const QString &password);
+    void updateStatsItem(const QString &statLabel, const QString &statValue);
 
 private:
     Ui::MainWindow *ui;
     SQLiteOpenHelper *mSQLiteOpenHelper;
     QListWidgetItem *mSelectedAccountItem;
+    QHash<QString, CastleAgeRequestManager *> mRequestManagers;
 };
 
 #endif // MAINWINDOW_H
