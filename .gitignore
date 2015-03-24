@@ -2,3 +2,6 @@ CastleAgeHelper.pro.user
 
 # mac-specific
 .DS_Store
+
+# windows-specific
+Thumbs.db
