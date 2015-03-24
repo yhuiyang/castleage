@@ -15,7 +15,13 @@ CONFIG += c++11
 
 QMAKE_CXXFLAGS_DEBUG += -ggdb
 
+INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
+
 LIBS += -lz
+
+win32 {
+    LIBS -= -lz
+}
 
 SOURCES += main.cpp\
     mainwindow.cpp \
