@@ -106,10 +106,10 @@
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dockAccountPreference">
+  <widget class="QDockWidget" name="dockAccountStat">
    <property name="minimumSize">
     <size>
-     <width>200</width>
+     <width>320</width>
      <height>300</height>
     </size>
    </property>
@@ -117,12 +117,12 @@
     <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Account Preference</string>
+    <string>Account Stats</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockContentAccountPref">
+   <widget class="QWidget" name="dockContentAccountStat">
     <layout class="QVBoxLayout" name="_2">
      <property name="leftMargin">
       <number>0</number>
@@ -137,207 +137,177 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeWidget" name="treeAccountPref">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <property name="autoExpandDelay">
-        <number>-1</number>
-       </property>
-       <property name="indentation">
-        <number>8</number>
-       </property>
+      <widget class="QTreeWidget" name="treeAccountStat">
        <property name="rootIsDecorated">
-        <bool>true</bool>
-       </property>
-       <property name="uniformRowHeights">
         <bool>false</bool>
-       </property>
-       <property name="itemsExpandable">
-        <bool>true</bool>
-       </property>
-       <property name="sortingEnabled">
-        <bool>false</bool>
-       </property>
-       <property name="animated">
-        <bool>true</bool>
-       </property>
-       <property name="headerHidden">
-        <bool>true</bool>
-       </property>
-       <property name="expandsOnDoubleClick">
-        <bool>true</bool>
        </property>
        <property name="columnCount">
         <number>2</number>
        </property>
-       <attribute name="headerCascadingSectionResizes">
-        <bool>false</bool>
-       </attribute>
        <attribute name="headerDefaultSectionSize">
-        <number>130</number>
-       </attribute>
-       <attribute name="headerHighlightSections">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="headerMinimumSectionSize">
-        <number>30</number>
-       </attribute>
-       <attribute name="headerShowSortIndicator" stdset="0">
-        <bool>false</bool>
-       </attribute>
-       <attribute name="headerStretchLastSection">
-        <bool>true</bool>
+        <number>128</number>
        </attribute>
        <column>
         <property name="text">
-         <string notr="true">Property</string>
-        </property>
-        <property name="font">
-         <font>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
+         <string>Property</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string notr="true">Value</string>
+         <string>Value</string>
         </property>
        </column>
        <item>
         <property name="text">
-         <string notr="true">Stats</string>
+         <string notr="true">FacebookId</string>
         </property>
         <property name="text">
          <string notr="true"/>
         </property>
-        <property name="flags">
-         <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
-        </property>
-        <item>
-         <property name="text">
-          <string notr="true">FacebookId</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">InGameName</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Level</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">MaxEnergy</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">MaxStamina</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">MaxHealth</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Attack</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">Defense</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">ArmySize</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">BattleRank</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">WarRank</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">ConquestRank</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string notr="true">FestivalRank</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
        </item>
        <item>
         <property name="text">
-         <string notr="true">Preferences</string>
+         <string notr="true">InGameName</string>
         </property>
         <property name="text">
          <string notr="true"/>
         </property>
-        <item>
-         <property name="text">
-          <string notr="true">New Subitem</string>
-         </property>
-         <property name="text">
-          <string notr="true"/>
-         </property>
-        </item>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">Level</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">MaxEnergy</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">MaxStamina</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">MaxHealth</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">Attack</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">Defense</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">ArmySize</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">BattleRank</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">WarRank</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">ConquestRank</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">FestivalRank</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">AttackEssence</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">DefenseEssence</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">DamageEssence</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">HealthEssence</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">GuildId</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string notr="true">GuildName</string>
+        </property>
+        <property name="text">
+         <string notr="true"/>
+        </property>
        </item>
       </widget>
      </item>
