@@ -30,6 +30,7 @@ bool SQLiteOpenHelper::init()
     }
 
     QSqlQuery query;
+    query.exec("PRAGMA foreign_keys = ON"); /* explicitly enable foreign keys support */
     query.exec("PRAGMA user_version");
     if (!query.next())
     {
