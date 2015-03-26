@@ -1403,6 +1403,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAboutCastleAgeHelper</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onAbout()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAboutQt</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onAboutQt()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAddAccount()</slot>
@@ -1411,6 +1443,8 @@
   <slot>onReloadSelectedAccount()</slot>
   <slot>onReloadAllAccounts()</slot>
   <slot>onBatchAction()</slot>
+  <slot>onAbout()</slot>
+  <slot>onAboutQt()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>

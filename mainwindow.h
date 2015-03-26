@@ -22,6 +22,8 @@ public:
     ~MainWindow();
 
 public Q_SLOTS:
+    void onAbout();
+    void onAboutQt();
     void onAddAccount();
     void onRemoveAccount();
     void onReloadSelectedAccount();

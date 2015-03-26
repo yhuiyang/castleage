@@ -118,6 +118,21 @@ void MainWindow::updateStatsItem(const QString &statLabel, const QString &statVa
 //
 // Slot implementations
 //
+void MainWindow::onAbout()
+{
+    QMessageBox::about(this,
+                       "Castle Age Helper, Version 0.1",
+                       "This application is built for educational purpose only. "
+                       "It performs http operations with remote server and parses replied content. "
+                       "\n\nBuild at " __DATE__ " " __TIME__
+                       );
+}
+
+void MainWindow::onAboutQt()
+{
+    QMessageBox::aboutQt(this);
+}
+
 void MainWindow::onAddAccount()
 {
     NewAccountDialog dlg(this);
