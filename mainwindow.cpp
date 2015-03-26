@@ -192,6 +192,11 @@ void MainWindow::onReloadAllAccounts()
     qDebug() << "Reload stats for all accounts.";
 }
 
+void MainWindow::onBatchAction()
+{
+    qDebug() << "Open batch action dialog.";
+}
+
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
 {
     QSqlQuery q(db);

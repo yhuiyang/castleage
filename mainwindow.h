@@ -26,6 +26,7 @@ public Q_SLOTS:
     void onRemoveAccount();
     void onReloadSelectedAccount();
     void onReloadAllAccounts();
+    void onBatchAction();
     void onCreateDatabase(QSqlDatabase &db);
     void onUpgradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);

@@ -7,3 +7,7 @@ Free for personal use (Buy commerical license at Iconshock)
  - AccountStatsReload.png
 
 
+https://www.iconfinder.com/icons/24775/application_executable_script_icon
+Free for non commercial use
+
+ - BatchAction.png

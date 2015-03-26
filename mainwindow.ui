@@ -42,9 +42,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-28</y>
+         <y>0</y>
          <width>405</width>
-         <height>1414</height>
+         <height>1410</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -971,6 +971,7 @@
    <addaction name="actionReloadSelectedAccount"/>
    <addaction name="actionReloadAllAccounts"/>
    <addaction name="separator"/>
+   <addaction name="actionBatchAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockAccountList">
@@ -1289,6 +1290,19 @@
     <string>Reload stats for all accounts</string>
    </property>
   </action>
+  <action name="actionBatchAction">
+   <property name="icon">
+    <iconset>
+     <normalon>:/toolbar/res/BatchAction.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Batch Action</string>
+   </property>
+   <property name="toolTip">
+    <string>Open batch action dialog</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
@@ -1373,6 +1387,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionBatchAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onBatchAction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>499</x>
+     <y>349</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAddAccount()</slot>
@@ -1380,6 +1410,7 @@
   <slot>onAccountSelectionChanged()</slot>
   <slot>onReloadSelectedAccount()</slot>
   <slot>onReloadAllAccounts()</slot>
+  <slot>onBatchAction()</slot>
  </slots>
  <buttongroups>
   <buttongroup name="buttonGroup"/>
