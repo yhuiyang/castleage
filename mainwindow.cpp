@@ -9,6 +9,7 @@
 #include "newaccountdialog.h"
 #include "sqliteopenhelper.h"
 #include "castleage.h"
+#include "batchactiondialog.h"
 
 
 struct StatKeyMap
@@ -185,7 +186,7 @@ void MainWindow::onRemoveAccount()
             delete mgr;
         }
         else
-            qDebug() << "Failed to delete account: " << mSelectedAccountItem->text();
+            qDebug() << "Failed to delete account:" << mSelectedAccountItem->text() << q.lastError();
     }
 
     return;
@@ -209,7 +210,8 @@ void MainWindow::onReloadAllAccounts()
 
 void MainWindow::onBatchAction()
 {
-    qDebug() << "Open batch action dialog.";
+    BatchActionDialog dlg(this);
+    dlg.exec();
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
@@ -244,6 +246,19 @@ void MainWindow::onCreateDatabase(QSqlDatabase &db)
              "guildId TEXT,"
              "guildName TEXT,"
              "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
+           ")");
+
+    q.exec("CREATE TABLE IF NOT EXISTS Batches("
+             "id INTEGER PRIMARY KEY,"
+             "name TEXT UNIQUE,"
+             "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS BatchContents("
+             "id INTEGER PRIMARY KEY,"
+             "batchId INTEGER REFERENCES Batches ON DELETE CASCADE,"
+             "accountId INTEGER REFERENCES Accounts ON DELETE CASCADE,"
+             "doWhat INTEGER,"
+             "parameter TEXT"
            ")");
 }
 

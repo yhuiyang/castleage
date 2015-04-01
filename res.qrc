@@ -6,4 +6,13 @@
         <file>res/AccountStatsReload.png</file>
         <file>res/BatchAction.png</file>
     </qresource>
+    <qresource prefix="/batch">
+        <file>res/copy.png</file>
+        <file>res/delete.png</file>
+        <file>res/edit.png</file>
+        <file>res/new.png</file>
+        <file>res/play.png</file>
+        <file>res/save.png</file>
+        <file>res/rename.png</file>
+    </qresource>
 </RCC>

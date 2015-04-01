@@ -27,16 +27,19 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     newaccountdialog.cpp \
     sqliteopenhelper.cpp \
-    castleage.cpp
+    castleage.cpp \
+    batchactiondialog.cpp
 
 HEADERS  += mainwindow.h \
     newaccountdialog.h \
     sqliteopenhelper.h \
     castleage.h \
-    constant.h
+    constant.h \
+    batchactiondialog.h
 
 FORMS    += mainwindow.ui \
-    newaccountdialog.ui
+    newaccountdialog.ui \
+    batchactiondialog.ui
 
 RESOURCES += \
     res.qrc
