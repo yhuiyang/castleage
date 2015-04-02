@@ -441,6 +441,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBoxBatches</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>BatchActionDialog</receiver>
+   <slot>onActiveBatchIndexChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>392</x>
+     <y>21</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onNewBatch()</slot>
@@ -450,5 +466,6 @@
   <slot>onModifyBatch()</slot>
   <slot>onSaveBatch()</slot>
   <slot>onRunBatch()</slot>
+  <slot>onActiveBatchIndexChanged(int)</slot>
  </slots>
 </ui>

@@ -405,7 +405,7 @@ void BatchActionDialog::onRunBatch()
     emit runBatchActionCompleted(0, 0);
 }
 
-void BatchActionDialog::on_comboBoxBatches_currentIndexChanged(int index)
+void BatchActionDialog::onActiveBatchIndexChanged(int index)
 {
     qDebug() << __FUNCTION__ << index;
     bool ok;

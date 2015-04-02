@@ -30,10 +30,7 @@ private Q_SLOTS:
     void onModifyBatch();
     void onSaveBatch();
     void onRunBatch();
-private slots:
-
-    void on_comboBoxBatches_currentIndexChanged(int index);
-
+    void onActiveBatchIndexChanged(int);
 
 Q_SIGNALS:
     void beginBatchActionEditMode(qlonglong batchId);
