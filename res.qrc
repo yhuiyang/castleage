@@ -5,6 +5,8 @@
         <file>res/AccountStatReload.png</file>
         <file>res/AccountStatsReload.png</file>
         <file>res/BatchAction.png</file>
+        <file>res/AccountShowIGN.png</file>
+        <file>res/AccountShowIGNoff.png</file>
     </qresource>
     <qresource prefix="/batch">
         <file>res/copy.png</file>

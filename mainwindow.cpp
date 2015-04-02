@@ -208,6 +208,11 @@ void MainWindow::onReloadAllAccounts()
     qDebug() << "Reload stats for all accounts.";
 }
 
+void MainWindow::onShowIGN(bool checked)
+{
+    qDebug() << "onShowIGN" << checked;
+}
+
 void MainWindow::onBatchAction()
 {
     BatchActionDialog dlg(this);
