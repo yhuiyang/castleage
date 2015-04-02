@@ -42,7 +42,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-367</y>
+         <y>-259</y>
          <width>405</width>
          <height>1410</height>
         </rect>
@@ -533,6 +533,9 @@
                     <property name="text">
                      <string>X:</string>
                     </property>
+                    <property name="buddy">
+                     <cstring>lineEditBattleEnemyRankRangeLimitX</cstring>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -548,6 +551,9 @@
                     </property>
                     <property name="text">
                      <string>Y:</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>lineEditBattleEnemyRankRangeLimitY</cstring>
                     </property>
                    </widget>
                   </item>
@@ -605,6 +611,9 @@
                     <property name="text">
                      <string>X:</string>
                     </property>
+                    <property name="buddy">
+                     <cstring>lineEditBattleEnemyLevelRangeLimitX</cstring>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -620,6 +629,9 @@
                     </property>
                     <property name="text">
                      <string>Y:</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>lineEditBattleEnemyLevelRangeLimitY</cstring>
                     </property>
                    </widget>
                   </item>
@@ -787,6 +799,9 @@
                     <property name="text">
                      <string>X:</string>
                     </property>
+                    <property name="buddy">
+                     <cstring>lineEditConquestEnemyRankRangeLimitX</cstring>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -802,6 +817,9 @@
                     </property>
                     <property name="text">
                      <string>Y:</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>lineEditConquestEnemyRankRangeLimitY</cstring>
                     </property>
                    </widget>
                   </item>
@@ -859,6 +877,9 @@
                     <property name="text">
                      <string>X:</string>
                     </property>
+                    <property name="buddy">
+                     <cstring>lineEditConquestEnemyLevelRangeLimitX</cstring>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -874,6 +895,9 @@
                     </property>
                     <property name="text">
                      <string>Y:</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>lineEditConquestEnemyLevelRangeLimitY</cstring>
                     </property>
                    </widget>
                   </item>
@@ -1220,6 +1244,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionBatchAction"/>
+   <addaction name="separator"/>
   </widget>
   <action name="actionAddAccount">
    <property name="icon">
