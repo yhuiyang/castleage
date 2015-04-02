@@ -42,7 +42,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-367</y>
          <width>405</width>
          <height>1410</height>
         </rect>
@@ -422,9 +422,6 @@
                   <property name="text">
                    <string>Battle Duel</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
-                  </attribute>
                  </widget>
                 </item>
                 <item>
@@ -432,9 +429,6 @@
                   <property name="text">
                    <string>Battle Invade</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
-                  </attribute>
                  </widget>
                 </item>
                 <item>
@@ -442,9 +436,6 @@
                   <property name="text">
                    <string>War</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
-                  </attribute>
                  </widget>
                 </item>
                 <item>
@@ -452,9 +443,6 @@
                   <property name="text">
                    <string>Festival Duel</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup</string>
-                  </attribute>
                  </widget>
                 </item>
                </layout>
@@ -477,9 +465,6 @@
                   <property name="text">
                    <string>The more the better</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup_2</string>
-                  </attribute>
                  </widget>
                 </item>
                 <item>
@@ -487,9 +472,6 @@
                   <property name="text">
                    <string>less than</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">buttonGroup_2</string>
-                  </attribute>
                  </widget>
                 </item>
                 <item>
@@ -963,7 +945,7 @@
     <enum>TopToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
-    <bool>false</bool>
+    <bool>true</bool>
    </attribute>
    <addaction name="actionAddAccount"/>
    <addaction name="actionRemoveAccount"/>
@@ -971,7 +953,6 @@
    <addaction name="actionReloadSelectedAccount"/>
    <addaction name="actionReloadAllAccounts"/>
    <addaction name="separator"/>
-   <addaction name="actionBatchAction"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QDockWidget" name="dockAccountList">
@@ -1228,6 +1209,18 @@
     </layout>
    </widget>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionBatchAction"/>
+  </widget>
   <action name="actionAddAccount">
    <property name="icon">
     <iconset>
@@ -1446,8 +1439,4 @@
   <slot>onAbout()</slot>
   <slot>onAboutQt()</slot>
  </slots>
- <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
-  <buttongroup name="buttonGroup"/>
- </buttongroups>
 </ui>
