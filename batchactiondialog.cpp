@@ -55,7 +55,6 @@ BatchActionTableItemDelegate::BatchActionTableItemDelegate(QObject *parent)
         mAccountList[AccountIdx::Email] << q.value("email").toString();
         mAccountList[AccountIdx::IGN] << q.value("inGameName").toString();
     }
-    q.finish();
 }
 
 QWidget *BatchActionTableItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -124,12 +123,18 @@ BatchActionDialog::BatchActionDialog(QWidget *parent) :
 
     this->setupStateMachine();
 
+    QStringList names;
+    QVariantList ids;
     QSqlQuery q;
     /* collect and populate batch list */
     q.exec("SELECT id, name FROM Batches ORDER BY timestamp");
     while (q.next())
-        ui->comboBoxBatches->addItem(q.value("name").toString(), q.value("id"));
-    q.finish();
+    {
+        names << q.value("name").toString();
+        ids << q.value("id");
+    }
+    for (int i = 0; i < names.size(); i++)
+        ui->comboBoxBatches->addItem(names.at(i), ids.at(i));
 
     /* setup editor */
     ui->tableWidget->setItemDelegate(new BatchActionTableItemDelegate(ui->tableWidget));
@@ -402,7 +407,7 @@ void BatchActionDialog::onRunBatch()
 
 void BatchActionDialog::on_comboBoxBatches_currentIndexChanged(int index)
 {
-    qDebug() << __func__ << index;
+    qDebug() << __FUNCTION__ << index;
     bool ok;
     qlonglong batchId = ui->comboBoxBatches->itemData(index).toLongLong(&ok);
 
@@ -411,15 +416,15 @@ void BatchActionDialog::on_comboBoxBatches_currentIndexChanged(int index)
 
     QSqlQuery q;
     if (!q.exec("DROP TABLE IF EXISTS ActiveBatchContents"))
-        qDebug() << "Failed to drop ActiveBatchContents table" << q.lastError() << q.lastError().text();
-    q.finish();
+        qDebug() << "Failed to drop ActiveBatchContents table" << q.lastError();
 
-    q.prepare("CREATE TEMP TABLE ActiveBatchContents AS SELECT a.email, accountId, doWhat, parameter FROM BatchContents INNER JOIN Accounts AS a ON a.id = accountId WHERE batchId = :batchId");
+    if (!q.prepare("CREATE TEMP TABLE IF NOT EXISTS ActiveBatchContents AS SELECT a.email, accountId, doWhat, parameter FROM BatchContents INNER JOIN Accounts AS a ON a.id = accountId WHERE batchId = :batchId"))
+        qDebug() << "Failed to prepare create temp table..." << q.lastError();
     q.bindValue(":batchId", batchId);
     if (!q.exec())
-        qDebug() << "Failed to create temp table." << q.lastError() << q.lastError().text();
-    q.finish();
-    if (!q.exec("SELECT rowid, * FROM ActiveBatchContents ORDER BY rowid"))
+        qDebug() << "Failed to create temp table." << q.lastError();
+
+    if (!q.exec("SELECT rowid, email, accountId, doWhat, parameter FROM ActiveBatchContents ORDER BY rowid"))
         qDebug() << "Failed to retrieve from ActiveBatchContents" << q.lastError();
     int filledRow = -1;
     while (q.next())
@@ -430,7 +435,6 @@ void BatchActionDialog::on_comboBoxBatches_currentIndexChanged(int index)
         setBatchActionTableText(filledRow, BatchActionTableColumns::DoWhat, ACTION_DESCRIPTIONS[q.value("doWhat").toInt()].desc, q.value("doWhat").toLongLong());
         setBatchActionTableText(filledRow, BatchActionTableColumns::Parameter, q.value("parameter").toString());
     }
-    q.finish();
     for (filledRow++; filledRow < 100; filledRow++)
     {
         setBatchActionTableText(filledRow, BatchActionTableColumns::Who, "");
