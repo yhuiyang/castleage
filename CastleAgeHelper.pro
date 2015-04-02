@@ -13,8 +13,6 @@ TEMPLATE = app
 
 CONFIG += c++11
 
-QMAKE_CXXFLAGS_DEBUG += -ggdb
-
 INCLUDEPATH += $$[QT_INSTALL_HEADERS]/QtZlib
 
 LIBS += -lz
