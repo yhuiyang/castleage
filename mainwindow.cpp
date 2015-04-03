@@ -136,6 +136,7 @@ CastleAgeRequestManager * MainWindow::createRequestManager(const qlonglong id, c
 {
     CastleAgeRequestManager *mgr = new CastleAgeRequestManager(id, email, password, this);
     connect(mgr, SIGNAL(StatsAvailable(qlonglong,QHash<UserStatKeys,QString>&)), this, SLOT(onStatsAvailable(qlonglong,QHash<UserStatKeys,QString>&)));
+    connect(mgr, SIGNAL(AuthorizedFailure(qlonglong)), this, SLOT(onAuthorizedFailure(qlonglong)));
     return mgr;
 }
 
@@ -410,6 +411,23 @@ void MainWindow::onAccountSelectionChanged()
         for (int i = sizeof(STATS_MAPPING)/sizeof(struct StatKeyMap) - 1; i >= 0; i--)
             updateStatsItem(STATS_MAPPING[i].statLabel, "");
     }
+}
+
+void MainWindow::onAuthorizedFailure(qlonglong id)
+{
+    int count = ui->listAccount->count();
+    QListWidgetItem *item;
+    for (int row = 0; row < count; row++)
+    {
+        item = ui->listAccount->item(row);
+        if (item->data(Qt::UserRole).toLongLong() == id)
+        {
+            item->setTextColor(QColor::fromRgb(255, 0, 0));
+            break;
+        }
+    }
+
+
 }
 
 void MainWindow::onStatsAvailable(qlonglong id, QHash<UserStatKeys, QString> &stats)

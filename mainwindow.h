@@ -35,6 +35,7 @@ public Q_SLOTS:
     void onUpgradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onAccountSelectionChanged();
+    void onAuthorizedFailure(qlonglong);
     void onStatsAvailable(qlonglong, QHash<UserStatKeys, QString> &stats);
 
 private:
