@@ -82,13 +82,38 @@ MainWindow::~MainWindow()
 //
 void MainWindow::populateAccounts()
 {
+    QStringList emails;
+    QStringList igns;
+    QVariantList ids;
+
+    /* retrieve from database */
     QSqlQuery q;
-    if (q.exec("SELECT email FROM Accounts ORDER BY timestamp"))
+    q.exec("SELECT a.id, a.email, s.inGameName FROM Accounts AS a LEFT OUTER JOIN Stats AS s ON a.id = s.accountId ORDER BY a.timestamp");
+    while (q.next())
     {
-        QStringList l;
-        while (q.next())
-            l << q.value("email").toString();
-        ui->listAccount->addItems(l);
+        ids << q.value("id");
+        emails << q.value("email").toString();
+        igns << q.value("inGameName").toString();
+    }
+
+    /* update ui */
+    int size = ids.size();
+    ui->listAccount->clear();
+    for (int idx = 0; idx < size; idx++)
+    {
+        QListWidgetItem *item;
+        if (mAppPrefs.value(AppPrefs::AccountShowIgn).toBool() && !igns.at(idx).isEmpty())
+        {
+            item = new QListWidgetItem(igns.at(idx));
+            item->setToolTip(emails.at(idx));
+        }
+        else
+        {
+            item = new QListWidgetItem(emails.at(idx));
+            item->setToolTip(igns.at(idx));
+        }
+        item->setData(Qt::UserRole, ids.at(idx));
+        ui->listAccount->addItem(item);
     }
 }
 
@@ -250,8 +275,8 @@ void MainWindow::onReloadAllAccounts()
 
 void MainWindow::onShowIGN(bool checked)
 {
-    if (!setAppPrefs(AppPrefs::AccountShowIgn, checked))
-        qDebug() << "save app pref failed";
+    setAppPrefs(AppPrefs::AccountShowIgn, checked);
+    populateAccounts();
 }
 
 void MainWindow::onBatchAction()
