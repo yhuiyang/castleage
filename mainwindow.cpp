@@ -296,7 +296,7 @@ void MainWindow::onShowIGN(bool checked)
 
 void MainWindow::onBatchAction()
 {
-    BatchActionDialog dlg(this);
+    BatchActionDialog dlg(getAppPrefs(AppPrefs::AccountShowIgn).toBool(), this);
     dlg.exec();
 }
 

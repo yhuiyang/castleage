@@ -44,11 +44,12 @@ const struct ActionDescription {
 //////////////////////////////////////////////////////////////////////////////////////////
 // Batch Action Table Item Delegate
 //////////////////////////////////////////////////////////////////////////////////////////
-BatchActionTableItemDelegate::BatchActionTableItemDelegate(QObject *parent)
-    : QStyledItemDelegate(parent)
+BatchActionTableItemDelegate::BatchActionTableItemDelegate(bool preferredIgn, QObject *parent)
+    : QStyledItemDelegate(parent),
+      mPreferredIgn(preferredIgn)
 {
     QSqlQuery q;
-    q.exec("SELECT a.id, a.email, s.inGameName FROM Accounts AS a INNER JOIN Stats AS s ON s.accountId = a.id ORDER BY a.timestamp");
+    q.exec("SELECT a.id, a.email, s.inGameName FROM Accounts AS a LEFT OUTER JOIN Stats AS s ON s.accountId = a.id ORDER BY a.timestamp");
     while (q.next())
     {
         mAccountList[AccountIdx::Id] << q.value("id").toString();
@@ -69,7 +70,7 @@ QWidget *BatchActionTableItemDelegate::createEditor(QWidget *parent, const QStyl
         combo = new QComboBox(parent);
         accountCount = mAccountList[AccountIdx::Id].size();
         for (int i = 0; i < accountCount; i++)
-            combo->addItem(mAccountList[AccountIdx::Email].at(i), mAccountList[AccountIdx::Id].at(i).toLongLong());
+            combo->addItem((mPreferredIgn && !mAccountList[AccountIdx::IGN].at(i).isEmpty()) ? mAccountList[AccountIdx::IGN].at(i) : mAccountList[AccountIdx::Email].at(i), mAccountList[AccountIdx::Id].at(i).toLongLong());
         return combo;
     case BatchActionTableColumns::DoWhat:
         combo = new QComboBox(parent);
@@ -115,9 +116,10 @@ void BatchActionTableItemDelegate::setModelData (QWidget *editor, QAbstractItemM
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Implementation of BatchActionDialog
 ///////////////////////////////////////////////////////////////////////////////////////////
-BatchActionDialog::BatchActionDialog(QWidget *parent) :
+BatchActionDialog::BatchActionDialog(bool preferredIgn, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::BatchActionDialog)
+    ui(new Ui::BatchActionDialog),
+    _preferredIgn(preferredIgn)
 {
     ui->setupUi(this);
 
@@ -137,7 +139,7 @@ BatchActionDialog::BatchActionDialog(QWidget *parent) :
         ui->comboBoxBatches->addItem(names.at(i), ids.at(i));
 
     /* setup editor */
-    ui->tableWidget->setItemDelegate(new BatchActionTableItemDelegate(ui->tableWidget));
+    ui->tableWidget->setItemDelegate(new BatchActionTableItemDelegate(preferredIgn, ui->tableWidget));
 }
 
 BatchActionDialog::~BatchActionDialog()
@@ -418,20 +420,20 @@ void BatchActionDialog::onActiveBatchIndexChanged(int index)
     if (!q.exec("DROP TABLE IF EXISTS ActiveBatchContents"))
         qDebug() << "Failed to drop ActiveBatchContents table" << q.lastError();
 
-    if (!q.prepare("CREATE TEMP TABLE IF NOT EXISTS ActiveBatchContents AS SELECT a.email, accountId, doWhat, parameter FROM BatchContents INNER JOIN Accounts AS a ON a.id = accountId WHERE batchId = :batchId"))
+    if (!q.prepare("CREATE TEMP TABLE IF NOT EXISTS ActiveBatchContents AS SELECT a.email, s.inGameName AS ign, b.accountId, doWhat, parameter FROM BatchContents as b INNER JOIN Accounts AS a ON a.id = b.accountId LEFT OUTER JOIN Stats AS s ON s.accountId = a.id WHERE batchId = :batchId"))
         qDebug() << "Failed to prepare create temp table..." << q.lastError();
     q.bindValue(":batchId", batchId);
     if (!q.exec())
         qDebug() << "Failed to create temp table." << q.lastError();
 
-    if (!q.exec("SELECT rowid, email, accountId, doWhat, parameter FROM ActiveBatchContents ORDER BY rowid"))
+    if (!q.exec("SELECT rowid, email, ign, accountId, doWhat, parameter FROM ActiveBatchContents ORDER BY rowid"))
         qDebug() << "Failed to retrieve from ActiveBatchContents" << q.lastError();
     int filledRow = -1;
     while (q.next())
     {
         filledRow = q.value("rowid").toInt() - 1;
 
-        setBatchActionTableText(filledRow, BatchActionTableColumns::Who, q.value("email").toString(), q.value("accountId").toLongLong());
+        setBatchActionTableText(filledRow, BatchActionTableColumns::Who, (_preferredIgn && !q.value("ign").toString().isEmpty()) ? q.value("ign").toString() : q.value("email").toString(), q.value("accountId").toLongLong());
         setBatchActionTableText(filledRow, BatchActionTableColumns::DoWhat, ACTION_DESCRIPTIONS[q.value("doWhat").toInt()].desc, q.value("doWhat").toLongLong());
         setBatchActionTableText(filledRow, BatchActionTableColumns::Parameter, q.value("parameter").toString());
     }

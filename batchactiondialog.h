@@ -15,7 +15,7 @@ class BatchActionDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit BatchActionDialog(QWidget *parent = 0);
+    explicit BatchActionDialog(bool preferredIgn, QWidget *parent = 0);
     ~BatchActionDialog();
 
 private:
@@ -41,6 +41,7 @@ Q_SIGNALS:
 
 private:
     Ui::BatchActionDialog *ui;
+    bool _preferredIgn;
     QStateMachine *_stateMachine;
 };
 
@@ -52,7 +53,7 @@ class BatchActionTableItemDelegate : public QStyledItemDelegate
     enum AccountIdx { Id, Email, IGN, Max };
 
 public:
-    BatchActionTableItemDelegate(QObject *parent = 0);
+    BatchActionTableItemDelegate(bool preferredIgn, QObject *parent = 0);
     virtual ~BatchActionTableItemDelegate() {}
 
     virtual QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
@@ -61,6 +62,7 @@ public:
 
 private:
     QStringList mAccountList[AccountIdx::Max];
+    bool mPreferredIgn;
 };
 
 #endif // BATCHACTIONDIALOG_H
