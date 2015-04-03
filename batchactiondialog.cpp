@@ -353,6 +353,7 @@ void BatchActionDialog::onCloneBatch()
 
     /* append cloned batch to ui combobox */
     ui->comboBoxBatches->addItem(dstName, dstBatchId);
+    ui->comboBoxBatches->setCurrentIndex(ui->comboBoxBatches->count() - 1);
 }
 
 void BatchActionDialog::onModifyBatch()
