@@ -253,7 +253,7 @@ void MainWindow::onRemoveAccount()
 
             /* disconnect to slots and delete request manager */
             CastleAgeRequestManager *mgr = this->mRequestManagers.take(id.toLongLong());
-            disconnect(mgr, SIGNAL(StatsAvailable(QString,QHash<UserStatKeys,QString>&)), this, SLOT(onStatsAvailable(QString,QHash<UserStatKeys,QString>&)));
+            disconnect(mgr, SIGNAL(StatsAvailable(qlonglong,QHash<UserStatKeys,QString>&)), this, SLOT(onStatsAvailable(qlonglong,QHash<UserStatKeys,QString>&)));
             delete mgr;
         }
         else
