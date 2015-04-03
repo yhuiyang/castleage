@@ -35,12 +35,12 @@ public Q_SLOTS:
     void onUpgradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onDowngradeDatabase(QSqlDatabase &db, int dbVersion, int codeVersion);
     void onAccountSelectionChanged();
-    void onStatsAvailable(QString email, QHash<UserStatKeys, QString> &stats);
+    void onStatsAvailable(qlonglong, QHash<UserStatKeys, QString> &stats);
 
 private:
     void populateAccounts();
     void initRequestManagers();
-    CastleAgeRequestManager* createRequestManager(const QString &email, const QString &password);
+    CastleAgeRequestManager* createRequestManager(const qlonglong id, const QString &email, const QString &password);
     void updateStatsItem(const QString &statLabel, const QString &statValue);
     void initAppPrefs();
     QVariant getAppPrefs(AppPrefs key, const QVariant& defValue = QVariant(0)) const;
@@ -50,7 +50,7 @@ private:
     Ui::MainWindow *ui;
     SQLiteOpenHelper *mSQLiteOpenHelper;
     QListWidgetItem *mSelectedAccountItem;
-    QHash<QString, CastleAgeRequestManager *> mRequestManagers;
+    QHash<qlonglong, CastleAgeRequestManager *> mRequestManagers;
     QHash<AppPrefs, QVariant> mAppPrefs;
 };
 

@@ -27,14 +27,14 @@ class CastleAgeRequestManager : public QNetworkAccessManager
     };
 
 public:
-    CastleAgeRequestManager(QString email, QString password, QObject *parent = 0);
+    CastleAgeRequestManager(qlonglong id, QString email, QString password, QObject *parent = 0);
     ~CastleAgeRequestManager();
 
 private Q_SLOTS:
     void onFinished(QNetworkReply *reply);
 
 Q_SIGNALS:
-    void StatsAvailable(QString email, QHash<enum UserStatKeys, QString> &stats);
+    void StatsAvailable(qlonglong id, QHash<enum UserStatKeys, QString> &stats);
 
 public:
     void retrieveStats();
@@ -49,6 +49,7 @@ private:
 
     static const QByteArray USER_AGENT;
     static const QUrl URL_BASE;
+    const qlonglong _id;
     const QString _email;
     const QString _password;
     qint64 _requestSentAtMilliSecs;

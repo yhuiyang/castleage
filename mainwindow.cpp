@@ -120,21 +120,22 @@ void MainWindow::populateAccounts()
 void MainWindow::initRequestManagers()
 {
     QSqlQuery q;
-    if (q.exec("SELECT email, password FROM Accounts"))
+    if (q.exec("SELECT id, email, password FROM Accounts"))
     {
         while (q.next())
         {
+            qlonglong id = q.value("id").toLongLong();
             QString email = q.value("email").toString();
             QString password = q.value("password").toString();
-            this->mRequestManagers.insert(email, createRequestManager(email, password));
+            this->mRequestManagers.insert(id, createRequestManager(id, email, password));
         }
     }
 }
 
-CastleAgeRequestManager * MainWindow::createRequestManager(const QString &email, const QString &password)
+CastleAgeRequestManager * MainWindow::createRequestManager(const qlonglong id, const QString &email, const QString &password)
 {
-    CastleAgeRequestManager *mgr = new CastleAgeRequestManager(email, password, this);
-    connect(mgr, SIGNAL(StatsAvailable(QString,QHash<UserStatKeys,QString>&)), this, SLOT(onStatsAvailable(QString,QHash<UserStatKeys,QString>&)));
+    CastleAgeRequestManager *mgr = new CastleAgeRequestManager(id, email, password, this);
+    connect(mgr, SIGNAL(StatsAvailable(qlonglong,QHash<UserStatKeys,QString>&)), this, SLOT(onStatsAvailable(qlonglong,QHash<UserStatKeys,QString>&)));
     return mgr;
 }
 
@@ -211,10 +212,14 @@ void MainWindow::onAddAccount()
         if (q.exec())
         {
             /* append to QListWidget */
-            ui->listAccount->addItem(dlg.getEmail());
+            QListWidgetItem *item = new QListWidgetItem(dlg.getEmail());
+            item->setToolTip("Reload stat for this account to show in game name");
+            item->setData(Qt::UserRole, q.lastInsertId());
+            ui->listAccount->addItem(item);
 
             /* prepare request manager for this account. */
-            this->mRequestManagers.insert(dlg.getEmail(), createRequestManager(dlg.getEmail(), dlg.getPassword()));
+            qlonglong accountId = q.lastInsertId().toLongLong();
+            this->mRequestManagers.insert(accountId, createRequestManager(accountId, dlg.getEmail(), dlg.getPassword()));
         }
     }
 
@@ -235,23 +240,23 @@ void MainWindow::onRemoveAccount()
     //dlg.setDetailedText("Add detail text here");
     if (dlg.exec() == QMessageBox::Yes)
     {
-        QString email = mSelectedAccountItem->text();
+        QVariant id = mSelectedAccountItem->data(Qt::UserRole);
         QSqlQuery q;
-        q.prepare("DELETE FROM Accounts WHERE email = :email");
-        q.bindValue(":email", email);
-        if (q.exec())
+        q.prepare("DELETE FROM Accounts WHERE id = :id");
+        q.bindValue(":id", id);
+        if (q.exec() && q.numRowsAffected() == 1)
         {
             delete mSelectedAccountItem;
             /* do NOT set mSeleectedAccountItem to nullptr here,
              * onAccountSelectionChanged() will assign another selected item to it, if there exists one. */
 
             /* disconnect to slots and delete request manager */
-            CastleAgeRequestManager *mgr = this->mRequestManagers.take(email);
+            CastleAgeRequestManager *mgr = this->mRequestManagers.take(id.toLongLong());
             disconnect(mgr, SIGNAL(StatsAvailable(QString,QHash<UserStatKeys,QString>&)), this, SLOT(onStatsAvailable(QString,QHash<UserStatKeys,QString>&)));
             delete mgr;
         }
         else
-            qDebug() << "Failed to delete account:" << mSelectedAccountItem->text() << q.lastError();
+            qDebug() << "Failed to delete account:" << mSelectedAccountItem->text();
     }
 
     return;
@@ -261,8 +266,8 @@ void MainWindow::onReloadSelectedAccount()
 {
     if (this->mSelectedAccountItem != nullptr)
     {
-        QString email = this->mSelectedAccountItem->text();
-        CastleAgeRequestManager *mgr = mRequestManagers.value(email, nullptr);
+        qlonglong id = this->mSelectedAccountItem->data(Qt::UserRole).toLongLong();
+        CastleAgeRequestManager *mgr = mRequestManagers.value(id, nullptr);
         if (mgr != nullptr)
             mgr->retrieveStats();
     }
@@ -369,8 +374,8 @@ void MainWindow::onAccountSelectionChanged()
     {
         /* select to specific account */
         QSqlQuery q;
-        q.prepare("SELECT * FROM Stats WHERE accountId = (SELECT id FROM accounts WHERE email = :email)");
-        q.bindValue(":email", mSelectedAccountItem->text());
+        q.prepare("SELECT * FROM Stats WHERE accountId = :id");
+        q.bindValue(":id", mSelectedAccountItem->data(Qt::UserRole).toLongLong());
         q.exec();
 
         if (q.next())
@@ -398,7 +403,7 @@ void MainWindow::onAccountSelectionChanged()
     }
 }
 
-void MainWindow::onStatsAvailable(QString email, QHash<UserStatKeys, QString> &stats)
+void MainWindow::onStatsAvailable(qlonglong id, QHash<UserStatKeys, QString> &stats)
 {
     QSqlQuery insert;
 
@@ -426,7 +431,7 @@ void MainWindow::onStatsAvailable(QString email, QHash<UserStatKeys, QString> &s
                      "guildName"
                    ") VALUES("
                      "NULL,"
-                     "(SELECT id FROM Accounts WHERE email = :email),"
+                     ":id,"
                      ":facebookId,"
                      ":inGameName,"
                      ":level,"
@@ -447,7 +452,7 @@ void MainWindow::onStatsAvailable(QString email, QHash<UserStatKeys, QString> &s
                      ":guildId,"
                      ":guildName"
                    ")");
-    insert.bindValue(":email", email);
+    insert.bindValue(":id", id);
     insert.bindValue(":facebookId", stats.value(UserStatKeys::FacebookId));
     insert.bindValue(":inGameName", stats.value(UserStatKeys::InGameName));
     insert.bindValue(":level", stats.value(UserStatKeys::Level));
@@ -471,7 +476,7 @@ void MainWindow::onStatsAvailable(QString email, QHash<UserStatKeys, QString> &s
     if (!insert.exec())
         qDebug() << "Failed to write to stats table...?!";
 
-    if (mSelectedAccountItem != nullptr && mSelectedAccountItem->text() == email)
+    if (mSelectedAccountItem != nullptr && mSelectedAccountItem->data(Qt::UserRole).toLongLong() == id)
     {
         /* query response is current selected, so tree widget can be updated */
         for (int i = sizeof(STATS_MAPPING)/sizeof(struct StatKeyMap) - 1; i >= 0; i--)

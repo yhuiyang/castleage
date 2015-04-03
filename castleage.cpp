@@ -10,8 +10,9 @@
 const QByteArray CastleAgeRequestManager::USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36";
 const QUrl CastleAgeRequestManager::URL_BASE = QUrl("https://web3.castleagegame.com/castle_ws/");
 
-CastleAgeRequestManager::CastleAgeRequestManager(QString email, QString password, QObject *parent)
+CastleAgeRequestManager::CastleAgeRequestManager(qlonglong id, QString email, QString password, QObject *parent)
     : QNetworkAccessManager(parent),
+      _id(id),
       _email(email),
       _password(password)
 {
@@ -268,7 +269,7 @@ bool CastleAgeRequestManager::parseUserStats(const QByteArray &data)
     if (!result)
         qDebug() << "CA may change the keep page, parser need to be modified...";
 
-    emit StatsAvailable(_email, stats);
+    emit StatsAvailable(_id, stats);
 
     return result;
 }
