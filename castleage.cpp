@@ -349,6 +349,7 @@ void CastleAgeRequestManager::onFinished(QNetworkReply *reply)
     {
         /* This usually means wrong account setting after sending login data but no redirect happened. */
         qDebug() << "You probably with wrong email or password";
+        emit AuthorizedFailure(_id);
         _state = Ready;
         return;
     }

@@ -35,6 +35,7 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     void StatsAvailable(qlonglong id, QHash<enum UserStatKeys, QString> &stats);
+    void AuthorizedFailure(qlonglong id);
 
 public:
     void retrieveStats();
