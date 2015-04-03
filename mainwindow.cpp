@@ -275,7 +275,16 @@ void MainWindow::onReloadSelectedAccount()
 
 void MainWindow::onReloadAllAccounts()
 {
-    qDebug() << "Reload stats for all accounts.";
+    qlonglong accountId;
+    CastleAgeRequestManager *mgr;
+    int size = ui->listAccount->count();
+    for (int idx = 0; idx < size; idx++)
+    {
+        accountId = ui->listAccount->item(idx)->data(Qt::UserRole).toLongLong();
+        mgr = mRequestManagers.value(accountId);
+        if (mgr != nullptr)
+            mgr->retrieveStats();
+    }
 }
 
 void MainWindow::onShowIGN(bool checked)
