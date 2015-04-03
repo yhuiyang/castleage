@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QVariant>
 #include "constant.h"
 
 class QSqlDatabase;
@@ -41,12 +42,16 @@ private:
     void initRequestManagers();
     CastleAgeRequestManager* createRequestManager(const QString &email, const QString &password);
     void updateStatsItem(const QString &statLabel, const QString &statValue);
+    void initAppPrefs();
+    QVariant getAppPrefs(AppPrefs key, const QVariant& defValue = QVariant(0)) const;
+    bool setAppPrefs(AppPrefs key, const QVariant &value);
 
 private:
     Ui::MainWindow *ui;
     SQLiteOpenHelper *mSQLiteOpenHelper;
     QListWidgetItem *mSelectedAccountItem;
     QHash<QString, CastleAgeRequestManager *> mRequestManagers;
+    QHash<AppPrefs, QVariant> mAppPrefs;
 };
 
 #endif // MAINWINDOW_H

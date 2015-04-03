@@ -24,5 +24,13 @@ enum UserStatKeys
     GuildName,
 };
 
+enum AppPrefs
+{
+    First, // begin marker
+    AccountShowIgn = First,
+
+    Last // end marker.
+};
+
 #endif // CONSTANT_H
 

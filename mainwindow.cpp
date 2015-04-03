@@ -53,8 +53,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mSQLiteOpenHelper, SIGNAL(downgradeDatabase(QSqlDatabase&,int,int)), this, SLOT(onDowngradeDatabase(QSqlDatabase&,int,int)));
     mSQLiteOpenHelper->init();
 
+    /* load app prefs from database into local cache */
+    initAppPrefs();
+
     /* setup ui */
     ui->setupUi(this);
+    ui->actionPreferredShowIGN->setChecked(getAppPrefs(AppPrefs::AccountShowIgn).toBool());
 
     /* populate the account list */
     populateAccounts();
@@ -114,6 +118,42 @@ void MainWindow::updateStatsItem(const QString &statLabel, const QString &statVa
     QList<QTreeWidgetItem *> found = ui->treeAccountStat->findItems(statLabel, Qt::MatchExactly|Qt::MatchRecursive);
     if (found.size())
         found[0]->setText(1, statValue);
+}
+
+void MainWindow::initAppPrefs()
+{
+    QList<AppPrefs> keys;
+    QVariantList values;
+    int key;
+    QSqlQuery q;
+    q.exec("SELECT key, value FROM AppPrefs");
+    while (q.next())
+    {
+        key = q.value("key").toInt();
+        if (key >= AppPrefs::First && key < AppPrefs::Last)
+        {
+            keys << static_cast<AppPrefs>(key);
+            values << q.value("value");
+        }
+    }
+
+    for (int i = keys.size() - 1; i >= 0; i--)
+        mAppPrefs.insert(keys.at(i), values.at(i));
+}
+
+QVariant MainWindow::getAppPrefs(AppPrefs key, const QVariant &defValue) const
+{
+    return mAppPrefs.value(key, defValue);
+}
+
+bool MainWindow::setAppPrefs(AppPrefs key, const QVariant &value)
+{
+    mAppPrefs.insert(key, value);
+    QSqlQuery q;
+    q.prepare("INSERT OR REPLACE INTO AppPrefs(key, value) VALUES(:key, :value)");
+    q.bindValue(":key", key);
+    q.bindValue(":value", value.toString());
+    return q.exec();
 }
 
 //
@@ -210,7 +250,8 @@ void MainWindow::onReloadAllAccounts()
 
 void MainWindow::onShowIGN(bool checked)
 {
-    qDebug() << "onShowIGN" << checked;
+    if (!setAppPrefs(AppPrefs::AccountShowIgn, checked))
+        qDebug() << "save app pref failed";
 }
 
 void MainWindow::onBatchAction()
@@ -251,6 +292,11 @@ void MainWindow::onCreateDatabase(QSqlDatabase &db)
              "guildId TEXT,"
              "guildName TEXT,"
              "timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
+           ")");
+
+    q.exec("CREATE TABLE IF NOT EXISTS AppPrefs("
+             "key NUMERIC UNIQUE,"
+             "value TEXT"
            ")");
 
     q.exec("CREATE TABLE IF NOT EXISTS Batches("
