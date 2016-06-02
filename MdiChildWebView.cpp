@@ -158,8 +158,8 @@ void CastleAgeNetworkAccessManager::dumpRequestHeader(const QNetworkRequest &req
 void CastleAgeNetworkAccessManager::dumpRequestBody(QIODevice *outgoingData)
 {
     if (outgoingData != nullptr) {
-        qDebug() << "Body (at most first 150 bytes)";
-        qDebug() << " +-" << outgoingData->peek(150);
+        qDebug() << "Body (at most first 200 bytes)";
+        qDebug() << " +-" << outgoingData->peek(200);
     }
 }
 
