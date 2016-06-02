@@ -4,15 +4,21 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT      += core gui sql network webkitwidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+CONFIG += c++11
 
 TARGET = cabrowser
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        MainWindow.cpp
+SOURCES += main.cpp \
+    MainWindow.cpp \
+    MdiChildWebView.cpp \
+    sqliteopenhelper.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    MdiChildWebView.h \
+    sqliteopenhelper.h
