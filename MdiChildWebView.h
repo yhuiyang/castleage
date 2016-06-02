@@ -34,7 +34,7 @@ protected:
 
 private:
     void dumpRequestHeader(const QNetworkRequest &request);
-    void dumpRequestBody(QIODevice *outgoingData);
+    void dumpRequestBody(QIODevice *outgoingData, qint64 length = 0);
     void storeCookie(QByteArray setCookieHeader);
     void loadCookie();
 

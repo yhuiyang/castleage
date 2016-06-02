@@ -108,15 +108,8 @@ QNetworkReply * CastleAgeNetworkAccessManager::createRequest(Operation op, const
             reply = QNetworkAccessManager::createRequest(op, request, outgoingData);
         }
     } else if (request_url.host() == "web3.castleagegame.com" || request_url.host() == "web4.castleagegame.com") {
-        //QNetworkRequest updated_request(request);
-        //QByteArray cookie = this->loadCookie();
-        //if (!cookie.isNull() && !cookie.isEmpty())
-        //    updated_request.setRawHeader("Cookie", cookie);
-        //dumpRequestHeader(updated_request);
-        //dumpRequestBody(outgoingData);
-        //reply = QNetworkAccessManager::createRequest(op, updated_request, outgoingData);
         dumpRequestHeader(request);
-        dumpRequestBody(outgoingData);
+        dumpRequestBody(outgoingData, request.header(QNetworkRequest::ContentLengthHeader).toLongLong());
         reply = QNetworkAccessManager::createRequest(op, request, outgoingData);
     } else {
         /* These may be requests for images, pubnub, facebook,...etc, and we are not interested in. */
@@ -155,11 +148,16 @@ void CastleAgeNetworkAccessManager::dumpRequestHeader(const QNetworkRequest &req
         qDebug() << " +-" << header << request.rawHeader(header);
 }
 
-void CastleAgeNetworkAccessManager::dumpRequestBody(QIODevice *outgoingData)
+void CastleAgeNetworkAccessManager::dumpRequestBody(QIODevice *outgoingData, qint64 length)
 {
     if (outgoingData != nullptr) {
-        qDebug() << "Body (at most first 200 bytes)";
-        qDebug() << " +-" << outgoingData->peek(200);
+        if (length <= 0) {
+            qDebug() << "Body (at most first 200 bytes)";
+            qDebug() << " +-" << outgoingData->peek(200);
+        } else {
+            qDebug() << "Body";
+            qDebug() << " +-" << outgoingData->peek(length);
+        }
     }
 }
 
