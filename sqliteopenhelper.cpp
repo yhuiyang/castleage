@@ -1,5 +1,3 @@
-#include <QSqlDatabase>
-#include <QSqlQuery>
 #include <QtSql>
 #include <QVariant>
 #include <QDebug>
