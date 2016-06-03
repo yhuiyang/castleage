@@ -236,6 +236,12 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
 
     int http_status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
     qDebug() << "CastleAgeNetworkAccessManager" << "finished" << op << http_status_code << reply->request().url();
+    QList<QByteArray> headers = reply->rawHeaderList();
+    if (headers.size() > 0) {
+        qDebug() << "Response Header";
+        for (QByteArray header: headers)
+            qDebug() << " +-" << header << reply->rawHeader(header);
+    }
 
     if (http_status_code == 302) {
         QString location = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
