@@ -3,6 +3,8 @@
 
 #include <QNetworkAccessManager>
 
+class QNetworkDiskCache;
+
 class CastleAgeNetworkAccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
@@ -41,6 +43,7 @@ private:
     const static QUrl web3_home;
     const static QUrl web4_home;
     qlonglong _currentAccountId;
+    QNetworkDiskCache *_cache;
 };
 
 #endif // CASTLEAGENETWORKACCESSMANAGER_H

@@ -13,7 +13,7 @@ const QUrl CastleAgeNetworkAccessManager::web3_home = QUrl("https://web3.castlea
 const QUrl CastleAgeNetworkAccessManager::web4_home = QUrl("https://web4.castleagegame.com/castle_ws/index.php");
 
 CastleAgeNetworkAccessManager::CastleAgeNetworkAccessManager(qlonglong accountId, QObject *parent)
-    : QNetworkAccessManager(parent)
+    : QNetworkAccessManager(parent), _cache(nullptr)
 {
     switchAccount(accountId);
 
@@ -112,7 +112,23 @@ QNetworkReply * CastleAgeNetworkAccessManager::createRequest(Operation op, const
 void CastleAgeNetworkAccessManager::switchAccount(qlonglong accountId)
 {
     _currentAccountId = accountId;
+
+    /* reload cookie */
     loadCookie();
+
+    /* setup per account cache directory */
+    QString cachePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    if (!cachePath.endsWith(QLatin1Char('/')))
+        cachePath += QLatin1Char('/');
+    cachePath += QString::number(accountId);
+    if (_cache == nullptr) {
+        _cache = new QNetworkDiskCache;
+        _cache->setCacheDirectory(cachePath);
+        _cache->setMaximumCacheSize(10 * 1024 * 1024);
+        this->setCache(_cache);
+    } else {
+        _cache->setCacheDirectory(cachePath);
+    }
 }
 
 qlonglong CastleAgeNetworkAccessManager::currentAccount() const
@@ -225,7 +241,8 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
     }
 
     int http_status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    qDebug() << "CastleAgeNetworkAccessManager" << "finished" << op << http_status_code << reply->request().url();
+    bool fromCache = reply->attribute(QNetworkRequest::SourceIsFromCacheAttribute).toBool();
+    qDebug() << "CastleAgeNetworkAccessManager" << "finished" << op << http_status_code << reply->request().url() << "from cache:" << fromCache;
     QList<QByteArray> headers = reply->rawHeaderList();
     if (headers.size() > 0) {
         qDebug() << "Response Header";

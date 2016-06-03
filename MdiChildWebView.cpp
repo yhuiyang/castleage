@@ -70,8 +70,6 @@ MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
     page->setNetworkAccessManager(_netMgr);
 
     /* setup QWebView and initial url */
-    //_view->settings()->setAttribute(QWebSettings::LocalStorageEnabled, true);
-    //_view->settings()->enablePersistentStorage(QDir::tempPath());
     _view->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
     _view->show();
 
