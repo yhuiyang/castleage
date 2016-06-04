@@ -260,14 +260,21 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
             qDebug() << "Login is required";
             // TODO: do what?
         } else if (redirect_url == web3_home || redirect_url == web4_home) {
-            qDebug() << "This is probably login successfully";
+            qDebug() << "This is probably login successfully." << "I wish I could disable the next follow redirect location request...";
             QVariant cookie_set = reply->header(QNetworkRequest::SetCookieHeader);
             if (cookie_set.isValid())
                 this->storeCookie(reply->rawHeader("Set-Cookie"));
             else
                 qDebug() << "Response 302 Found with redirect to index.php, but no valid Set-Cookie header";
+            emit ca_login_done(true);
         } else {
             qDebug() << "Redirect to where else?" << redirect_url;
+        }
+    } else if (http_status_code == 200) {
+        QUrl request_url = reply->request().url();
+        if (request_url == web3_login || request_url == web4_login) {
+            qDebug() << "This is probably login failed";
+            emit ca_login_done(false);
         }
     }
 }

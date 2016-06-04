@@ -67,6 +67,8 @@ MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
     _netMgr = new CastleAgeNetworkAccessManager(accountId, this);
     page->setNetworkAccessManager(_netMgr);
 
+    connect(_netMgr, SIGNAL(ca_login_done(bool)), this, SLOT(onCastleAgeLoginDone(bool)));
+
     /* setup QWebView and initial url */
     _view->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
     _view->show();
@@ -332,5 +334,19 @@ void MdiChildWebView::onAddressLineReturnPressed()
         _view->load(QUrl(addressString));
     } else {
         qWarning() << "Url is not in white list. Ignore!";
+    }
+}
+
+void MdiChildWebView::onCastleAgeLoginDone(bool successful)
+{
+    if (successful) {
+        QString addressString = _address->text();
+        if (!addressString.isEmpty()) {
+            if (addressString.startsWith("https://web3.castleagegame.com/castle_ws/")) {
+                _view->load(QUrl(addressString));
+            }
+        }
+    } else {
+        qWarning() << "ca login failed";
     }
 }
