@@ -55,6 +55,7 @@ public slots:
     void onWebPageViewportChangeRequested();
     void onWebPageWindowCloseRequested();
     void onAccountComboBoxIndexChanged(int row);
+    void onAddressLineReturnPressed();
 
 private:
     void setupToolBarAndStatusBar();

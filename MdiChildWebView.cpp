@@ -16,10 +16,8 @@
 
 MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
 {
-    setAttribute(Qt::WA_DeleteOnClose);
-    setupToolBarAndStatusBar();
-
     _view = new QWebView;
+    setupToolBarAndStatusBar();
 
     /* connect signals from QWebView */
     connect(_view, SIGNAL(iconChanged(void)), this, SLOT(onWebViewIconChanged(void)));
@@ -75,18 +73,26 @@ MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
 
     this->setCentralWidget(_view);
     this->setMinimumWidth(800);
+
+    setAttribute(Qt::WA_DeleteOnClose);
 }
 
 void MdiChildWebView::setupToolBarAndStatusBar()
 {
-    /* address tool bar */
-    QToolBar *addressToolBar = this->addToolBar(tr("Address ToolBar"));
+    /* navigation tool bar */
+    QToolBar *navigationToolBar = this->addToolBar(tr("Navigation ToolBar"));
 
-    /* address line edit */
-    addressToolBar->addWidget(new QLabel(tr("Address: "), this));
-    addressToolBar->addWidget(_address = new QLineEdit(this));
+    // actions
+    navigationToolBar->addAction(_view->pageAction(QWebPage::Reload));
+    navigationToolBar->addAction(_view->pageAction(QWebPage::Stop));
 
-    this->addToolBarBreak(Qt::TopToolBarArea);
+    // address line edit
+    _address = new QLineEdit(this);
+    _address->setSizePolicy(QSizePolicy::Expanding, _address->sizePolicy().verticalPolicy());
+    connect(_address, SIGNAL(returnPressed()), this, SLOT(onAddressLineReturnPressed()));
+    navigationToolBar->addWidget(_address);
+
+    this->addToolBarBreak();
 
     /* account tool bar */
     QToolBar *accountToolBar = this->addToolBar(tr("Account ToolBar"));
@@ -158,6 +164,8 @@ void MdiChildWebView::onWebViewTitleChanged(const QString &title)
 void MdiChildWebView::onWebViewUrlChanged(const QUrl &url)
 {
     qDebug() << "QWebView urlChanged:" << url;
+
+    _address->setText(url.toString());
 }
 
 void MdiChildWebView::onWebPageApplicationCacheQuotaExceeded(QWebSecurityOrigin * origin, quint64 defaultOriginQuota, quint64 totalSpaceNeeded)
@@ -303,4 +311,26 @@ void MdiChildWebView::onAccountComboBoxIndexChanged(int row)
     qDebug() << "AccountComboBox index changed" << row << accountId;
     this->_netMgr->switchAccount(accountId);
     this->_view->reload();
+}
+
+void MdiChildWebView::onAddressLineReturnPressed()
+{
+    // accept only url to https://web3.castleagegame.com/castle_ws/
+    bool addressUpdated = false;
+    QString addressString = _address->text();
+    if (addressString.startsWith("http://")) {
+        addressString.replace("http://", "https://");
+        addressUpdated = true;
+    }
+    if (addressString.startsWith("https://web4.")) {
+        addressString.replace("https://web4.", "https://web3.");
+        addressUpdated = true;
+    }
+    if (addressString.startsWith("https://web3.castleagegame.com/castle_ws/")) {
+        if (addressUpdated)
+            _address->setText(addressString);
+        _view->load(QUrl(addressString));
+    } else {
+        qWarning() << "Url is not in white list. Ignore!";
+    }
 }
