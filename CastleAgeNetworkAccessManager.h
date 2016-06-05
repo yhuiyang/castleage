@@ -25,7 +25,7 @@ private:
     void loadCookie();
 
 signals:
-    void ca_login_done(bool successful = true);
+    void ca_login_done(qlonglong accountId, bool successful = true);
 
 public slots:
     void onAuthenticationRequired(QNetworkReply * reply, QAuthenticator * authenticator);

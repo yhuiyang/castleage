@@ -67,7 +67,7 @@ MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
     _netMgr = new CastleAgeNetworkAccessManager(accountId, this);
     page->setNetworkAccessManager(_netMgr);
 
-    connect(_netMgr, SIGNAL(ca_login_done(bool)), this, SLOT(onCastleAgeLoginDone(bool)));
+    connect(_netMgr, SIGNAL(ca_login_done(qlonglong,bool)), this, SLOT(onCastleAgeLoginDone(qlonglong,bool)));
 
     /* setup QWebView and initial url */
     _view->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
@@ -337,8 +337,9 @@ void MdiChildWebView::onAddressLineReturnPressed()
     }
 }
 
-void MdiChildWebView::onCastleAgeLoginDone(bool successful)
+void MdiChildWebView::onCastleAgeLoginDone(qlonglong accountId, bool successful)
 {
+    Q_UNUSED(accountId);
     if (successful) {
         QString addressString = _address->text();
         if (!addressString.isEmpty()) {

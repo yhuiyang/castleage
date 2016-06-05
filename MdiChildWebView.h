@@ -56,7 +56,7 @@ public slots:
     void onWebPageWindowCloseRequested();
     void onAccountComboBoxIndexChanged(int row);
     void onAddressLineReturnPressed();
-    void onCastleAgeLoginDone(bool);
+    void onCastleAgeLoginDone(qlonglong accountId, bool successful);
 
 private:
     void setupToolBarAndStatusBar();

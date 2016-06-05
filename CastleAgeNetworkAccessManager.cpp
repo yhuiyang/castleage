@@ -266,7 +266,7 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
                 this->storeCookie(reply->rawHeader("Set-Cookie"));
             else
                 qDebug() << "Response 302 Found with redirect to index.php, but no valid Set-Cookie header";
-            emit ca_login_done(true);
+            emit ca_login_done(_currentAccountId, true);
         } else {
             qDebug() << "Redirect to where else?" << redirect_url;
         }
@@ -274,7 +274,7 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
         QUrl request_url = reply->request().url();
         if (request_url == web3_login || request_url == web4_login) {
             qDebug() << "This is probably login failed";
-            emit ca_login_done(false);
+            emit ca_login_done(_currentAccountId, false);
         }
     }
 }
