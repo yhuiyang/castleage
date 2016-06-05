@@ -1,6 +1,6 @@
 #include <QtWidgets>
 #include "MainWindow.h"
-#include "MdiChildWebView.h"
+#include "MdiChild.h"
 #include "sqliteopenhelper.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -55,7 +55,7 @@ void MainWindow::createStatusBar()
 // Slots
 // ------------------------------------------------------------------------------------------
 void MainWindow::createChildBrowser() {
-    MdiChildWebView *child = new MdiChildWebView;
+    MdiChild *child = new MdiChild;
     _mdiArea->addSubWindow(child);
     child->show();
 }

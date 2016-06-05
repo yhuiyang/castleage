@@ -5,7 +5,7 @@
 #include <QWebPage>
 #include <QtSql>
 #include <QVariant>
-#include "MdiChildWebView.h"
+#include "MdiChild.h"
 #include "sqliteopenhelper.h"
 #include "CastleAgeNetworkAccessManager.h"
 
@@ -14,7 +14,7 @@
 // MdiChildWebVeiw
 // -----------------------------------------------------------------------------------------------------
 
-MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
+MdiChild::MdiChild(QWidget *parent) : QMainWindow(parent)
 {
     _view = new QWebView;
     setupToolBarAndStatusBar();
@@ -79,7 +79,7 @@ MdiChildWebView::MdiChildWebView(QWidget *parent) : QMainWindow(parent)
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
-void MdiChildWebView::setupToolBarAndStatusBar()
+void MdiChild::setupToolBarAndStatusBar()
 {
     /* navigation tool bar */
     QToolBar *navigationToolBar = this->addToolBar(tr("Navigation ToolBar"));
@@ -112,7 +112,7 @@ void MdiChildWebView::setupToolBarAndStatusBar()
     this->setStatusBar(new QStatusBar);
 }
 
-qlonglong MdiChildWebView::getCurrentAccountIdFromComboBox()
+qlonglong MdiChild::getCurrentAccountIdFromComboBox()
 {
     int row = _accountComboBox->currentIndex();
     int col = 0; // column 0: accountId, 1: ign, 2: email, 3: ign & email
@@ -123,189 +123,189 @@ qlonglong MdiChildWebView::getCurrentAccountIdFromComboBox()
 //
 // Slots
 //
-void MdiChildWebView::onWebViewIconChanged()
+void MdiChild::onWebViewIconChanged()
 {
     qDebug() << "QWebView iconChanged";
 }
 
-void MdiChildWebView::onWebViewLinkClicked(const QUrl &url)
+void MdiChild::onWebViewLinkClicked(const QUrl &url)
 {
     qDebug() << "QWebView linkClicked:" << url;
 }
 
-void MdiChildWebView::onWebViewLoadFinished(bool ok)
+void MdiChild::onWebViewLoadFinished(bool ok)
 {
     qDebug() << "QWebView loadFinished. ok:" << ok;
 }
 
-void MdiChildWebView::onWebViewLoadProgress(int progress)
+void MdiChild::onWebViewLoadProgress(int progress)
 {
     qDebug() << "QWebView loadProgress:" << progress;
 }
 
-void MdiChildWebView::onWebViewLoadStarted()
+void MdiChild::onWebViewLoadStarted()
 {
     qDebug() << "QWebView loadStarted";
 }
 
-void MdiChildWebView::onWebViewSelectionChanged()
+void MdiChild::onWebViewSelectionChanged()
 {
     qDebug() << "QWebView selectionChanged";
 }
 
-void MdiChildWebView::onWebViewStatusBarMessage(const QString &text)
+void MdiChild::onWebViewStatusBarMessage(const QString &text)
 {
     qDebug() << "QWebView statusBarMessage:" << text;
 }
 
-void MdiChildWebView::onWebViewTitleChanged(const QString &title)
+void MdiChild::onWebViewTitleChanged(const QString &title)
 {
     qDebug() << "QWebView titleChanged:" << title;
 }
 
-void MdiChildWebView::onWebViewUrlChanged(const QUrl &url)
+void MdiChild::onWebViewUrlChanged(const QUrl &url)
 {
     qDebug() << "QWebView urlChanged:" << url;
 
     _address->setText(url.toString());
 }
 
-void MdiChildWebView::onWebPageApplicationCacheQuotaExceeded(QWebSecurityOrigin * origin, quint64 defaultOriginQuota, quint64 totalSpaceNeeded)
+void MdiChild::onWebPageApplicationCacheQuotaExceeded(QWebSecurityOrigin * origin, quint64 defaultOriginQuota, quint64 totalSpaceNeeded)
 {
     qDebug() << "QWebPage applicationCacheQuotaExceeded" << origin << defaultOriginQuota << totalSpaceNeeded;
 }
 
-void MdiChildWebView::onWebPageContentsChanged()
+void MdiChild::onWebPageContentsChanged()
 {
     qDebug() << "QWebPage contentsChanged";
 }
 
-void MdiChildWebView::onWebPageDatabaseQuotaExceeded(QWebFrame * frame, QString databaseName)
+void MdiChild::onWebPageDatabaseQuotaExceeded(QWebFrame * frame, QString databaseName)
 {
     qDebug() << "QWebPage databaseQuotaExceeded" << frame << databaseName;
 }
 
-void MdiChildWebView::onWebPageDownloadRequested(const QNetworkRequest & request)
+void MdiChild::onWebPageDownloadRequested(const QNetworkRequest & request)
 {
     qDebug() << "QWebPage downloadRequested" << request.url();
 }
 
-void MdiChildWebView::onWebPageFeaturePermissionRequestCanceled(QWebFrame * frame, QWebPage::Feature feature)
+void MdiChild::onWebPageFeaturePermissionRequestCanceled(QWebFrame * frame, QWebPage::Feature feature)
 {
     qDebug() << "QWebPage featurePermissionRequestCanceled" << frame << feature;
 }
 
-void MdiChildWebView::onWebPageFeaturePermissionRequested(QWebFrame * frame, QWebPage::Feature feature)
+void MdiChild::onWebPageFeaturePermissionRequested(QWebFrame * frame, QWebPage::Feature feature)
 {
     qDebug() << "QWebPage featurePermissionRequested" << frame << feature;
 }
 
-void MdiChildWebView::onWebPageFrameCreated(QWebFrame * frame)
+void MdiChild::onWebPageFrameCreated(QWebFrame * frame)
 {
     qDebug() << "QWebPage frameCreated" << frame;
 }
 
-void MdiChildWebView::onWebPageGeometryChangeRequested(const QRect & geometry)
+void MdiChild::onWebPageGeometryChangeRequested(const QRect & geometry)
 {
     qDebug() << "QWebPage geometryChangeRequested" << geometry;
 }
 
-void MdiChildWebView::onWebPageLinkClicked(const QUrl & url)
+void MdiChild::onWebPageLinkClicked(const QUrl & url)
 {
     qDebug() << "QWebPage linkClicked" << url;
 }
 
-void MdiChildWebView::onWebPageLinkHovered(const QString & link, const QString & title, const QString & textContent)
+void MdiChild::onWebPageLinkHovered(const QString & link, const QString & title, const QString & textContent)
 {
     qDebug() << "QWebPage linkHovered" << link << title << textContent;
 }
 
-void MdiChildWebView::onWebPageLoadFinished(bool ok)
+void MdiChild::onWebPageLoadFinished(bool ok)
 {
     qDebug() << "QWebPage loadFinished" << ok;
 }
 
-void MdiChildWebView::onWebPageLoadProgress(int progress)
+void MdiChild::onWebPageLoadProgress(int progress)
 {
     qDebug() << "QWebPage loadProgress" << progress;
 }
 
-void MdiChildWebView::onWebPageLoadStarted()
+void MdiChild::onWebPageLoadStarted()
 {
     qDebug() << "QWebPage loadStarted";
 }
 
-void MdiChildWebView::onWebPageMenuBarVisibilityChangeRequested(bool visible)
+void MdiChild::onWebPageMenuBarVisibilityChangeRequested(bool visible)
 {
     qDebug() << "QWebPage menuBarVisibilityChangeRequested" << visible;
 }
 
-void MdiChildWebView::onWebPageMicroFocusChanged()
+void MdiChild::onWebPageMicroFocusChanged()
 {
     qDebug() << "QWebPage microFocusChanged";
 }
 
-void MdiChildWebView::onWebPagePrintRequested(QWebFrame * frame)
+void MdiChild::onWebPagePrintRequested(QWebFrame * frame)
 {
     qDebug() << "QWebPage printRequested" << frame;
 }
 
-void MdiChildWebView::onWebPageRepaintRequested(const QRect & dirtyRect)
+void MdiChild::onWebPageRepaintRequested(const QRect & dirtyRect)
 {
     qDebug() << "QWebPage repaintRequested" << dirtyRect;
 }
 
-void MdiChildWebView::onWebPageRestoreFrameStateRequested(QWebFrame * frame)
+void MdiChild::onWebPageRestoreFrameStateRequested(QWebFrame * frame)
 {
     qDebug() << "QWebPage restoreFrameStateRequested" << frame;
 }
 
-void MdiChildWebView::onWebPageSaveFrameStateRequested(QWebFrame * frame, QWebHistoryItem * item)
+void MdiChild::onWebPageSaveFrameStateRequested(QWebFrame * frame, QWebHistoryItem * item)
 {
     qDebug() << "QWebPage saveFrameStateRequested" << frame << item;
 }
 
-void MdiChildWebView::onWebPageScrollRequested(int dx, int dy, const QRect & rectToScroll)
+void MdiChild::onWebPageScrollRequested(int dx, int dy, const QRect & rectToScroll)
 {
     qDebug() << "QWebPage scrollRequested" << dx << dy << rectToScroll;
 }
 
-void MdiChildWebView::onWebPageSelectionChanged()
+void MdiChild::onWebPageSelectionChanged()
 {
     qDebug() << "QWebPage selectionChanged";
 }
 
-void MdiChildWebView::onWebPageStatusBarMessage(const QString & text)
+void MdiChild::onWebPageStatusBarMessage(const QString & text)
 {
     qDebug() << "QWebPage statusBarMessage" << text;
 }
 
-void MdiChildWebView::onWebPageStatusBarVisibilityChangeRequested(bool visible)
+void MdiChild::onWebPageStatusBarVisibilityChangeRequested(bool visible)
 {
     qDebug() << "QWebPage statusBarVisibilityChangeRequested" << visible;
 }
 
-void MdiChildWebView::onWebPageToolBarVisibilityChangeRequested(bool visible)
+void MdiChild::onWebPageToolBarVisibilityChangeRequested(bool visible)
 {
     qDebug() << "QWebPage toolBarVisibilityChangeRequested" << visible;
 }
 
-void MdiChildWebView::onWebPageUnsupportedContent(QNetworkReply * reply)
+void MdiChild::onWebPageUnsupportedContent(QNetworkReply * reply)
 {
     qDebug() << "QWebPage unsupportedContent" << reply;
 }
 
-void MdiChildWebView::onWebPageViewportChangeRequested()
+void MdiChild::onWebPageViewportChangeRequested()
 {
     qDebug() << "QWebPage viewportChangeRequested";
 }
 
-void MdiChildWebView::onWebPageWindowCloseRequested()
+void MdiChild::onWebPageWindowCloseRequested()
 {
     qDebug() << "QWebPage windowCloseRequested";
 }
 
-void MdiChildWebView::onAccountComboBoxIndexChanged(int row)
+void MdiChild::onAccountComboBoxIndexChanged(int row)
 {
     int col = 0; // column 0: accountId, 1: ign, 2: email, 3: ign & email
     QModelIndex idx = _accountComboBox->model()->index(row, col);
@@ -315,7 +315,7 @@ void MdiChildWebView::onAccountComboBoxIndexChanged(int row)
     this->_view->reload();
 }
 
-void MdiChildWebView::onAddressLineReturnPressed()
+void MdiChild::onAddressLineReturnPressed()
 {
     // accept only url to https://web3.castleagegame.com/castle_ws/
     bool addressUpdated = false;
@@ -337,7 +337,7 @@ void MdiChildWebView::onAddressLineReturnPressed()
     }
 }
 
-void MdiChildWebView::onCastleAgeLoginDone(qlonglong accountId, bool successful)
+void MdiChild::onCastleAgeLoginDone(qlonglong accountId, bool successful)
 {
     Q_UNUSED(accountId);
     if (successful) {

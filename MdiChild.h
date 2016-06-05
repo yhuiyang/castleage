@@ -1,5 +1,5 @@
-#ifndef MDICHILDWEBVIEW_H
-#define MDICHILDWEBVIEW_H
+#ifndef MDICHILD_H
+#define MDICHILD_H
 
 #include <QMainWindow>
 #include <QWebPage>
@@ -9,11 +9,11 @@ class QLineEdit;
 class QComboBox;
 class CastleAgeNetworkAccessManager;
 
-class MdiChildWebView : public QMainWindow
+class MdiChild : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit MdiChildWebView(QWidget *parent = 0);
+    explicit MdiChild(QWidget *parent = 0);
 
 signals:
 
@@ -69,4 +69,4 @@ private:
     QComboBox *_accountComboBox;
 };
 
-#endif // MDICHILDWEBVIEW_H
+#endif // MDICHILD_H

@@ -16,11 +16,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp \
     MainWindow.cpp \
-    MdiChildWebView.cpp \
     sqliteopenhelper.cpp \
-    CastleAgeNetworkAccessManager.cpp
+    CastleAgeNetworkAccessManager.cpp \
+    MdiChild.cpp
 
 HEADERS  += MainWindow.h \
-    MdiChildWebView.h \
     sqliteopenhelper.h \
-    CastleAgeNetworkAccessManager.h
+    CastleAgeNetworkAccessManager.h \
+    MdiChild.h
