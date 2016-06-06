@@ -50,15 +50,23 @@ void MainWindow::readSettings()
 
 void MainWindow::createActions()
 {
-    QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
-    QToolBar *fileToolBar = addToolBar(tr("File"));
+    QMenu *browserMenu = menuBar()->addMenu(tr("&Browser"));
+    QToolBar *browserToolBar = addToolBar(tr("Browser"));
+    browserToolBar->setObjectName("toolBar/Browser");
+    QAction *actionNewBrowser = new QAction(QIcon(":toolbar/new_window.png"), tr("New &Browser Window"), this);
+    actionNewBrowser->setStatusTip(tr("Create a new browser window"));;
+    connect(actionNewBrowser, SIGNAL(triggered(bool)), this, SLOT(createChildBrowser()));
+    browserMenu->addAction(actionNewBrowser);
+    browserToolBar->addAction(actionNewBrowser);
 
-    _actionNewBrowser = new QAction(tr("&New Browser"), this);
-    _actionNewBrowser->setStatusTip(tr("Create a new browser"));;
-    connect(_actionNewBrowser, &QAction::triggered, this, &MainWindow::createChildBrowser);
-    fileMenu->addAction(_actionNewBrowser);
-    fileToolBar->addAction(_actionNewBrowser);
-
+    QMenu *accountMenu = menuBar()->addMenu(tr("&Account"));
+    QToolBar *accountToolBar = addToolBar(tr("Account"));
+    accountToolBar->setObjectName("toolBar/Account");
+    QAction *actionImportAccount = new QAction(QIcon(":toolbar/import_account.png"), tr("&Import CastleAge Account"), this);
+    actionImportAccount->setStatusTip(tr("Import a castle age account"));
+    connect(actionImportAccount, SIGNAL(triggered(bool)), this, SLOT(showImportAccountDialog()));
+    accountMenu->addAction(actionImportAccount);
+    accountToolBar->addAction(actionImportAccount);
 }
 
 void MainWindow::createStatusBar()
@@ -73,6 +81,10 @@ void MainWindow::createChildBrowser() {
     MdiChild *child = new MdiChild;
     _mdiArea->addSubWindow(child);
     child->show();
+}
+
+void MainWindow::showImportAccountDialog() {
+    qDebug() << "Show import account dialog later";
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)

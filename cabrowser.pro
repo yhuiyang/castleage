@@ -24,3 +24,6 @@ HEADERS  += MainWindow.h \
     sqliteopenhelper.h \
     CastleAgeNetworkAccessManager.h \
     MdiChild.h
+
+RESOURCES += \
+    gfx/gfx.qrc

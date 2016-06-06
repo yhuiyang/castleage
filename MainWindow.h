@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QtSql>
 
-class QAction;
 class QMdiArea;
 class SQLiteOpenHelper;
 
@@ -26,13 +25,13 @@ private:
 
 private slots:
     void createChildBrowser();
+    void showImportAccountDialog();
     /* database */
     void onCreateDatabase(QSqlDatabase &db);
     void onUpgradeDatabase(QSqlDatabase &db, int oldVersion, int newVersion);
     void onDowngradeDatabase(QSqlDatabase &db, int oldVersion, int newVersion);
 
 private:
-    QAction *_actionNewBrowser;
     QMdiArea *_mdiArea;
     SQLiteOpenHelper *_dbHelper;
 };
