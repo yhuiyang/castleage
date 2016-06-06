@@ -15,6 +15,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     virtual ~MainWindow();
+    void readSettings();
+
+protected:
+    virtual void closeEvent(QCloseEvent *event);
 
 private:
     void createActions();
