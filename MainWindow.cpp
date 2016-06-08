@@ -2,6 +2,7 @@
 #include "MainWindow.h"
 #include "MdiChild.h"
 #include "sqliteopenhelper.h"
+#include "ImportAccountDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -84,7 +85,22 @@ void MainWindow::createChildBrowser() {
 }
 
 void MainWindow::showImportAccountDialog() {
-    qDebug() << "Show import account dialog later";
+    ImportAccountDialog dlg(this);
+    if (dlg.exec() == QDialog::Accepted) {
+        QString email, password;
+        dlg.getAccountData(email, password);
+        if (email.isEmpty() || password.isEmpty()) {
+            qDebug() << "Email and password fields can not be empty";
+            QMessageBox::warning(this, "Warning", "Email and password fields can not be empty.");
+        } else {
+            QSqlQuery q;
+            q.prepare("INSERT OR REPLACE INTO accounts (email, password) VALUES (:email, :password)");
+            q.bindValue(":email", email);
+            q.bindValue(":password", password);
+            if (q.exec())
+                emit ca_account_updated();
+        }
+    }
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
