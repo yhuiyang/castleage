@@ -340,7 +340,7 @@ void MdiChild::onAddressLineReturnPressed()
 void MdiChild::onCastleAgeLoginDone(qlonglong accountId, bool successful)
 {
     Q_UNUSED(accountId);
-    if (successful) {
+    if (successful && accountId == getCurrentAccountIdFromComboBox()) {
         QString addressString = _address->text();
         if (!addressString.isEmpty()) {
             if (addressString.startsWith("https://web3.castleagegame.com/castle_ws/")) {
