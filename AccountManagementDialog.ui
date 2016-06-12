@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AccountManagementDialog</class>
+ <widget class="QDialog" name="AccountManagementDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1000</width>
+    <height>800</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Account Management</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0">
+   <item>
+    <layout class="QHBoxLayout" name="accountLayout" stretch="1,0">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <item>
+      <widget class="QTableView" name="accountTable">
+       <property name="showGrid">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="accountOpBtnGroup">
+       <property name="title">
+        <string>Operations</string>
+       </property>
+       <layout class="QVBoxLayout" name="accountOpBtnLayout">
+        <item>
+         <widget class="QPushButton" name="pushButtonUpdateGuilds">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string>Update Guilds</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonUpdateIGNs">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string>Update IGNs</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonUpdateFBIDs">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string>Update FBIDs</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonMoveAccountUp">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string>Move up</string>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonMoveAccountDown">
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="text">
+           <string>Move down</string>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+       <zorder>verticalSpacer</zorder>
+       <zorder>pushButtonUpdateGuilds</zorder>
+       <zorder>pushButtonUpdateIGNs</zorder>
+       <zorder>pushButtonUpdateFBIDs</zorder>
+       <zorder>pushButtonMoveAccountDown</zorder>
+       <zorder>pushButtonMoveAccountUp</zorder>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Account Import/Delete</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLineEdit" name="lineEditEmail">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="placeholderText">
+         <string>Email</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="pushButtonImportAccount">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Import</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="lineEditPassword">
+        <property name="focusPolicy">
+         <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="placeholderText">
+         <string>Password</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="pushButtonDeleteAccount">
+        <property name="focusPolicy">
+         <enum>Qt::NoFocus</enum>
+        </property>
+        <property name="text">
+         <string>Delete</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+     <zorder></zorder>
+     <zorder>lineEditEmail</zorder>
+     <zorder>pushButtonImportAccount</zorder>
+     <zorder>pushButtonDeleteAccount</zorder>
+     <zorder>lineEditPassword</zorder>
+    </widget>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="messageOutput">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>50</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>150</height>
+      </size>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>messageOutput</tabstop>
+  <tabstop>accountTable</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>780</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>780</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>253</x>
+     <y>780</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>276</x>
+     <y>779</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonImportAccount</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onAccountImport()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>896</x>
+     <y>508</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>859</x>
+     <y>507</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonDeleteAccount</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onAccountDelete()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>896</x>
+     <y>571</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>857</x>
+     <y>571</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonUpdateGuilds</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onUpdateGuilds()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>847</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>764</x>
+     <y>52</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonUpdateIGNs</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onUpdateIGNs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>848</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>764</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonUpdateFBIDs</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onUpdateFBIDs()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>847</x>
+     <y>119</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>764</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonMoveAccountUp</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onAccountMoveUp()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>849</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>769</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonMoveAccountDown</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onAccountMoveDown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>847</x>
+     <y>442</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>772</x>
+     <y>442</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onAccountImport()</slot>
+  <slot>onAccountDelete()</slot>
+  <slot>onUpdateGuilds()</slot>
+  <slot>onUpdateIGNs()</slot>
+  <slot>onUpdateFBIDs()</slot>
+  <slot>onAccountMoveUp()</slot>
+  <slot>onAccountMoveDown()</slot>
+ </slots>
+</ui>

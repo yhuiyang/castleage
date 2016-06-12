@@ -3,6 +3,7 @@
 #include "MdiChild.h"
 #include "sqliteopenhelper.h"
 #include "ImportAccountDialog.h"
+#include "AccountManagementDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -63,6 +64,12 @@ void MainWindow::createActions()
     QMenu *accountMenu = menuBar()->addMenu(tr("&Account"));
     QToolBar *accountToolBar = addToolBar(tr("Account"));
     accountToolBar->setObjectName("toolBar/Account");
+
+    QAction *actionShowAccountManagementDialog = new QAction(tr("Account Mamagement..."), this);
+    actionShowAccountManagementDialog->setStatusTip(tr("Display account management dialog"));
+    connect(actionShowAccountManagementDialog, SIGNAL(triggered(bool)), this, SLOT(showAccountManagementDialog()));
+    accountMenu->addAction(actionShowAccountManagementDialog);
+
     QAction *actionImportAccount = new QAction(QIcon(":toolbar/import_account.png"), tr("&Import CastleAge Account"), this);
     actionImportAccount->setStatusTip(tr("Import a castle age account"));
     connect(actionImportAccount, SIGNAL(triggered(bool)), this, SLOT(showImportAccountDialog()));
@@ -103,6 +110,12 @@ void MainWindow::showImportAccountDialog() {
     }
 }
 
+void MainWindow::showAccountManagementDialog()
+{
+    AccountManagementDialog dlg(this);
+    dlg.exec();
+}
+
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
 {
     qDebug() << "Database" << "createDatabase";
@@ -124,13 +137,19 @@ void MainWindow::onCreateDatabase(QSqlDatabase &db)
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
            ", ign TEXT NOT NULL"
            ")");
-    q.exec("CREATE TABLE IF NOT EXISTS guilds ("
+    q.exec("CREATE TABLE IF NOT EXISTS guildids ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
-           ", guild TEXT NOT NULL"
+           ", guildId INTEGER REFERENCES guilds ON UPDATE CASCADE"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS fbids ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
            ", fbid TEXT NOT NULL"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS guilds ("
+           "id INTEGER PRIMARY KEY"
+           ", name TEXT NOT NULL"
+           ", creatorId TEXT NOT NULL"
+           ", createdAt DATETIME"
            ")");
 }
 

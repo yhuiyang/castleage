@@ -29,6 +29,7 @@ signals:
 private slots:
     void createChildBrowser();
     void showImportAccountDialog();
+    void showAccountManagementDialog();
     /* database */
     void onCreateDatabase(QSqlDatabase &db);
     void onUpgradeDatabase(QSqlDatabase &db, int oldVersion, int newVersion);

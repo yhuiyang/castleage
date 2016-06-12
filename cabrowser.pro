@@ -19,16 +19,19 @@ SOURCES += main.cpp \
     sqliteopenhelper.cpp \
     CastleAgeNetworkAccessManager.cpp \
     MdiChild.cpp \
-    ImportAccountDialog.cpp
+    ImportAccountDialog.cpp \
+    AccountManagementDialog.cpp
 
 HEADERS  += MainWindow.h \
     sqliteopenhelper.h \
     CastleAgeNetworkAccessManager.h \
     MdiChild.h \
-    ImportAccountDialog.h
+    ImportAccountDialog.h \
+    AccountManagementDialog.h
 
 RESOURCES += \
     gfx/gfx.qrc
 
 FORMS += \
-    ImportAccountDialog.ui
+    ImportAccountDialog.ui \
+    AccountManagementDialog.ui
