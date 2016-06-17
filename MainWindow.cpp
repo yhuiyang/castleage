@@ -139,14 +139,14 @@ void MainWindow::onCreateDatabase(QSqlDatabase &db)
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS guildids ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
-           ", guildId INTEGER REFERENCES guilds ON UPDATE CASCADE"
+           ", guildId TEXT REFERENCES guilds ON UPDATE CASCADE"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS fbids ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
            ", fbid TEXT NOT NULL"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS guilds ("
-           "id INTEGER PRIMARY KEY"
+           "id TEXT PRIMARY KEY"
            ", name TEXT NOT NULL"
            ", creatorId TEXT NOT NULL"
            ", createdAt DATETIME"

@@ -20,14 +20,16 @@ SOURCES += main.cpp \
     CastleAgeNetworkAccessManager.cpp \
     MdiChild.cpp \
     ImportAccountDialog.cpp \
-    AccountManagementDialog.cpp
+    AccountManagementDialog.cpp \
+    SynchronizedNetworkAccessManager.cpp
 
 HEADERS  += MainWindow.h \
     sqliteopenhelper.h \
     CastleAgeNetworkAccessManager.h \
     MdiChild.h \
     ImportAccountDialog.h \
-    AccountManagementDialog.h
+    AccountManagementDialog.h \
+    SynchronizedNetworkAccessManager.h
 
 RESOURCES += \
     gfx/gfx.qrc

@@ -2,6 +2,9 @@
 #define ACCOUNTMANAGEMENTDIALOG_H
 
 #include <QDialog>
+#include <QWebPage>
+
+class SynchronizedNetworkAccessManager;
 
 namespace Ui {
 class AccountManagementDialog;
@@ -29,7 +32,13 @@ public slots:
     void onAccountMoveDown();
 
 private:
+    void showLog(const QString &message);
+    SynchronizedNetworkAccessManager *getNetworkAccessManager(const qlonglong accountId, const QByteArray &accountEmail);
+
+private:
     Ui::AccountManagementDialog *ui;
+    QWebPage _page;
+    QHash<QString, SynchronizedNetworkAccessManager *> _accountMgrs;
 };
 
 #endif // ACCOUNTMANAGEMENTDIALOG_H
