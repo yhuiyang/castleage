@@ -52,29 +52,38 @@ void MainWindow::readSettings()
 
 void MainWindow::createActions()
 {
-    QMenu *browserMenu = menuBar()->addMenu(tr("&Browser"));
-    QToolBar *browserToolBar = addToolBar(tr("Browser"));
-    browserToolBar->setObjectName("toolBar/Browser");
+    /* create actions first, then add actions to menu and toolbar, finally connect necessary signals/slots. */
+
     QAction *actionNewBrowser = new QAction(QIcon(":toolbar/new_window.png"), tr("New &Browser Window"), this);
-    actionNewBrowser->setStatusTip(tr("Create a new browser window"));;
+    QAction *actionShowAccountManagementDialog = new QAction(tr("Account Management..."), this);
+    QAction *actionToggleBrowserToolBar = new QAction("Browser", this);
+    QAction *actionToggleAccountToolBar = new QAction("Account", this);
+    actionToggleBrowserToolBar->setCheckable(true);
+    actionToggleAccountToolBar->setCheckable(true);
+
+    QMenu *menuView = menuBar()->addMenu(tr("&View"));
+    QMenu *menuAccount = menuBar()->addMenu(tr("&Account"));
+    QMenu *menuToolbar = menuView->addMenu(tr("Toolbar"));
+
+    menuView->addAction(actionNewBrowser);
+    menuView->addSeparator();
+    menuView->addMenu(menuToolbar);
+    menuAccount->addAction(actionShowAccountManagementDialog);
+    menuToolbar->addAction(actionToggleBrowserToolBar);
+    menuToolbar->addAction(actionToggleAccountToolBar);
+
+    QToolBar *toolbarBrowser = addToolBar(tr("Browser"));
+    QToolBar *toolbarAccount = addToolBar(tr("Account"));
+
+    toolbarBrowser->addAction(actionNewBrowser);
+    toolbarAccount->addAction(actionShowAccountManagementDialog);
+
     connect(actionNewBrowser, SIGNAL(triggered(bool)), this, SLOT(createChildBrowser()));
-    browserMenu->addAction(actionNewBrowser);
-    browserToolBar->addAction(actionNewBrowser);
-
-    QMenu *accountMenu = menuBar()->addMenu(tr("&Account"));
-    QToolBar *accountToolBar = addToolBar(tr("Account"));
-    accountToolBar->setObjectName("toolBar/Account");
-
-    QAction *actionShowAccountManagementDialog = new QAction(tr("Account Mamagement..."), this);
-    actionShowAccountManagementDialog->setStatusTip(tr("Display account management dialog"));
     connect(actionShowAccountManagementDialog, SIGNAL(triggered(bool)), this, SLOT(showAccountManagementDialog()));
-    accountMenu->addAction(actionShowAccountManagementDialog);
-
-    QAction *actionImportAccount = new QAction(QIcon(":toolbar/import_account.png"), tr("&Import CastleAge Account"), this);
-    actionImportAccount->setStatusTip(tr("Import a castle age account"));
-    connect(actionImportAccount, SIGNAL(triggered(bool)), this, SLOT(showImportAccountDialog()));
-    accountMenu->addAction(actionImportAccount);
-    accountToolBar->addAction(actionImportAccount);
+    connect(actionToggleBrowserToolBar, SIGNAL(triggered(bool)), toolbarBrowser, SLOT(setVisible(bool)));
+    connect(actionToggleAccountToolBar, SIGNAL(triggered(bool)), toolbarAccount, SLOT(setVisible(bool)));
+    connect(toolbarBrowser, SIGNAL(visibilityChanged(bool)), actionToggleBrowserToolBar, SLOT(setChecked(bool)));
+    connect(toolbarAccount, SIGNAL(visibilityChanged(bool)), actionToggleAccountToolBar, SLOT(setChecked(bool)));
 }
 
 void MainWindow::createStatusBar()
