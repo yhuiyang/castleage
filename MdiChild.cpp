@@ -41,7 +41,7 @@ MdiChild::MdiChild(QWidget *parent) : QMainWindow(parent)
     connect(page, SIGNAL(frameCreated(QWebFrame*)), this, SLOT(onWebPageFrameCreated(QWebFrame*)));
     connect(page, SIGNAL(geometryChangeRequested(QRect)), this, SLOT(onWebPageGeometryChangeRequested(QRect)));
     connect(page, SIGNAL(linkClicked(QUrl)), this, SLOT(onWebPageLinkClicked(QUrl)));
-    //connect(page, SIGNAL(linkHovered(QString,QString,QString)), this, SLOT(onWebPageLinkHovered(QString,QString,QString)));
+    connect(page, SIGNAL(linkHovered(QString,QString,QString)), this, SLOT(onWebPageLinkHovered(QString,QString,QString)));
     connect(page, SIGNAL(loadFinished(bool)), this, SLOT(onWebPageLoadFinished(bool)));
     connect(page, SIGNAL(loadProgress(int)), this, SLOT(onWebPageLoadProgress(int)));
     connect(page, SIGNAL(loadStarted()), this, SLOT(onWebPageLoadStarted()));
@@ -217,7 +217,8 @@ void MdiChild::onWebPageLinkClicked(const QUrl & url)
 
 void MdiChild::onWebPageLinkHovered(const QString & link, const QString & title, const QString & textContent)
 {
-    qDebug() << "QWebPage linkHovered" << link << title << textContent;
+    //qDebug() << "QWebPage linkHovered" << link << title << textContent;
+    this->statusBar()->showMessage(link);
 }
 
 void MdiChild::onWebPageLoadFinished(bool ok)
