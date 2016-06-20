@@ -14,6 +14,8 @@ class TabWebView : public QMainWindow
     Q_OBJECT
 public:
     explicit TabWebView(QWidget *parent = 0);
+    QUrl loadUrl(const QString &url);
+    QUrl getCurrentUrl() const;
 
 private:
     void setupActionToolBar();
@@ -52,6 +54,7 @@ signals:
 public slots:
     void onTabRequestUpdateTabInfo(TabWebView * const tabPage, qlonglong accountId);
     void onTabRequestShowStatusBarMessage(const QString &message);
+    void onTabRequestShowContextMenu(const QPoint &point);
 
 private:
 

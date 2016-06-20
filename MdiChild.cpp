@@ -36,6 +36,34 @@ TabWebView::TabWebView(QWidget *parent) : QMainWindow(parent)
     this->setCentralWidget(_webView);
 }
 
+QUrl TabWebView::loadUrl(const QString &url)
+{
+    // accept only url to https://web3.castleagegame.com/castle_ws/
+    QUrl targetUrl(url.trimmed());
+    qDebug() << "load url" << url;
+    if (targetUrl.scheme() == "http") {
+        qDebug() << "http -> https";
+        targetUrl.setScheme("https");
+    }
+    if (targetUrl.host() == "web4.castleagegame.com") {
+        qDebug() << "web4 -> web3";
+        targetUrl.setHost("web3.castleagegame.com");
+    }
+    if (targetUrl.scheme() != "https" || targetUrl.host() != "web3.castleagegame.com") {
+        qDebug() << "invalid url -> index.php";
+        targetUrl.setUrl("https://web3.castleagegame.com/castle_ws/index.php");
+    }
+
+    _webView->load(targetUrl);
+
+    return targetUrl;
+}
+
+QUrl TabWebView::getCurrentUrl() const
+{
+    return _webView->url();
+}
+
 void TabWebView::setupActionToolBar()
 {
     QToolBar *toolbarNavigation = addToolBar("Navigation");
@@ -67,27 +95,8 @@ void TabWebView::populateToolBar()
 
 void TabWebView::onAddressReturnKeyPressed()
 {
-    // accept only url to https://web3.castleagegame.com/castle_ws/
-    bool addressUpdated = false;
-    QString addressString = _address->text();
-    addressString = addressString.trimmed();
-    if (QString::compare(addressString, _address->text()))
-        addressUpdated = true;
-    if (addressString.startsWith("http://")) {
-        addressString.replace("http://", "https://");
-        addressUpdated = true;
-    }
-    if (addressString.startsWith("https://web4.")) {
-        addressString.replace("https://web4.", "https://web3.");
-        addressUpdated = true;
-    }
-    if (addressUpdated)
-        _address->setText(addressString);
-    if (addressString.startsWith("https://web3.castleagegame.com/castle_ws/")) {
-        _webView->load(QUrl(addressString));
-    } else {
-        QMessageBox::critical(this, "Wrong URL address!", "Only url addresses start with 'http://web3.castleagegame.com/castle_ws/' are allowed.");
-    }
+    QUrl url = loadUrl(_address->text());
+    _address->setText(url.toString());
 }
 
 void TabWebView::onAccountIndexChanged(int index)
@@ -143,11 +152,14 @@ MdiChild::MdiChild(QWidget *parent) : QMainWindow(parent)
     QPushButton *btnAddTab = new QPushButton("+");
     _tabWidget = new QTabWidget(this);
     _tabWidget->setDocumentMode(true);
-    _tabWidget->setTabsClosable(true);
+    _tabWidget->setTabsClosable(false);
+    _tabWidget->setMovable(true);
+    _tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
     _tabWidget->setCornerWidget(btnAddTab);
     this->setCentralWidget(_tabWidget);
     this->setMinimumWidth(800);
 
+    connect(_tabWidget->tabBar(), &QTabBar::customContextMenuRequested, this, &MdiChild::onTabRequestShowContextMenu);
     connect(btnAddTab, &QPushButton::clicked, this, &MdiChild::addTabWebView);
 
     addTabWebView();
@@ -160,6 +172,7 @@ int MdiChild::addTabWebView()
     QString tabText = "NO ACCOUNT SELECTED";
     TabWebView *tabWebView = new TabWebView(this);
     int tabIndex = _tabWidget->addTab(tabWebView, tabText);
+    _tabWidget->setCurrentIndex(tabIndex);
 
     connect(tabWebView, &TabWebView::requestUpdateTabInfo, this, &MdiChild::onTabRequestUpdateTabInfo);
     connect(tabWebView, &TabWebView::requestShowStatusBarMessage, this, &MdiChild::onTabRequestShowStatusBarMessage);
@@ -188,4 +201,58 @@ void MdiChild::onTabRequestUpdateTabInfo(TabWebView *const tabPage, qlonglong ac
 void MdiChild::onTabRequestShowStatusBarMessage(const QString &message)
 {
     statusBar()->showMessage(message);
+}
+
+void MdiChild::onTabRequestShowContextMenu(const QPoint &point)
+{
+    int clickedTabIndex = -1;
+    int tabCount = _tabWidget->tabBar()->count();
+    for (int tabIndex = 0; tabIndex < tabCount; tabIndex++) {
+        QRect rect = _tabWidget->tabBar()->tabRect(tabIndex);
+        if (rect.contains(point)) {
+            clickedTabIndex = tabIndex;
+            break;
+        }
+    }
+
+    /* not clicked on tab */
+    if (clickedTabIndex == -1)
+        return;
+
+    /* populate context menu */
+    QMenu contextMenu;
+    QAction *closeSelf = contextMenu.addAction("Close this tab");
+    closeSelf->setEnabled(tabCount > 1);
+    QAction *closeOthers = contextMenu.addAction("Close other tabs");
+    closeOthers->setEnabled(tabCount > 1);
+    contextMenu.addSeparator();
+    QAction *loadUrlInOthers = contextMenu.addAction("Load current url in other tabs");
+    loadUrlInOthers->setEnabled(tabCount > 1);
+
+    /* show it in synchronized mode */
+    QAction *selectedAction = contextMenu.exec(QCursor::pos());
+    if (selectedAction == 0) {
+        return;
+    } else if (selectedAction == closeSelf) {
+        _tabWidget->removeTab(clickedTabIndex);
+    } else if (selectedAction == closeOthers) {
+        for (int tabIndex = tabCount - 1; tabIndex > clickedTabIndex; tabIndex--)
+            _tabWidget->removeTab(tabIndex);
+        for (int tabIndex = 0; tabIndex < clickedTabIndex; tabIndex++)
+            _tabWidget->removeTab(0);
+    } else if (selectedAction == loadUrlInOthers) {
+        TabWebView *tabWebView = nullptr;
+        tabWebView = qobject_cast<TabWebView *>(_tabWidget->widget(clickedTabIndex));
+        if (tabWebView != nullptr) {
+            QUrl currentUrl = tabWebView->getCurrentUrl();
+            qDebug() << "current url" << currentUrl;
+            for (int tabIndex = 0; tabIndex < tabCount; tabIndex++) {
+                if (tabIndex == clickedTabIndex)
+                    continue;
+                tabWebView = qobject_cast<TabWebView *>(_tabWidget->widget(tabIndex));
+                if (tabWebView != nullptr)
+                    tabWebView->loadUrl(currentUrl.toString());
+            }
+        }
+    }
 }
