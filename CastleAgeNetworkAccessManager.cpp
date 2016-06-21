@@ -244,7 +244,7 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
     bool fromCache = reply->attribute(QNetworkRequest::SourceIsFromCacheAttribute).toBool();
     qDebug() << "CastleAgeNetworkAccessManager" << "finished" << op << http_status_code << reply->request().url() << "from cache:" << fromCache;
     QList<QByteArray> headers = reply->rawHeaderList();
-    if (headers.size() > 0) {
+    if (headers.size() > 0 && reply->request().url().fileName().endsWith(".php")) {
         qDebug() << "Response Header";
         for (QByteArray header: headers)
             qDebug() << " +-" << header << reply->rawHeader(header);
@@ -260,9 +260,9 @@ void CastleAgeNetworkAccessManager::onFinished(QNetworkReply * reply)
             qDebug() << "Login is required";
             // TODO: do what?
         } else if (redirect_url == web3_home || redirect_url == web4_home) {
-            qDebug() << "This is probably login successfully." << "I wish I could disable the next follow redirect location request...";
             QVariant cookie_set = reply->header(QNetworkRequest::SetCookieHeader);
             if (cookie_set.isValid()) {
+                qDebug() << "This is probably login successfully. I wish I could disable the next following redirect location request...";
                 this->storeCookie(reply->rawHeader("Set-Cookie"));
                 emit ca_login_done(_currentAccountId, true);
             } else
