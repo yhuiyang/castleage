@@ -75,6 +75,9 @@ void MainWindow::createActions()
     QToolBar *toolbarBrowser = addToolBar(tr("Browser"));
     QToolBar *toolbarAccount = addToolBar(tr("Account"));
 
+    toolbarBrowser->setObjectName("toolbar/Browser");
+    toolbarAccount->setObjectName("toolbar/Account");
+
     toolbarBrowser->addAction(actionNewBrowser);
     toolbarAccount->addAction(actionShowAccountManagementDialog);
 
