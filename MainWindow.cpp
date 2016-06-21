@@ -12,7 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
     _mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     _mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     this->setCentralWidget(_mdiArea);
-    this->setMinimumHeight(600);
+
+    QDesktopWidget *desktop = QApplication::desktop();
+    QRect rect = desktop->availableGeometry(this);
+    this->setMinimumHeight(rect.height() * 0.9f);
     this->setMinimumWidth(800);
 
     _dbHelper = new SQLiteOpenHelper("cabrowser.sqlite", 1);
@@ -20,7 +23,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_dbHelper, SIGNAL(upgradeDatabase(QSqlDatabase&,int,int)), this, SLOT(onUpgradeDatabase(QSqlDatabase&,int,int)));
     connect(_dbHelper, SIGNAL(downgradeDatabase(QSqlDatabase&,int,int)), this, SLOT(onDowngradeDatabase(QSqlDatabase&,int,int)));
     _dbHelper->init();
-
 
     createActions();
     createStatusBar();

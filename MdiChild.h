@@ -16,6 +16,7 @@ public:
     explicit TabWebView(QWidget *parent = 0);
     QUrl loadUrl(const QString &url);
     QUrl getCurrentUrl() const;
+    virtual QSize sizeHint() const;
 
 private:
     void setupActionToolBar();

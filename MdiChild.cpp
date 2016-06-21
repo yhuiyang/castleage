@@ -68,6 +68,11 @@ QUrl TabWebView::getCurrentUrl() const
     return _webView->url();
 }
 
+QSize TabWebView::sizeHint() const
+{
+    return QSize(800, QApplication::desktop()->availableGeometry(this).height());
+}
+
 void TabWebView::setupActionToolBar()
 {
     QToolBar *toolbarNavigation = addToolBar("Navigation");
