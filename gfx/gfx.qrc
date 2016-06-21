@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/toolbar">
         <file>new_window.png</file>
-        <file>import_account.png</file>
+        <file>account_management.png</file>
     </qresource>
 </RCC>

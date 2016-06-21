@@ -55,7 +55,7 @@ void MainWindow::createActions()
     /* create actions first, then add actions to menu and toolbar, finally connect necessary signals/slots. */
 
     QAction *actionNewBrowser = new QAction(QIcon(":toolbar/new_window.png"), tr("New &Browser Window"), this);
-    QAction *actionShowAccountManagementDialog = new QAction(tr("Account Management..."), this);
+    QAction *actionShowAccountManagementDialog = new QAction(QIcon(":toolbar/account_management.png"), tr("Account Management..."), this);
     QAction *actionToggleBrowserToolBar = new QAction("Browser", this);
     QAction *actionToggleAccountToolBar = new QAction("Account", this);
     actionToggleBrowserToolBar->setCheckable(true);
