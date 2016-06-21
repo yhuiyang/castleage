@@ -103,7 +103,10 @@ void TabWebView::onAccountIndexChanged(int index)
 {
     qlonglong accountId = _comboBoxAccount->itemData(index).toLongLong();
     this->_netMgr->switchAccount(accountId);
-    this->_webView->reload();
+    if (this->_webView->url().fileName() != "connect_login.php")
+        this->_webView->reload();
+    else
+        this->_webView->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
 
     emit requestUpdateTabInfo(this, accountId);
 }
