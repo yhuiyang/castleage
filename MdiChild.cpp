@@ -49,6 +49,10 @@ QUrl TabWebView::loadUrl(const QString &url)
         qDebug() << "web4 -> web3";
         targetUrl.setHost("web3.castleagegame.com");
     }
+    if (targetUrl.fileName() == "connect_login.php") {
+        qDebug() << "connect_login.php -> index.php";
+        targetUrl.setUrl("https://web3.castleagegame.com/castle_ws/index.php");
+    }
     if (targetUrl.scheme() != "https" || targetUrl.host() != "web3.castleagegame.com") {
         qDebug() << "invalid url -> index.php";
         targetUrl.setUrl("https://web3.castleagegame.com/castle_ws/index.php");
@@ -141,7 +145,11 @@ void TabWebView::onWebPageLinkHovered(const QString &link, const QString &title,
 
 void TabWebView::onCastleAgeLoginResult(qlonglong accountId, bool successful)
 {
-
+    qlonglong currentAccountId = _comboBoxAccount->currentData().toLongLong();
+    if (currentAccountId == accountId && successful) {
+        QString addressString = _address->text();
+        this->loadUrl(addressString);
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------
