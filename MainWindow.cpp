@@ -4,6 +4,7 @@
 #include "sqliteopenhelper.h"
 #include "ImportAccountDialog.h"
 #include "AccountManagementDialog.h"
+#include "LoMTimeCheckDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -62,10 +63,12 @@ void MainWindow::createActions()
     QAction *actionToggleAccountToolBar = new QAction("Account", this);
     actionToggleBrowserToolBar->setCheckable(true);
     actionToggleAccountToolBar->setCheckable(true);
+    QAction *actionShowLomLandTimerDialog = new QAction(tr("Lom Land Timer..."), this);
 
     QMenu *menuView = menuBar()->addMenu(tr("&View"));
     QMenu *menuAccount = menuBar()->addMenu(tr("&Account"));
     QMenu *menuToolbar = menuView->addMenu(tr("Toolbar"));
+    QMenu *menuScript = menuBar()->addMenu(tr("&Script"));
 
     menuView->addAction(actionNewBrowser);
     menuView->addSeparator();
@@ -73,6 +76,7 @@ void MainWindow::createActions()
     menuAccount->addAction(actionShowAccountManagementDialog);
     menuToolbar->addAction(actionToggleBrowserToolBar);
     menuToolbar->addAction(actionToggleAccountToolBar);
+    menuScript->addAction(actionShowLomLandTimerDialog);
 
     QToolBar *toolbarBrowser = addToolBar(tr("Browser"));
     QToolBar *toolbarAccount = addToolBar(tr("Account"));
@@ -89,6 +93,7 @@ void MainWindow::createActions()
     connect(actionToggleAccountToolBar, SIGNAL(triggered(bool)), toolbarAccount, SLOT(setVisible(bool)));
     connect(toolbarBrowser, SIGNAL(visibilityChanged(bool)), actionToggleBrowserToolBar, SLOT(setChecked(bool)));
     connect(toolbarAccount, SIGNAL(visibilityChanged(bool)), actionToggleAccountToolBar, SLOT(setChecked(bool)));
+    connect(actionShowLomLandTimerDialog, SIGNAL(triggered(bool)), this, SLOT(showLomLandTimerDialog()));
 }
 
 void MainWindow::createStatusBar()
@@ -127,6 +132,12 @@ void MainWindow::showImportAccountDialog() {
 void MainWindow::showAccountManagementDialog()
 {
     AccountManagementDialog dlg(this);
+    dlg.exec();
+}
+
+void MainWindow::showLomLandTimerDialog()
+{
+    LoMTimeCheckDialog dlg(this);
     dlg.exec();
 }
 

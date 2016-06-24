@@ -2,5 +2,6 @@
     <qresource prefix="/toolbar">
         <file>new_window.png</file>
         <file>account_management.png</file>
+        <file>run.png</file>
     </qresource>
 </RCC>
