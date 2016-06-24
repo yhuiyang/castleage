@@ -20,6 +20,8 @@ LoMTimeCheckDialog::LoMTimeCheckDialog(QWidget *parent) :
 
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(onQueryLomLand()));
+
+    this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 LoMTimeCheckDialog::~LoMTimeCheckDialog()

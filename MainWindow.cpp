@@ -131,14 +131,16 @@ void MainWindow::showImportAccountDialog() {
 
 void MainWindow::showAccountManagementDialog()
 {
-    AccountManagementDialog dlg(this);
-    dlg.exec();
+    AccountManagementDialog *dlg = new AccountManagementDialog;
+    _mdiArea->addSubWindow(dlg);
+    dlg->show();
 }
 
 void MainWindow::showLomLandTimerDialog()
 {
-    LoMTimeCheckDialog dlg(this);
-    dlg.exec();
+    LoMTimeCheckDialog *dlg = new LoMTimeCheckDialog;
+    _mdiArea->addSubWindow(dlg);
+    dlg->show();
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)

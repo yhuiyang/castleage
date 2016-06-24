@@ -18,6 +18,8 @@ AccountManagementDialog::AccountManagementDialog(QWidget *parent) :
 
     _page.settings()->setAttribute(QWebSettings::AutoLoadImages, false);
     _page.settings()->setAttribute(QWebSettings::JavascriptEnabled, false);
+
+    this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
 AccountManagementDialog::~AccountManagementDialog()

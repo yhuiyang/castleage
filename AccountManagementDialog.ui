@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Account Management</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0">
    <item>
     <layout class="QHBoxLayout" name="accountLayout" stretch="1,0">
      <property name="sizeConstraint">
@@ -171,7 +171,6 @@
        </widget>
       </item>
      </layout>
-     <zorder></zorder>
      <zorder>lineEditEmail</zorder>
      <zorder>pushButtonImportAccount</zorder>
      <zorder>pushButtonDeleteAccount</zorder>
@@ -180,39 +179,8 @@
    </item>
    <item>
     <widget class="QTextEdit" name="messageOutput">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>150</height>
-      </size>
-     </property>
      <property name="readOnly">
       <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="focusPolicy">
-      <enum>Qt::StrongFocus</enum>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
      </property>
     </widget>
    </item>
@@ -224,38 +192,6 @@
  </tabstops>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>AccountManagementDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>94</x>
-     <y>780</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>112</x>
-     <y>780</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>AccountManagementDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>253</x>
-     <y>780</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>276</x>
-     <y>779</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>pushButtonImportAccount</sender>
    <signal>clicked()</signal>
