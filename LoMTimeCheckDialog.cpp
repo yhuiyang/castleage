@@ -12,8 +12,10 @@ LoMTimeCheckDialog::LoMTimeCheckDialog(QWidget *parent) :
     ui(new Ui::LoMTimeCheckDialog)
 {
     ui->setupUi(this);
+    updateUiEnableState(false);
 
     populateGuild();
+
 
     page.settings()->setAttribute(QWebSettings::AutoLoadImages, false);
     page.settings()->setAttribute(QWebSettings::JavascriptEnabled, false);
@@ -80,6 +82,16 @@ void LoMTimeCheckDialog::populateAccount(const QString &guildId)
     }
 }
 
+void LoMTimeCheckDialog::updateUiEnableState(bool scriptRunning)
+{
+    this->ui->pushButtonRun->setEnabled(!scriptRunning);
+    this->ui->pushButtonStop->setEnabled(scriptRunning);
+    this->ui->comboBoxGuild->setEnabled(!scriptRunning);
+    this->ui->comboBoxAccount->setEnabled(!scriptRunning);
+    this->ui->spinBoxCheckInterval->setEnabled(!scriptRunning);
+    this->ui->checkBoxPostToGuildChat->setEnabled(!scriptRunning);
+}
+
 //
 // Slots
 //
@@ -94,28 +106,19 @@ void LoMTimeCheckDialog::onRun()
     accountId = selectedAccountId.toLongLong();
     postToGuildChat = ui->checkBoxPostToGuildChat->isChecked();
 
-    ui->pushButtonRun->setEnabled(false);
-    ui->pushButtonStop->setEnabled(true);
-    ui->comboBoxGuild->setEnabled(false);
-    ui->comboBoxAccount->setEnabled(false);
-    ui->checkBoxPostToGuildChat->setEnabled(false);
+    updateUiEnableState(true);
     ShowLog("Start checking LoM land timer...");
 
+    int interval = ui->spinBoxCheckInterval->value();
     startTime = QDateTime::currentDateTime();
-    timer->start(20000);
+    timer->start(interval * 1000);
 }
 
 void LoMTimeCheckDialog::onStop()
 {
     timer->stop();
-
+    updateUiEnableState(false);
     ShowLog("Check LoM land timer interrupted by user.");
-
-    ui->pushButtonRun->setEnabled(true);
-    ui->pushButtonStop->setEnabled(false);
-    ui->comboBoxGuild->setEnabled(true);
-    ui->comboBoxAccount->setEnabled(true);
-    ui->checkBoxPostToGuildChat->setEnabled(true);
 }
 
 void LoMTimeCheckDialog::onGuildIndexChanged(int guildIndex)
@@ -134,12 +137,8 @@ void LoMTimeCheckDialog::onQueryLomLand()
     qint64 elapsed = startTime.secsTo(now);
     if (elapsed > 60 * 60) {
         timer->stop();
+        updateUiEnableState(false);
         ShowLog("Check LoM land timer accomplished.");
-        ui->pushButtonRun->setEnabled(true);
-        ui->pushButtonStop->setEnabled(false);
-        ui->comboBoxGuild->setEnabled(true);
-        ui->comboBoxAccount->setEnabled(true);
-        ui->checkBoxPostToGuildChat->setEnabled(true);
         return;
     }
 
@@ -207,6 +206,6 @@ void LoMTimeCheckDialog::onQueryLomLand()
             landExpireHours.insert(landName, intExpireHrs);
         }
 
-        //qDebug() << landName << intSlot << intProtectedHrs << intExpireHrs;
+        //qDebug() << now.toString() << landName << intSlot << intProtectedHrs << intExpireHrs;
     }
 }

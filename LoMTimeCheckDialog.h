@@ -30,6 +30,7 @@ private:
     void postMessageToGuildChat(const QString &message);
     void populateGuild();
     void populateAccount(const QString &guildId);
+    void updateUiEnableState(bool scriptRunning);
 
 private:
     Ui::LoMTimeCheckDialog *ui;
