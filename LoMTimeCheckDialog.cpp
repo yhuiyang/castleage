@@ -183,7 +183,7 @@ void LoMTimeCheckDialog::onQueryLomLand()
             intProtectedHrs = landStateHourElement.toPlainText().split(' ')[0].toInt();
 
             if (landProtectedHours.contains(landName)) {
-                if (landProtectedHours.value(landName) != intProtectedHrs) {
+                if (landProtectedHours.value(landName) != intProtectedHrs && ((landProtectedHours.value(landName) - intProtectedHrs) == 1)) {
                     msg = landName.trimmed() + "(slot=" + QString::number(intSlot) + ") vulnerable @ " + now.addSecs(intProtectedHrs * 60 * 60).toString("MM/dd HH:mm:ss");
                     ShowLog(msg);
                     postMessageToGuildChat(msg);
@@ -196,7 +196,7 @@ void LoMTimeCheckDialog::onQueryLomLand()
         landExpireHourElement = element.findFirst("div:nth-child(5) > div:nth-child(2) > div:nth-child(1) > span:nth-child(2)"); // "X HR"
         intExpireHrs = landExpireHourElement.toPlainText().split(' ')[0].toInt();
         if (landExpireHours.contains(landName)) {
-            if (landExpireHours.value(landName) != intExpireHrs) {
+            if (landExpireHours.value(landName) != intExpireHrs  && ((landExpireHours.value(landName) - intExpireHrs) == 1)) {
                 msg = landName.trimmed() + "(slot=" + QString::number(intSlot) + ") expire @ " + now.addSecs(intExpireHrs * 60 * 60).toString("MM/dd HH:mm:ss");
                 ShowLog(msg);
                 postMessageToGuildChat(msg);
