@@ -11,13 +11,13 @@ class LoMTimeCheckDialog;
 
 class SynchronizedNetworkAccessManager;
 
-class LoMTimeCheckDialog : public QDialog
+class LomTimeCheckDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit LoMTimeCheckDialog(QWidget *parent = 0);
-    ~LoMTimeCheckDialog();
+    explicit LomTimeCheckDialog(QWidget *parent = 0);
+    ~LomTimeCheckDialog();
 
 public slots:
     void onRun();

@@ -22,7 +22,7 @@ SOURCES += main.cpp \
     ImportAccountDialog.cpp \
     AccountManagementDialog.cpp \
     SynchronizedNetworkAccessManager.cpp \
-    LoMTimeCheckDialog.cpp
+    LomTimeCheckDialog.cpp
 
 HEADERS  += MainWindow.h \
     sqliteopenhelper.h \
@@ -31,7 +31,7 @@ HEADERS  += MainWindow.h \
     ImportAccountDialog.h \
     AccountManagementDialog.h \
     SynchronizedNetworkAccessManager.h \
-    LoMTimeCheckDialog.h
+    LomTimeCheckDialog.h
 
 RESOURCES += \
     gfx/gfx.qrc
@@ -39,4 +39,4 @@ RESOURCES += \
 FORMS += \
     ImportAccountDialog.ui \
     AccountManagementDialog.ui \
-    LoMTimeCheckDialog.ui
+    LomTimeCheckDialog.ui

@@ -4,7 +4,7 @@
 #include "sqliteopenhelper.h"
 #include "ImportAccountDialog.h"
 #include "AccountManagementDialog.h"
-#include "LoMTimeCheckDialog.h"
+#include "LomTimeCheckDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -138,7 +138,7 @@ void MainWindow::showAccountManagementDialog()
 
 void MainWindow::showLomLandTimerDialog()
 {
-    LoMTimeCheckDialog *dlg = new LoMTimeCheckDialog;
+    LomTimeCheckDialog *dlg = new LomTimeCheckDialog;
     _mdiArea->addSubWindow(dlg);
     dlg->show();
 }

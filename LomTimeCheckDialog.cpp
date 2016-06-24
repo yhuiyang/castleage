@@ -3,11 +3,11 @@
 #include <QWebFrame>
 #include <QWebElement>
 #include <QWebElementCollection>
-#include "LoMTimeCheckDialog.h"
+#include "LomTimeCheckDialog.h"
 #include "ui_LoMTimeCheckDialog.h"
 #include "SynchronizedNetworkAccessManager.h"
 
-LoMTimeCheckDialog::LoMTimeCheckDialog(QWidget *parent) :
+LomTimeCheckDialog::LomTimeCheckDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoMTimeCheckDialog)
 {
@@ -26,18 +26,18 @@ LoMTimeCheckDialog::LoMTimeCheckDialog(QWidget *parent) :
     this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-LoMTimeCheckDialog::~LoMTimeCheckDialog()
+LomTimeCheckDialog::~LomTimeCheckDialog()
 {
     delete ui;
 }
 
-void LoMTimeCheckDialog::ShowLog(const QString &message)
+void LomTimeCheckDialog::ShowLog(const QString &message)
 {
     if (ui->plainTextEditLog != nullptr)
         ui->plainTextEditLog->appendPlainText(QDateTime::currentDateTime().toString("[MM/dd HH:mm:ss] ") + message);
 }
 
-void LoMTimeCheckDialog::postMessageToGuildChat(const QString &message)
+void LomTimeCheckDialog::postMessageToGuildChat(const QString &message)
 {
     if (postToGuildChat) {
         /* reuse network access manager if available */
@@ -56,7 +56,7 @@ void LoMTimeCheckDialog::postMessageToGuildChat(const QString &message)
     }
 }
 
-void LoMTimeCheckDialog::populateGuild()
+void LomTimeCheckDialog::populateGuild()
 {
     QSqlQuery sql;
 
@@ -67,7 +67,7 @@ void LoMTimeCheckDialog::populateGuild()
     }
 }
 
-void LoMTimeCheckDialog::populateAccount(const QString &guildId)
+void LomTimeCheckDialog::populateAccount(const QString &guildId)
 {
     if (!guildId.isEmpty()) {
         QSqlQuery sql;
@@ -82,7 +82,7 @@ void LoMTimeCheckDialog::populateAccount(const QString &guildId)
     }
 }
 
-void LoMTimeCheckDialog::updateUiEnableState(bool scriptRunning)
+void LomTimeCheckDialog::updateUiEnableState(bool scriptRunning)
 {
     this->ui->pushButtonRun->setEnabled(!scriptRunning);
     this->ui->pushButtonStop->setEnabled(scriptRunning);
@@ -95,7 +95,7 @@ void LoMTimeCheckDialog::updateUiEnableState(bool scriptRunning)
 //
 // Slots
 //
-void LoMTimeCheckDialog::onRun()
+void LomTimeCheckDialog::onRun()
 {
     QVariant selectedAccountId = ui->comboBoxAccount->currentData();
     if (!selectedAccountId.isValid()) {
@@ -114,14 +114,14 @@ void LoMTimeCheckDialog::onRun()
     timer->start(interval * 1000);
 }
 
-void LoMTimeCheckDialog::onStop()
+void LomTimeCheckDialog::onStop()
 {
     timer->stop();
     updateUiEnableState(false);
     ShowLog("Check LoM land timer interrupted by user.");
 }
 
-void LoMTimeCheckDialog::onGuildIndexChanged(int guildIndex)
+void LomTimeCheckDialog::onGuildIndexChanged(int guildIndex)
 {
     QVariant guildId = ui->comboBoxGuild->itemData(guildIndex);
 
@@ -130,7 +130,7 @@ void LoMTimeCheckDialog::onGuildIndexChanged(int guildIndex)
         populateAccount(guildId.toString());
 }
 
-void LoMTimeCheckDialog::onQueryLomLand()
+void LomTimeCheckDialog::onQueryLomLand()
 {
     /* check elapsed time */
     QDateTime now = QDateTime::currentDateTime();
