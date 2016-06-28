@@ -25,160 +25,255 @@
   <property name="windowTitle">
    <string>Account Management</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <layout class="QHBoxLayout" name="accountLayout" stretch="1,0">
-     <property name="sizeConstraint">
-      <enum>QLayout::SetNoConstraint</enum>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
      </property>
-     <item>
-      <widget class="QTableView" name="accountTable">
-       <property name="showGrid">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="accountOpBtnGroup">
-       <property name="title">
-        <string>Operations</string>
-       </property>
-       <layout class="QVBoxLayout" name="accountOpBtnLayout">
-        <item>
-         <widget class="QPushButton" name="pushButtonUpdateGuilds">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="text">
-           <string>Update Guilds</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonUpdateIGNs">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="text">
-           <string>Update IGNs</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonUpdateFBIDs">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="text">
-           <string>Update FBIDs</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonMoveAccountUp">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="text">
-           <string>Move up</string>
-          </property>
-          <property name="autoDefault">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="pushButtonMoveAccountDown">
-          <property name="focusPolicy">
-           <enum>Qt::NoFocus</enum>
-          </property>
-          <property name="text">
-           <string>Move down</string>
-          </property>
-          <property name="autoDefault">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-       <zorder>verticalSpacer</zorder>
-       <zorder>pushButtonUpdateGuilds</zorder>
-       <zorder>pushButtonUpdateIGNs</zorder>
-       <zorder>pushButtonUpdateFBIDs</zorder>
-       <zorder>pushButtonMoveAccountDown</zorder>
-       <zorder>pushButtonMoveAccountUp</zorder>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>Account Import/Delete</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLineEdit" name="lineEditEmail">
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-        <property name="placeholderText">
-         <string>Email</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="pushButtonImportAccount">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="text">
-         <string>Import</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLineEdit" name="lineEditPassword">
-        <property name="focusPolicy">
-         <enum>Qt::ClickFocus</enum>
-        </property>
-        <property name="placeholderText">
-         <string>Password</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="pushButtonDeleteAccount">
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="text">
-         <string>Delete</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-     <zorder>lineEditEmail</zorder>
-     <zorder>pushButtonImportAccount</zorder>
-     <zorder>pushButtonDeleteAccount</zorder>
-     <zorder>lineEditPassword</zorder>
+     <widget class="QWidget" name="tabAccounts">
+      <attribute name="title">
+       <string>Accounts</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="1,0">
+       <item>
+        <layout class="QHBoxLayout" name="accountLayout" stretch="1,0">
+         <property name="sizeConstraint">
+          <enum>QLayout::SetNoConstraint</enum>
+         </property>
+         <item>
+          <widget class="QTableView" name="accountTable">
+           <property name="showGrid">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="accountOpBtnGroup">
+           <property name="title">
+            <string>Operations</string>
+           </property>
+           <layout class="QVBoxLayout" name="accountOpBtnLayout">
+            <item>
+             <widget class="QPushButton" name="pushButtonUpdateGuilds">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Update Guilds</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonUpdateIGNs">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Update IGNs</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonUpdateFBIDs">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Update FBIDs</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonMoveAccountUp">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Move up</string>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButtonMoveAccountDown">
+              <property name="focusPolicy">
+               <enum>Qt::NoFocus</enum>
+              </property>
+              <property name="text">
+               <string>Move down</string>
+              </property>
+              <property name="autoDefault">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+           <zorder>verticalSpacer</zorder>
+           <zorder>pushButtonUpdateGuilds</zorder>
+           <zorder>pushButtonUpdateIGNs</zorder>
+           <zorder>pushButtonUpdateFBIDs</zorder>
+           <zorder>pushButtonMoveAccountDown</zorder>
+           <zorder>pushButtonMoveAccountUp</zorder>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBoxAccounts">
+         <property name="title">
+          <string>Account Import/Delete</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLineEdit" name="lineEditEmail">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Email</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="pushButtonImportAccount">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="text">
+             <string>Import</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLineEdit" name="lineEditPassword">
+            <property name="focusPolicy">
+             <enum>Qt::ClickFocus</enum>
+            </property>
+            <property name="placeholderText">
+             <string>Password</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="pushButtonDeleteAccount">
+            <property name="focusPolicy">
+             <enum>Qt::NoFocus</enum>
+            </property>
+            <property name="text">
+             <string>Delete</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+         <zorder>lineEditEmail</zorder>
+         <zorder>pushButtonImportAccount</zorder>
+         <zorder>pushButtonDeleteAccount</zorder>
+         <zorder>lineEditPassword</zorder>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabTags">
+      <attribute name="title">
+       <string>Tags</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLineEdit" name="lineEditTagName">
+           <property name="placeholderText">
+            <string>New tag name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonNewTag">
+           <property name="text">
+            <string>Create</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
+          <string>Tags</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QRadioButton" name="radioButtonTagByAccount">
+              <property name="text">
+               <string>by account</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radioButtonTagByTag">
+              <property name="text">
+               <string>by tag</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTreeWidget" name="treeWidgetTags">
+            <property name="expandsOnDoubleClick">
+             <bool>false</bool>
+            </property>
+            <property name="columnCount">
+             <number>2</number>
+            </property>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string notr="true">2</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
     <widget class="QTextEdit" name="messageOutput">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -187,7 +282,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>messageOutput</tabstop>
   <tabstop>accountTable</tabstop>
  </tabstops>
  <resources/>
@@ -215,8 +309,8 @@
    <slot>onAccountDelete()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>896</x>
-     <y>571</y>
+     <x>955</x>
+     <y>548</y>
     </hint>
     <hint type="destinationlabel">
      <x>857</x>
@@ -231,8 +325,8 @@
    <slot>onUpdateGuilds()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>847</x>
-     <y>53</y>
+     <x>954</x>
+     <y>104</y>
     </hint>
     <hint type="destinationlabel">
      <x>764</x>
@@ -247,8 +341,8 @@
    <slot>onUpdateIGNs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>848</x>
-     <y>89</y>
+     <x>954</x>
+     <y>138</y>
     </hint>
     <hint type="destinationlabel">
      <x>764</x>
@@ -263,8 +357,8 @@
    <slot>onUpdateFBIDs()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>847</x>
-     <y>119</y>
+     <x>954</x>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>764</x>
@@ -304,6 +398,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonNewTag</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onCreateTag()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>934</x>
+     <y>47</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>898</x>
+     <y>46</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButtonTagByAccount</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onTagByWhatChanged(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>671</x>
+     <y>111</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-2</x>
+     <y>144</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>treeWidgetTags</sender>
+   <signal>itemDoubleClicked(QTreeWidgetItem*,int)</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>349</x>
+     <y>314</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>345</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAccountImport()</slot>
@@ -313,5 +455,8 @@
   <slot>onUpdateFBIDs()</slot>
   <slot>onAccountMoveUp()</slot>
   <slot>onAccountMoveDown()</slot>
+  <slot>onCreateTag()</slot>
+  <slot>onTagByWhatChanged(bool)</slot>
+  <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
  </slots>
 </ui>

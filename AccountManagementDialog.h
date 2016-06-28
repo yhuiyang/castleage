@@ -5,6 +5,7 @@
 #include <QWebPage>
 
 class SynchronizedNetworkAccessManager;
+class QTreeWidgetItem;
 
 namespace Ui {
 class AccountManagementDialog;
@@ -20,9 +21,11 @@ public:
 
 signals:
     void account_updated();
+    void tag_updated();
 
 public slots:
     void populuteAccounts();
+    void populateTags();
     void onAccountImport();
     void onAccountDelete();
     void onUpdateGuilds();
@@ -30,6 +33,9 @@ public slots:
     void onUpdateFBIDs();
     void onAccountMoveUp();
     void onAccountMoveDown();
+    void onCreateTag();
+    void onTagByWhatChanged(bool);
+    void onTagItemDoubleClicked(QTreeWidgetItem*,int);
 
 private:
     void showLog(const QString &message);

@@ -6,6 +6,7 @@
 #include "AccountManagementDialog.h"
 #include "ui_AccountManagementDialog.h"
 #include "SynchronizedNetworkAccessManager.h"
+#include "TagEditorDialog.h"
 
 AccountManagementDialog::AccountManagementDialog(QWidget *parent) :
     QDialog(parent),
@@ -14,7 +15,9 @@ AccountManagementDialog::AccountManagementDialog(QWidget *parent) :
     ui->setupUi(this);
 
     populuteAccounts();
+    populateTags();
     connect(this, SIGNAL(account_updated()), this, SLOT(populuteAccounts()));
+    connect(this, SIGNAL(tag_updated()), this, SLOT(populateTags()));
 
     _page.settings()->setAttribute(QWebSettings::AutoLoadImages, false);
     _page.settings()->setAttribute(QWebSettings::JavascriptEnabled, false);
@@ -42,6 +45,98 @@ void AccountManagementDialog::populuteAccounts()
         oldModel->deleteLater();
     for (int col = 0; col < 4; col++)
         ui->accountTable->horizontalHeader()->setSectionResizeMode(col, QHeaderView::ResizeToContents);
+}
+
+void AccountManagementDialog::populateTags()
+{
+    bool tagByAccount = ui->radioButtonTagByAccount->isChecked();
+    QSqlQuery sql;
+    QSet<int> rootIds;
+    QTreeWidgetItem *parent;
+    QTreeWidgetItem *child;
+    QStringList strList;
+    QStringList headers;
+    bool ok;
+    int accountId;
+    int tagId;
+    QString accountIgn;
+    QString accountEmail;
+    QString tagName;
+
+    ui->treeWidgetTags->clear();
+    headers.clear();
+    if (tagByAccount) {
+        headers.append("Ign / Tag");
+        headers.append("Email");
+        ok = sql.exec("SELECT a.id, ifnull(i.ign, 'UnknownIGN') AS ign, a.email, t.id, t.name FROM accounts AS a "
+                      "LEFT JOIN igns AS i ON i.accountId = a.id "
+                      "LEFT JOIN account_tag_mapping AS m ON m.accountId = a.id "
+                      "LEFT JOIN tags AS t ON t.id = m.tagId "
+                      "ORDER BY a.id, t.id");
+        if (ok) {
+            while (sql.next()) {
+                accountId = sql.value(0).toInt();
+                accountIgn = sql.value(1).toString();
+                accountEmail = sql.value(2).toString();
+                tagName = sql.value(4).toString();
+
+                if (!rootIds.contains(accountId)) {
+                    strList.clear();
+                    strList.append(accountIgn);
+                    strList.append(accountEmail);
+                    parent = new QTreeWidgetItem(ui->treeWidgetTags, strList);
+                    parent->setData(0, Qt::UserRole, accountId);
+                    ui->treeWidgetTags->addTopLevelItem(parent);
+                    rootIds.insert(accountId);
+                }
+
+                if (!tagName.isEmpty()) {
+                    strList.clear();
+                    strList.append(tagName);
+                    child = new QTreeWidgetItem(parent, strList);
+                    parent->addChild(child);
+                }
+            }
+        }
+
+    } else {
+        headers.append("Tag / Ign");
+        headers.append("Email");
+        ok = sql.exec("SELECT t.id, t.name, a.id, a.email, i.ign FROM tags AS t "
+                      "LEFT JOIN account_tag_mapping AS m ON t.id = m.tagId "
+                      "LEFT JOIN accounts AS a ON a.id = m.accountId "
+                      "LEFT JOIN igns AS i ON i.accountId = a.id "
+                      "ORDER BY t.id, a.id");
+        if (ok) {
+            while (sql.next()) {
+                tagId = sql.value(0).toInt();
+                tagName = sql.value(1).toString();
+                accountEmail = sql.value(3).toString();
+                accountIgn = sql.value(4).toString();
+
+                if (!rootIds.contains(tagId)) {
+                    strList.clear();
+                    strList.append(tagName);
+                    parent = new QTreeWidgetItem(ui->treeWidgetTags, strList);
+                    parent->setData(0, Qt::UserRole, tagId);
+                    ui->treeWidgetTags->addTopLevelItem(parent);
+                    rootIds.insert(tagId);
+                }
+
+                if (!accountEmail.isEmpty()) {
+                    strList.clear();
+                    strList.append(accountIgn);
+                    strList.append(accountEmail);
+                    child = new QTreeWidgetItem(parent, strList);
+                    parent->addChild(child);
+                }
+            }
+        }
+    }
+    ui->treeWidgetTags->expandAll();
+    ui->treeWidgetTags->setHeaderLabels(headers);
+    for (int col = 0; col < ui->treeWidgetTags->columnCount(); col++)
+        ui->treeWidgetTags->resizeColumnToContents(col);
 }
 
 void AccountManagementDialog::showLog(const QString &message)
@@ -243,4 +338,48 @@ void AccountManagementDialog::onAccountMoveUp()
 void AccountManagementDialog::onAccountMoveDown()
 {
     qDebug() << "Move account down";
+}
+
+void AccountManagementDialog::onCreateTag()
+{
+    QString tag = ui->lineEditTagName->text();
+    if (tag.isEmpty()) {
+        QMessageBox::warning(this, "Warning", "Tag name can not empty.");
+        return;
+    }
+
+    QSqlQuery sql;
+    sql.prepare("INSERT INTO tags (name) VALUES (:tag)");
+    sql.bindValue(":tag", tag);
+    if (sql.exec()) {
+        ui->lineEditTagName->clear();
+        showLog("Tag: \"" + tag + "\" created");
+
+        emit tag_updated();
+    }
+}
+
+void AccountManagementDialog::onTagByWhatChanged(bool checked)
+{
+    Q_UNUSED(checked);
+    populateTags();
+}
+
+void AccountManagementDialog::onTagItemDoubleClicked(QTreeWidgetItem *item, int col)
+{
+    Q_UNUSED(col);
+
+    QVariant userData;
+    if (item != nullptr)
+        userData = item->data(0, Qt::UserRole);
+    if (!userData.isValid()) {
+        qDebug() << "no user data";
+        return;
+    }
+
+    //qDebug() << (ui->radioButtonTagByAccount->isChecked() ? "accountId" : "tagId") << userData.toInt();
+
+    TagEditorDialog dlg(ui->radioButtonTagByAccount->isChecked(), userData.toInt(), this);
+    if (dlg.exec() > 0)
+        emit tag_updated();
 }

@@ -178,6 +178,15 @@ void MainWindow::onCreateDatabase(QSqlDatabase &db)
            ", creatorId TEXT NOT NULL"
            ", createdAt DATETIME"
            ")");
+    q.exec("CREATE TABLE IF NOT EXISTS tags ("
+           "id INTEGER PRIMARY KEY"
+           ", name TEXT UNIQUE NOT NULL"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS account_tag_mapping ("
+           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
+           ", tagId INTEGER REFERENCES tags ON DELETE CASCADE"
+           ", UNIQUE (accountId, tagId) ON CONFLICT IGNORE"
+           ")");
 }
 
 void MainWindow::onUpgradeDatabase(QSqlDatabase &db, int oldVersion, int newVersion)
