@@ -36,6 +36,7 @@ public slots:
     void onAccountMoveDown();
     void onAccountActivated(QModelIndex);
     void onCreateTag();
+    void onDeleteTag();
     void onTagByWhatChanged(bool);
     void onTagItemDoubleClicked(QTreeWidgetItem*,int);
 

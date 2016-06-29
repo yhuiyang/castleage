@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tabAccounts">
       <attribute name="title">
@@ -205,14 +205,21 @@
          <item>
           <widget class="QLineEdit" name="lineEditTagName">
            <property name="placeholderText">
-            <string>New tag name</string>
+            <string>Tag name</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButtonNewTag">
            <property name="text">
-            <string>Create</string>
+            <string>Create Tag</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pushButtonDeleteTag">
+           <property name="text">
+            <string>Delete Tag</string>
            </property>
           </widget>
          </item>
@@ -411,12 +418,12 @@
    <slot>onCreateTag()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>134</x>
-     <y>73</y>
+     <x>758</x>
+     <y>65</y>
     </hint>
     <hint type="destinationlabel">
-     <x>898</x>
-     <y>46</y>
+     <x>762</x>
+     <y>60</y>
     </hint>
    </hints>
   </connection>
@@ -427,8 +434,8 @@
    <slot>onTagByWhatChanged(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>93</x>
-     <y>68</y>
+     <x>123</x>
+     <y>130</y>
     </hint>
     <hint type="destinationlabel">
      <x>-2</x>
@@ -443,8 +450,8 @@
    <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>94</x>
-     <y>68</y>
+     <x>124</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
@@ -468,6 +475,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonDeleteTag</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onDeleteTag()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>933</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>923</x>
+     <y>44</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAccountImport()</slot>
@@ -481,5 +504,6 @@
   <slot>onTagByWhatChanged(bool)</slot>
   <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
   <slot>onAccountActivated(QModelIndex)</slot>
+  <slot>onDeleteTag()</slot>
  </slots>
 </ui>

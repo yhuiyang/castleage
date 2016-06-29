@@ -374,6 +374,27 @@ void AccountManagementDialog::onCreateTag()
     }
 }
 
+void AccountManagementDialog::onDeleteTag()
+{
+    QString tag = ui->lineEditTagName->text();
+    if (tag.isEmpty()) {
+        QMessageBox::warning(this, "Warning", "Tag name can not empty");
+        return;
+    }
+
+    if (QMessageBox::warning(this, "Remove tag?", "Are you sure you want to remove tag '" + tag + "'?", QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes) {
+        QSqlQuery sql;
+        sql.prepare("DELETE FROM tags WHERE name = :tagName");
+        sql.bindValue(":tagName", tag);
+        if (sql.exec()) {
+            ui->lineEditTagName->clear();
+            showLog("Tag: '" + tag + "' removed");
+
+            emit tag_updated();
+        }
+    }
+}
+
 void AccountManagementDialog::onTagByWhatChanged(bool checked)
 {
     Q_UNUSED(checked);
