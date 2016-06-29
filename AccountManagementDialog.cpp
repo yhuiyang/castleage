@@ -340,6 +340,14 @@ void AccountManagementDialog::onAccountMoveDown()
     qDebug() << "Move account down";
 }
 
+void AccountManagementDialog::onAccountActivated(QModelIndex modelIndex)
+{
+    if (modelIndex.isValid()) {
+        QModelIndex emailModelIndex = ui->accountTable->model()->index(modelIndex.row(), 0);
+        ui->lineEditEmail->setText(ui->accountTable->model()->data(emailModelIndex).toString());
+    }
+}
+
 void AccountManagementDialog::onCreateTag()
 {
     QString tag = ui->lineEditTagName->text();

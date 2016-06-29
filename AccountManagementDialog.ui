@@ -405,8 +405,8 @@
    <slot>onCreateTag()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>934</x>
-     <y>47</y>
+     <x>924</x>
+     <y>44</y>
     </hint>
     <hint type="destinationlabel">
      <x>898</x>
@@ -421,8 +421,8 @@
    <slot>onTagByWhatChanged(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>671</x>
-     <y>111</y>
+     <x>78</x>
+     <y>113</y>
     </hint>
     <hint type="destinationlabel">
      <x>-2</x>
@@ -437,12 +437,28 @@
    <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>314</y>
+     <x>79</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
      <y>345</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>accountTable</sender>
+   <signal>activated(QModelIndex)</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onAccountActivated(QModelIndex)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>214</x>
+     <y>106</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>235</x>
+     <y>106</y>
     </hint>
    </hints>
   </connection>
@@ -458,5 +474,6 @@
   <slot>onCreateTag()</slot>
   <slot>onTagByWhatChanged(bool)</slot>
   <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
+  <slot>onAccountActivated(QModelIndex)</slot>
  </slots>
 </ui>

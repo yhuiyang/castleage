@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QWebPage>
+#include <QModelIndex>
 
 class SynchronizedNetworkAccessManager;
 class QTreeWidgetItem;
@@ -33,6 +34,7 @@ public slots:
     void onUpdateFBIDs();
     void onAccountMoveUp();
     void onAccountMoveDown();
+    void onAccountActivated(QModelIndex);
     void onCreateTag();
     void onTagByWhatChanged(bool);
     void onTagItemDoubleClicked(QTreeWidgetItem*,int);
