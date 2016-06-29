@@ -171,8 +171,10 @@ void AccountManagementDialog::onAccountImport()
     sql.prepare("INSERT OR REPLACE INTO accounts (email, password) VALUES (:email, :password)");
     sql.bindValue(":email", email);
     sql.bindValue(":password", password);
-    if (sql.exec())
+    if (sql.exec()) {
+        showLog("Account '" + email + "' is imported.");
         emit account_updated();
+    }
 }
 
 void AccountManagementDialog::onAccountDelete()
@@ -183,11 +185,16 @@ void AccountManagementDialog::onAccountDelete()
         return;
     }
 
-    QSqlQuery sql;
-    sql.prepare("DELETE FROM accounts WHERE email = :email");
-    sql.bindValue(":email", email);
-    if (sql.exec())
-        emit account_updated();
+    if (QMessageBox::warning(this, "Remove account", "Are you sure you want to remove this account '" + email + "'?", QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes) {
+        QSqlQuery sql;
+        sql.prepare("DELETE FROM accounts WHERE email = :email");
+        sql.bindValue(":email", email);
+        if (sql.exec()) {
+            showLog("Account '" + email + "' is removed");
+            ui->lineEditEmail->clear();
+            emit account_updated();
+        }
+    }
 }
 
 void AccountManagementDialog::onUpdateGuilds()
