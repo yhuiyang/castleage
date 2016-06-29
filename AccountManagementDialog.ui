@@ -99,6 +99,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButtonMoveAccountUp">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
@@ -112,6 +115,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButtonMoveAccountDown">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="focusPolicy">
                <enum>Qt::NoFocus</enum>
               </property>
@@ -405,8 +411,8 @@
    <slot>onCreateTag()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>924</x>
-     <y>44</y>
+     <x>134</x>
+     <y>73</y>
     </hint>
     <hint type="destinationlabel">
      <x>898</x>
@@ -421,8 +427,8 @@
    <slot>onTagByWhatChanged(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>113</y>
+     <x>93</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
      <x>-2</x>
@@ -437,8 +443,8 @@
    <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>160</y>
+     <x>94</x>
+     <y>68</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
