@@ -43,8 +43,8 @@
          </property>
          <item>
           <widget class="QTableView" name="accountTable">
-           <property name="showGrid">
-            <bool>true</bool>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
            </property>
           </widget>
          </item>
