@@ -23,12 +23,8 @@ private:
     void createActions();
     void createStatusBar();
 
-signals:
-    void ca_account_updated();
-
 private slots:
     void createChildBrowser();
-    void showImportAccountDialog();
     void showAccountManagementDialog();
     void showLomLandTimerDialog();
     /* database */

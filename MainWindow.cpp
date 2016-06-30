@@ -110,25 +110,6 @@ void MainWindow::createChildBrowser() {
     child->show();
 }
 
-void MainWindow::showImportAccountDialog() {
-    ImportAccountDialog dlg(this);
-    if (dlg.exec() == QDialog::Accepted) {
-        QString email, password;
-        dlg.getAccountData(email, password);
-        if (email.isEmpty() || password.isEmpty()) {
-            qDebug() << "Email and password fields can not be empty";
-            QMessageBox::warning(this, "Warning", "Email and password fields can not be empty.");
-        } else {
-            QSqlQuery q;
-            q.prepare("INSERT OR REPLACE INTO accounts (email, password) VALUES (:email, :password)");
-            q.bindValue(":email", email);
-            q.bindValue(":password", password);
-            if (q.exec())
-                emit ca_account_updated();
-        }
-    }
-}
-
 void MainWindow::showAccountManagementDialog()
 {
     AccountManagementDialog *dlg = new AccountManagementDialog;
