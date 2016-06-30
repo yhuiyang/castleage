@@ -33,7 +33,7 @@ AccountManagementDialog::~AccountManagementDialog()
 void AccountManagementDialog::populuteAccounts()
 {
     QSqlQueryModel *model = new QSqlQueryModel;
-    model->setQuery("SELECT email, ign AS \"IGN\", g.name AS \"Guild\", fbid AS \"FBID\" FROM accounts AS a "
+    model->setQuery("SELECT a.id, email, ign AS \"IGN\", g.name AS \"Guild\", fbid AS \"FBID\" FROM accounts AS a "
                     "LEFT JOIN igns ON igns.accountId = a.id "
                     "LEFT JOIN guildids ON guildids.accountId = a.id "
                     "LEFT JOIN guilds AS g ON g.id = guildids.guildId "
@@ -41,9 +41,10 @@ void AccountManagementDialog::populuteAccounts()
                     "ORDER BY timestamp");
     QAbstractItemModel *oldModel = ui->accountTable->model();
     ui->accountTable->setModel(model);
+    ui->accountTable->hideColumn(0); // hide column 0: account id.
     if (oldModel != nullptr)
         oldModel->deleteLater();
-    for (int col = 0; col < 4; col++)
+    for (int col = 0; col < model->columnCount(); col++)
         ui->accountTable->horizontalHeader()->setSectionResizeMode(col, QHeaderView::ResizeToContents);
 }
 
@@ -147,14 +148,16 @@ void AccountManagementDialog::showLog(const QString &message)
 
 SynchronizedNetworkAccessManager * AccountManagementDialog::getNetworkAccessManager(const qlonglong accountId, const QByteArray &accountEmail)
 {
-    if (_accountMgrs.contains(QString::number(accountId)))
+    if (accountId > 0 && _accountMgrs.contains(QString::number(accountId)))
         return _accountMgrs.value(QString::number(accountId));
-    if (_accountMgrs.contains(accountEmail))
+    if (!accountEmail.isEmpty() && _accountMgrs.contains(accountEmail))
         return _accountMgrs.value(accountEmail);
 
     SynchronizedNetworkAccessManager *mgr = new SynchronizedNetworkAccessManager(accountId, this);
-    _accountMgrs.insert(QString::number(accountId), mgr);
-    _accountMgrs.insert(accountEmail, mgr);
+    if (accountId > 0)
+        _accountMgrs.insert(QString::number(accountId), mgr);
+    if (!accountEmail.isEmpty())
+        _accountMgrs.insert(accountEmail, mgr);
     return mgr;
 }
 
@@ -202,16 +205,29 @@ void AccountManagementDialog::onUpdateGuilds()
     SynchronizedNetworkAccessManager *mgr;
     QList<QPair<qlonglong, QByteArray>> check;
 
-    QSqlQuery sql;
-    if (!sql.exec("SELECT id, email FROM accounts")) {
-        qCritical() << "Failed to retrieve accounts from database.";
-        showLog("Failed to retrieve accounts from database.");
-        return;
+    /* check if selection exists */
+    QItemSelectionModel * selectionModel = ui->accountTable->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+    for (QModelIndex selectedRow: selectedRows) {
+        qlonglong accountId = selectedRow.data().toLongLong();
+        QByteArray accountEmail = ui->accountTable->model()->data(ui->accountTable->model()->index(selectedRow.row(), 1)).toByteArray();
+        check.append(QPair<qlonglong, QByteArray>(accountId, accountEmail));
     }
-    while (sql.next())
-        check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
-    sql.finish();
 
+    /* if no selection exists, apply to all */
+    if (check.count() == 0) {
+        QSqlQuery sql;
+        if (!sql.exec("SELECT id, email FROM accounts")) {
+            qCritical() << "Failed to retrieve accounts from database.";
+            showLog("Failed to retrieve accounts from database.");
+            return;
+        }
+        while (sql.next())
+            check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
+        sql.finish();
+    }
+
+    showLog("Start to update guild...");
     bool guildIdUpdated = false;
     QSqlQuery sqlInsertAccountGuildId;
     QSqlQuery sqlInsertGuild;
@@ -251,6 +267,7 @@ void AccountManagementDialog::onUpdateGuilds()
             showLog("Failed to find guild of account[" + account.second + "]");
         }
     }
+    showLog("Update guild completedly.");
 
     if (guildIdUpdated)
         emit account_updated();
@@ -261,16 +278,29 @@ void AccountManagementDialog::onUpdateIGNs()
     SynchronizedNetworkAccessManager *mgr;
     QList<QPair<qlonglong, QByteArray>> check;
 
-    QSqlQuery sql;
-    if (!sql.exec("SELECT id, email FROM accounts")) {
-        qCritical() << "Failed to retrieve accounts from database.";
-        showLog("Failed to retrieve accounts from database.");
-        return;
+    /* check if selection exists */
+    QItemSelectionModel * selectionModel = ui->accountTable->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+    for (QModelIndex selectedRow: selectedRows) {
+        qlonglong accountId = selectedRow.data().toLongLong();
+        QByteArray accountEmail = ui->accountTable->model()->data(ui->accountTable->model()->index(selectedRow.row(), 1)).toByteArray();
+        check.append(QPair<qlonglong, QByteArray>(accountId, accountEmail));
     }
-    while (sql.next())
-        check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
-    sql.finish();
 
+    /* if no selection exists, apply to all */
+    QSqlQuery sql;
+    if (check.count() == 0) {
+        if (!sql.exec("SELECT id, email FROM accounts")) {
+            qCritical() << "Failed to retrieve accounts from database.";
+            showLog("Failed to retrieve accounts from database.");
+            return;
+        }
+        while (sql.next())
+            check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
+        sql.finish();
+    }
+
+    showLog("Start to update IGN...");
     bool ignUpdated = false;
     sql.clear();
     sql.prepare("INSERT OR REPLACE INTO igns VALUES (:accountId, :ign)");
@@ -291,6 +321,7 @@ void AccountManagementDialog::onUpdateIGNs()
             showLog("Failed to update ign for account[" + account.second + "]");
         }
     }
+    showLog("Update IGN completedly");
 
     if (ignUpdated)
         emit account_updated();
@@ -301,16 +332,29 @@ void AccountManagementDialog::onUpdateFBIDs()
     SynchronizedNetworkAccessManager *mgr;
     QList<QPair<qlonglong, QByteArray>> check;
 
-    QSqlQuery sql;
-    if (!sql.exec("SELECT id, email FROM accounts")) {
-        qCritical() << "Failed to retrieve accounts from database.";
-        showLog("Failed to retrieve accounts from database.");
-        return;
+    /* check if selection exists */
+    QItemSelectionModel * selectionModel = ui->accountTable->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+    for (QModelIndex selectedRow: selectedRows) {
+        qlonglong accountId = selectedRow.data().toLongLong();
+        QByteArray accountEmail = ui->accountTable->model()->data(ui->accountTable->model()->index(selectedRow.row(), 1)).toByteArray();
+        check.append(QPair<qlonglong, QByteArray>(accountId, accountEmail));
     }
-    while (sql.next())
-        check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
-    sql.finish();
 
+    /* if no selection exists, apply to all */
+    QSqlQuery sql;
+    if (check.count() == 0) {
+        if (!sql.exec("SELECT id, email FROM accounts")) {
+            qCritical() << "Failed to retrieve accounts from database.";
+            showLog("Failed to retrieve accounts from database.");
+            return;
+        }
+        while (sql.next())
+            check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
+        sql.finish();
+    }
+
+    showLog("Start to update FBID...");
     bool fbidUpdated = false;
     sql.clear();
     sql.prepare("INSERT OR REPLACE INTO fbids VALUES(:accountId, :fbid)");
@@ -332,6 +376,7 @@ void AccountManagementDialog::onUpdateFBIDs()
             showLog("Failed to update fbid for account[" + account.second + "]");
         }
     }
+    showLog("Update FBID completedly");
 
     if (fbidUpdated)
         emit account_updated();
@@ -350,7 +395,7 @@ void AccountManagementDialog::onAccountMoveDown()
 void AccountManagementDialog::onAccountActivated(QModelIndex modelIndex)
 {
     if (modelIndex.isValid()) {
-        QModelIndex emailModelIndex = ui->accountTable->model()->index(modelIndex.row(), 0);
+        QModelIndex emailModelIndex = ui->accountTable->model()->index(modelIndex.row(), 1); // email
         ui->lineEditEmail->setText(ui->accountTable->model()->data(emailModelIndex).toString());
     }
 }
