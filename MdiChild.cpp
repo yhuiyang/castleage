@@ -85,20 +85,29 @@ void TabWebView::setupActionToolBar()
     QToolBar *toolbarAccount = addToolBar("Account");
     toolbarAccount->addWidget(new QLabel("Account:", toolbarAccount));
     toolbarAccount->addWidget(_comboBoxAccount = new QComboBox(toolbarAccount));
+    toolbarAccount->addWidget(new QLabel("Filter:", toolbarAccount));
+    toolbarAccount->addWidget(_comboBoxFilter = new QComboBox(toolbarAccount));
 
     connect(_address, &QLineEdit::returnPressed, this, &TabWebView::onAddressReturnKeyPressed);
     connect(_comboBoxAccount, SIGNAL(currentIndexChanged(int)), this, SLOT(onAccountIndexChanged(int)));
+    connect(_comboBoxFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(onFilterIndexChanged(int)));
 }
 
 void TabWebView::populateToolBar()
 {
-    _comboBoxAccount->clear();
-    _comboBoxAccount->addItem("------ Select Account ------", 0);
-
+    _comboBoxFilter->clear();
+    _comboBoxFilter->addItem("No filter", 0);
+    _comboBoxFilter->addItem("Accounts not join any guild", -1);
     QSqlQuery sql;
-    if (sql.exec("SELECT a.id, ifnull(ign, 'Unknown') || ' - ' || email FROM accounts AS a LEFT JOIN igns AS i ON i.accountId = a.id ORDER BY timestamp")) {
+    /* guild id & guild name for all possible accounts */
+    if (sql.exec("SELECT guildid, name FROM guildids INNER JOIN guilds ON guilds.id = guildids.guildid GROUP BY guildid")) {
         while (sql.next())
-            _comboBoxAccount->addItem(sql.value(1).toString(), sql.value(0).toLongLong());
+            _comboBoxFilter->addItem("Guild: " + sql.value(1).toString(), sql.value(0).toString());
+    }
+    /* tags */
+    if (sql.exec("SELECT id, name FROM tags")) {
+        while (sql.next())
+            _comboBoxFilter->addItem("Tag: " + sql.value(1).toString(), sql.value(0).toInt());
     }
 }
 
@@ -118,6 +127,56 @@ void TabWebView::onAccountIndexChanged(int index)
         this->_webView->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
 
     emit requestUpdateTabInfo(this, accountId);
+}
+
+void TabWebView::onFilterIndexChanged(int index)
+{
+    QSqlQuery sql;
+
+    //
+    // QVariant user itemData
+    // int 0 => this is no filter, and should list all accounts
+    // QString '1234567890_1234567890' (contains '_' char) => this is a filter for selected guild.
+    // int [1, n] => this is a fiter for selected tag.
+    // int -1 => this is a filter for no guild accounts.
+    //
+    QVariant itemData = _comboBoxFilter->itemData(index);
+    QString itemDataAsString = itemData.toString();
+    if (itemDataAsString.contains('_')) { // for selected guild
+        sql.prepare("SELECT a.id, ifnull(i.ign, 'UnknownIGN') || ' - ' || a.email FROM accounts AS a "
+                    "INNER JOIN guildids AS g ON g.accountId = a.id AND g.guildid = :guildId "
+                    "LEFT JOIN igns AS i ON a.id = i.accountId "
+                    "ORDER BY a.id");
+        sql.bindValue(":guildId", itemDataAsString);
+    } else {
+        int itemDataAsInt = itemData.toInt();
+        if (itemDataAsInt == 0) { // no filter
+            sql.prepare("SELECT a.id, ifnull(i.ign, 'UnknownIGN') || ' - ' || a.email FROM accounts AS a "
+                        "LEFT JOIN igns AS i ON i.accountId = a.id "
+                        "ORDER BY a.id");
+        } else if (itemDataAsInt == -1) { // for accounts no join any guild
+            sql.prepare("SELECT a.id, ifnull(i.ign, 'UnknownIGN') || ' - ' || a.email FROM accounts AS a "
+                        "LEFT JOIN igns AS i ON i.accountId = a.id "
+                        "WHERE a.id NOT IN (SELECT accountId FROM guildids) "
+                        "ORDER BY a.id");
+        } else if (itemDataAsInt >= 1) { // for selected tag
+            sql.prepare("SELECT a.id, ifnull(i.ign, 'UnknownIGN') || ' - ' || a.email FROM accounts AS a "
+                        "INNER JOIN account_tag_mapping AS m ON m.accountId = a.id AND m.tagId = :tagId "
+                        "LEFT JOIN igns AS i ON i.accountId = a.id "
+                        "ORDER BY a.id");
+            sql.bindValue(":tagId", itemDataAsInt);
+        } else {
+            qWarning() << __func__ << "index changed to unhandled filter...";
+            return;
+        }
+    }
+
+    if (sql.exec()) {
+        _comboBoxAccount->clear();
+        _comboBoxAccount->addItem("------ Select an Account ------", 0);
+        while (sql.next())
+            _comboBoxAccount->addItem(sql.value(1).toString(), sql.value(0).toLongLong());
+    }
 }
 
 void TabWebView::onWebViewLoadStarted()

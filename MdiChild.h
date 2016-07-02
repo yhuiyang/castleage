@@ -29,6 +29,7 @@ signals:
 public slots:
     void onAddressReturnKeyPressed();
     void onAccountIndexChanged(int index);
+    void onFilterIndexChanged(int index);
     void onWebViewLoadStarted();
     void onWebViewLoadProgress(int progress);
     void onWebViewLoadFinished(bool ok);
@@ -41,6 +42,7 @@ private:
     QWebView *_webView;
     CastleAgeNetworkAccessManager *_netMgr;
     QComboBox *_comboBoxAccount;
+    QComboBox *_comboBoxFilter;
 };
 
 class MdiChild : public QMainWindow
