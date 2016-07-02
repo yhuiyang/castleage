@@ -3,5 +3,7 @@
         <file>new_window.png</file>
         <file>account_management.png</file>
         <file>run.png</file>
+        <file>action_consume.png</file>
+        <file>lom_timer.png</file>
     </qresource>
 </RCC>

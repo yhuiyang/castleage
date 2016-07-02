@@ -27,6 +27,7 @@ private slots:
     void createChildBrowser();
     void showAccountManagementDialog();
     void showLomLandTimerDialog();
+    void showActionConsumeDialog();
     /* database */
     void onCreateDatabase(QSqlDatabase &db);
     void onUpgradeDatabase(QSqlDatabase &db, int oldVersion, int newVersion);

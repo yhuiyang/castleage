@@ -61,9 +61,11 @@ void MainWindow::createActions()
     QAction *actionShowAccountManagementDialog = new QAction(QIcon(":toolbar/account_management.png"), tr("Account Management..."), this);
     QAction *actionToggleBrowserToolBar = new QAction("Browser", this);
     QAction *actionToggleAccountToolBar = new QAction("Account", this);
+    QAction *actionToggleScriptToolBar = new QAction("Script", this);
     actionToggleBrowserToolBar->setCheckable(true);
     actionToggleAccountToolBar->setCheckable(true);
-    QAction *actionShowLomLandTimerDialog = new QAction(tr("Lom Land Timer..."), this);
+    QAction *actionShowLomLandTimerDialog = new QAction(QIcon(":toolbar/lom_timer.png"), tr("Lom Land Timer..."), this);
+    QAction *actionShowActionConsumeDialog = new QAction(QIcon(":toolbar/action_consume.png"), tr("Action consume..."), this);
 
     QMenu *menuView = menuBar()->addMenu(tr("&View"));
     QMenu *menuAccount = menuBar()->addMenu(tr("&Account"));
@@ -76,24 +78,32 @@ void MainWindow::createActions()
     menuAccount->addAction(actionShowAccountManagementDialog);
     menuToolbar->addAction(actionToggleBrowserToolBar);
     menuToolbar->addAction(actionToggleAccountToolBar);
+    menuToolbar->addAction(actionToggleScriptToolBar);
     menuScript->addAction(actionShowLomLandTimerDialog);
+    menuScript->addAction(actionShowActionConsumeDialog);
 
     QToolBar *toolbarBrowser = addToolBar(tr("Browser"));
     QToolBar *toolbarAccount = addToolBar(tr("Account"));
+    QToolBar *toolbarScript = addToolBar(tr("Script"));
 
     toolbarBrowser->setObjectName("toolbar/Browser");
     toolbarAccount->setObjectName("toolbar/Account");
+    toolbarScript->setObjectName("toolbar/Script");
 
     toolbarBrowser->addAction(actionNewBrowser);
     toolbarAccount->addAction(actionShowAccountManagementDialog);
+    toolbarScript->addAction(actionShowLomLandTimerDialog);
+    toolbarScript->addAction(actionShowActionConsumeDialog);
 
     connect(actionNewBrowser, SIGNAL(triggered(bool)), this, SLOT(createChildBrowser()));
     connect(actionShowAccountManagementDialog, SIGNAL(triggered(bool)), this, SLOT(showAccountManagementDialog()));
     connect(actionToggleBrowserToolBar, SIGNAL(triggered(bool)), toolbarBrowser, SLOT(setVisible(bool)));
     connect(actionToggleAccountToolBar, SIGNAL(triggered(bool)), toolbarAccount, SLOT(setVisible(bool)));
+    connect(actionToggleScriptToolBar, SIGNAL(triggered(bool)), toolbarScript, SLOT(setVisible(bool)));
     connect(toolbarBrowser, SIGNAL(visibilityChanged(bool)), actionToggleBrowserToolBar, SLOT(setChecked(bool)));
     connect(toolbarAccount, SIGNAL(visibilityChanged(bool)), actionToggleAccountToolBar, SLOT(setChecked(bool)));
     connect(actionShowLomLandTimerDialog, SIGNAL(triggered(bool)), this, SLOT(showLomLandTimerDialog()));
+    connect(actionShowActionConsumeDialog, SIGNAL(triggered(bool)), this, SLOT(showActionConsumeDialog()));
 }
 
 void MainWindow::createStatusBar()
@@ -122,6 +132,11 @@ void MainWindow::showLomLandTimerDialog()
     LomTimeCheckDialog *dlg = new LomTimeCheckDialog;
     _mdiArea->addSubWindow(dlg);
     dlg->show();
+}
+
+void MainWindow::showActionConsumeDialog()
+{
+    qDebug() << __func__;
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)
