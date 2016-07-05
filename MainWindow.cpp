@@ -2,9 +2,9 @@
 #include "MainWindow.h"
 #include "MdiChild.h"
 #include "sqliteopenhelper.h"
-#include "ImportAccountDialog.h"
 #include "AccountManagementDialog.h"
 #include "LomTimeCheckDialog.h"
+#include "ActionConsumeDialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -136,7 +136,9 @@ void MainWindow::showLomLandTimerDialog()
 
 void MainWindow::showActionConsumeDialog()
 {
-    qDebug() << __func__;
+    ActionConsumeDialog *dlg = new ActionConsumeDialog;
+    _mdiArea->addSubWindow(dlg);
+    dlg->show();
 }
 
 void MainWindow::onCreateDatabase(QSqlDatabase &db)

@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     AccountManagementDialog.cpp \
     SynchronizedNetworkAccessManager.cpp \
     LomTimeCheckDialog.cpp \
-    TagEditorDialog.cpp
+    TagEditorDialog.cpp \
+    ActionConsumeDialog.cpp
 
 HEADERS  += MainWindow.h \
     sqliteopenhelper.h \
@@ -31,7 +32,8 @@ HEADERS  += MainWindow.h \
     AccountManagementDialog.h \
     SynchronizedNetworkAccessManager.h \
     LomTimeCheckDialog.h \
-    TagEditorDialog.h
+    TagEditorDialog.h \
+    ActionConsumeDialog.h
 
 RESOURCES += \
     gfx/gfx.qrc
@@ -39,4 +41,5 @@ RESOURCES += \
 FORMS += \
     AccountManagementDialog.ui \
     LomTimeCheckDialog.ui \
-    TagEditorDialog.ui
+    TagEditorDialog.ui \
+    ActionConsumeDialog.ui
