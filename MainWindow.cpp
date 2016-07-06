@@ -185,6 +185,10 @@ void MainWindow::onCreateDatabase(QSqlDatabase &db)
            ", tagId INTEGER REFERENCES tags ON DELETE CASCADE"
            ", UNIQUE (accountId, tagId) ON CONFLICT IGNORE"
            ")");
+    q.exec("CREATE TABLE IF NOT EXISTS roles ("
+           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
+           ", role TEXT NOT NULL CHECK (role IN ('Master', 'Officer', 'Leader'))"
+           ")");
 }
 
 void MainWindow::onUpgradeDatabase(QSqlDatabase &db, int oldVersion, int newVersion)

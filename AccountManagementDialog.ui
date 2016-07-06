@@ -85,6 +85,13 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="pushButtonUpdateRoles">
+              <property name="text">
+               <string>Update Roles</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -136,6 +143,7 @@
            <zorder>pushButtonUpdateFBIDs</zorder>
            <zorder>pushButtonMoveAccountDown</zorder>
            <zorder>pushButtonMoveAccountUp</zorder>
+           <zorder>pushButtonUpdateRoles</zorder>
           </widget>
          </item>
         </layout>
@@ -491,6 +499,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButtonUpdateRoles</sender>
+   <signal>clicked()</signal>
+   <receiver>AccountManagementDialog</receiver>
+   <slot>onUpdateRoles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>906</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>828</x>
+     <y>195</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onAccountImport()</slot>
@@ -505,5 +529,6 @@
   <slot>onTagItemDoubleClicked(QTreeWidgetItem*,int)</slot>
   <slot>onAccountActivated(QModelIndex)</slot>
   <slot>onDeleteTag()</slot>
+  <slot>onUpdateRoles()</slot>
  </slots>
 </ui>

@@ -33,11 +33,12 @@ AccountManagementDialog::~AccountManagementDialog()
 void AccountManagementDialog::populuteAccounts()
 {
     QSqlQueryModel *model = new QSqlQueryModel;
-    model->setQuery("SELECT a.id, email, ign AS \"IGN\", g.name AS \"Guild\", fbid AS \"FBID\" FROM accounts AS a "
+    model->setQuery("SELECT a.id, email, ign AS 'IGN', g.name AS 'Guild', fbid AS 'FBID', role AS 'Role' FROM accounts AS a "
                     "LEFT JOIN igns ON igns.accountId = a.id "
                     "LEFT JOIN guildids ON guildids.accountId = a.id "
                     "LEFT JOIN guilds AS g ON g.id = guildids.guildId "
                     "LEFT JOIN fbids ON fbids.accountId = a.id "
+                    "LEFT JOIN roles AS r ON r.accountId = a.id "
                     "ORDER BY timestamp");
     QAbstractItemModel *oldModel = ui->accountTable->model();
     ui->accountTable->setModel(model);
@@ -379,6 +380,71 @@ void AccountManagementDialog::onUpdateFBIDs()
     showLog("Update FBID completedly");
 
     if (fbidUpdated)
+        emit account_updated();
+}
+
+void AccountManagementDialog::onUpdateRoles()
+{
+    SynchronizedNetworkAccessManager *mgr;
+    QList<QPair<qlonglong, QByteArray>> check;
+
+    /* check if selection exists */
+    QItemSelectionModel * selectionModel = ui->accountTable->selectionModel();
+    QModelIndexList selectedRows = selectionModel->selectedRows();
+    for (QModelIndex selectedRow: selectedRows) {
+        qlonglong accountId = selectedRow.data().toLongLong();
+        QByteArray accountEmail = ui->accountTable->model()->data(ui->accountTable->model()->index(selectedRow.row(), 1)).toByteArray();
+        check.append(QPair<qlonglong, QByteArray>(accountId, accountEmail));
+    }
+
+    /* if no selection exists, apply to all */
+    QSqlQuery sql;
+    if (check.count() == 0) {
+        if (!sql.exec("SELECT id, email FROM accounts")) {
+            qCritical() << "Failed to retrieve accounts from database.";
+            showLog("Failed to retrieve accounts from database.");
+            return;
+        }
+        while (sql.next())
+            check.append(QPair<qlonglong, QByteArray>(sql.value("id").toLongLong(), sql.value("email").toByteArray()));
+        sql.finish();
+    }
+
+    showLog("Start to update Role...");
+    bool roleUpdated = false;
+    sql.clear();
+    sql.prepare("INSERT OR REPLACE INTO roles VALUES(:accountId, :role)");
+    for (QPair<qlonglong, QByteArray> account: check) {
+        mgr = getNetworkAccessManager(account.first, account.second);
+
+        QByteArray response = mgr->ca_get("guildv2_panel.php");
+        QWebFrame *frame = _page.mainFrame();
+        frame->setHtml(response);
+        QWebElement elem = frame->findFirstElement("div#guildv2_list_body > div:nth-child(1) > div:nth-child(1)");
+        if (!elem.isNull()) {
+            QString firstLineString = elem.toPlainText();
+            if (firstLineString.startsWith("[Guild Master]")) {
+                showLog("Update role for account[" + account.second + "] => Master");
+                sql.bindValue(":accountId", account.first);
+                sql.bindValue(":role", "Master");
+                roleUpdated |= sql.exec();
+            } else if (firstLineString.startsWith("[Guild Officer]")) {
+                showLog("Update role for account[" + account.second + "] => Officer");
+                sql.bindValue(":accountId", account.first);
+                sql.bindValue(":role", "Officer");
+                roleUpdated |= sql.exec();
+            } else if (firstLineString.startsWith("Do you want to leave this guild")) {
+                // normal guild member
+            } else {
+                qWarning() << "Not sure what kind of role for account[" + account.second + "]";
+            }
+        } else {
+            showLog("Failed to update role for account[" + account.second + "]");
+        }
+    }
+    showLog("Update Roles completedly");
+
+    if (roleUpdated)
         emit account_updated();
 }
 

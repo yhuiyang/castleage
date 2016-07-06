@@ -32,6 +32,7 @@ public slots:
     void onUpdateGuilds();
     void onUpdateIGNs();
     void onUpdateFBIDs();
+    void onUpdateRoles();
     void onAccountMoveUp();
     void onAccountMoveDown();
     void onAccountActivated(QModelIndex);
