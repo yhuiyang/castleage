@@ -17,9 +17,9 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>LoM Action Consume Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,1,1" columnstretch="1,0,0">
+  <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,2,1" columnstretch="1,0,0">
    <item row="0" column="0" rowspan="2">
     <widget class="QGroupBox" name="groupBoxAttacker">
      <property name="title">
@@ -210,7 +210,7 @@
      <property name="title">
       <string>Defenders</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout" rowstretch="0,1" columnstretch="1,0,0">
+     <layout class="QGridLayout" name="gridLayout" rowstretch="0,1,0" columnstretch="1,0,0">
       <item row="0" column="0">
        <widget class="QComboBox" name="comboBoxDefenderGuild"/>
       </item>
@@ -218,6 +218,9 @@
        <widget class="QSpinBox" name="spinBoxLandId">
         <property name="prefix">
          <string>Slot </string>
+        </property>
+        <property name="minimum">
+         <number>1</number>
         </property>
         <property name="maximum">
          <number>30</number>
@@ -231,21 +234,20 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="3">
+      <item row="2" column="0" colspan="3">
        <widget class="QListWidget" name="listWidgetDefenders"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QComboBox" name="comboBoxDefenderGuildOfficer"/>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QComboBox" name="comboBoxDefenderGuildMember"/>
       </item>
      </layout>
     </widget>
    </item>
    <item row="2" column="0" colspan="3">
-    <widget class="QPlainTextEdit" name="plainTextEditLog">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>200</height>
-      </size>
-     </property>
-    </widget>
+    <widget class="QPlainTextEdit" name="plainTextEditLog"/>
    </item>
   </layout>
  </widget>
