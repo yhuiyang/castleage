@@ -64,6 +64,7 @@ void MainWindow::createActions()
     QAction *actionToggleScriptToolBar = new QAction("Script", this);
     actionToggleBrowserToolBar->setCheckable(true);
     actionToggleAccountToolBar->setCheckable(true);
+    actionToggleScriptToolBar->setCheckable(true);
     QAction *actionShowLomLandTimerDialog = new QAction(QIcon(":toolbar/lom_timer.png"), tr("Lom Land Timer..."), this);
     QAction *actionShowActionConsumeDialog = new QAction(QIcon(":toolbar/action_consume.png"), tr("Action consume..."), this);
 
@@ -102,6 +103,7 @@ void MainWindow::createActions()
     connect(actionToggleScriptToolBar, SIGNAL(triggered(bool)), toolbarScript, SLOT(setVisible(bool)));
     connect(toolbarBrowser, SIGNAL(visibilityChanged(bool)), actionToggleBrowserToolBar, SLOT(setChecked(bool)));
     connect(toolbarAccount, SIGNAL(visibilityChanged(bool)), actionToggleAccountToolBar, SLOT(setChecked(bool)));
+    connect(toolbarScript, SIGNAL(visibilityChanged(bool)), actionToggleScriptToolBar, SLOT(setChecked(bool)));
     connect(actionShowLomLandTimerDialog, SIGNAL(triggered(bool)), this, SLOT(showLomLandTimerDialog()));
     connect(actionShowActionConsumeDialog, SIGNAL(triggered(bool)), this, SLOT(showActionConsumeDialog()));
 }
