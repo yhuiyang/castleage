@@ -61,14 +61,14 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QRadioButton" name="radioButtonTokenUseFixed">
+         <widget class="QRadioButton" name="radioButtonTokenUseAtMost">
           <property name="text">
-           <string>Use fixed tokens</string>
+           <string>Use at most tokens</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="spinBoxUseFixedTokens">
+         <widget class="QSpinBox" name="spinBoxUseAtMostTokens">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -94,7 +94,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QRadioButton" name="radioButtonTokenUseToLeft">
+         <widget class="QRadioButton" name="radioButtonTokenUseUntil">
           <property name="text">
            <string>Use token until</string>
           </property>
@@ -128,7 +128,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QSpinBox" name="spinBoxLandActionLeft">
+       <widget class="QSpinBox" name="spinBoxStopActionLeft">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -185,6 +185,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonStop">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Stop</string>
        </property>
@@ -254,11 +257,11 @@
  <tabstops>
   <tabstop>pushButtonStart</tabstop>
   <tabstop>pushButtonStop</tabstop>
-  <tabstop>radioButtonTokenUseFixed</tabstop>
-  <tabstop>spinBoxUseFixedTokens</tabstop>
-  <tabstop>radioButtonTokenUseToLeft</tabstop>
+  <tabstop>radioButtonTokenUseAtMost</tabstop>
+  <tabstop>spinBoxUseAtMostTokens</tabstop>
+  <tabstop>radioButtonTokenUseUntil</tabstop>
   <tabstop>spinBoxUseUntil</tabstop>
-  <tabstop>spinBoxLandActionLeft</tabstop>
+  <tabstop>spinBoxStopActionLeft</tabstop>
   <tabstop>comboBoxDefenderGuild</tabstop>
   <tabstop>spinBoxLandId</tabstop>
   <tabstop>pushButtonRefreshLand</tabstop>
