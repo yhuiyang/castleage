@@ -59,6 +59,7 @@ class ArenaPlayer(BasePlayer):
         # enemies
         self.target = None
         self.enemies = list()
+        self.known_dead_target_ids = list()
 
     def __str__(self):
         return self.get_ign()
@@ -193,6 +194,7 @@ class ArenaPlayer(BasePlayer):
             if self.arena_token > token_trigger:
 
                 self.switch_loadout(self.loadout_atk)
+                del self.known_dead_target_ids[:]
 
                 token_use = token_usage
                 victory = False
@@ -231,7 +233,11 @@ class ArenaPlayer(BasePlayer):
                                 for msg in messages:
                                     if msg is not None and msg.startswith('Out Of Health'):
                                         # target is dead, need to change target
-                                        self.logY('Confirm target is dead. Need to do something to avoid choose same target again!')
+                                        self.logY('Confirm target is dead!')
+                                        for k, v in self.target.duel_params:
+                                            if k == 'target_id':
+                                                self.known_dead_target_ids.append(v)
+                                                break
                                         break
                         else:
                             self.log('vs [%s lv%d rank%d] %s%s%s, After duel: Token[%d], Rank[%d], Point[%d]' % (self.target.name, self.target.level, self.target.rank, (colors.RED, colors.GREEN)[victory], ('Defeat', 'Victory')[victory], colors.ENDC, self.arena_token, self.arena_rank, self.arena_point))
@@ -388,11 +394,20 @@ class ArenaPlayer(BasePlayer):
         score_enemy = sorted(zip(scores, self.enemies), reverse=True)
 
         for s, e in score_enemy:
+            enemy_down = False
             #if self.target_arena_level_minus <= (e.rank - self.arena_rank) <= self.target_arena_level_plus:
             if self.rankn <= (e.rank - self.arena_rank) <= self.rankp:
 
-                # if e.duel_data['target_id'] == '100000583069306':  # skip powerpuff
-                #     continue
+                # skip known dead target
+                for k, v in e.duel_params:
+                    if k == 'target_id':
+                        if v in self.known_dead_target_ids:
+                            enemy_down = True
+                        break
+
+                if enemy_down:
+                    continue
+
                 target = e
                 break
         else:
