@@ -1,11 +1,18 @@
 #include "mainwindow.h"
+#include "masterwindow.h"
 #include <QApplication>
+#include <QWebEngineSettings>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
-    return a.exec();
+    QApplication app(argc, argv);
+
+    QWebEngineSettings::defaultSettings()->setAttribute(QWebEngineSettings::PluginsEnabled, true);
+
+    MasterWindow *window = new MasterWindow();
+    window->show();
+
+    return app.exec();
 }
