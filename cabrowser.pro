@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 TEMPLATE = app
-QT += webenginewidgets
+QT += webenginewidgets sql
 TARGET = cabrowser
 CONFIG += c++11
 
@@ -22,9 +22,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     masterwindow.cpp \
+    sqlitehelper.cpp \
     main.cpp
 
 HEADERS += \
+    sqlitehelper.h \
     masterwindow.h
 
 #FORMS += \
