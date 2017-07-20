@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QWebEngineSettings>
 #include <QDebug>
+#include <QtSql>
 #include "masterwindow.h"
 #include "sqlitehelper.h"
 
@@ -9,8 +10,56 @@
 // ---------------------------------------------
 void CreateDatabaseV1(QSqlDatabase &db)
 {
-    Q_UNUSED(db);
     qDebug() << "Creating database v1...";
+
+    QSqlQuery q(db);
+
+    q.exec("CREATE TABLE IF NOT EXISTS accounts ("
+           "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+           ", email TEXT UNIQUE NOT NULL"
+           ", password TEXT NOT NULL"
+           ", timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
+           ", sequence INTEGER UNIQUE"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS tags ("
+           "_id INTEGER PRIMARY KEY AUTOINCREMENT"
+           ", name TEXT UNIQUE"
+           ", timestamp DATETIME DEFAULT CURRENT_TIMESTAMP"
+           ", sequence INTEGER UNIQUE"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS account_tag_mappings ("
+           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
+           ", tagId INTEGER REFERENCES groups ON DELETE CASCADE"
+           ", UNIQUE(accountId, tagId) ON CONFLICT IGNORE"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS cookies ("
+           "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
+           ", cookie TEXT NOT NULL"
+           ", modified DATETIME DEFAULT CURRENT_TIMESTAMP"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS igns ("
+           "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
+           ", ign TEXT NOT NULL"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS fbids ("
+           "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
+           ", fbId TEXT NOT NULL"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS guilds ("
+           "_id TEXT PRIMARY KEY"
+           ", name TEXT NOT NULL"
+           ", creatorId TEXT NOT NULL"
+           ", createdAt DATETIME"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS account_guild_mappings ("
+           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
+           ", guildId INTEGER REFERENCES guilds ON DELETE CASCADE"
+           ", UNIQUE(accountId, guildId) ON CONFLIT REPLACE"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS rols ("
+           "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
+           ", role TEXT NOT NULL CHECK (role IN ('Master', 'Officier', 'Leader'))"
+           ")");
 }
 
 void UpgradeDatabase_v1_to_v2(QSqlDatabase &db)
