@@ -56,7 +56,7 @@ void CreateDatabaseV1(QSqlDatabase &db)
            ", guildId INTEGER REFERENCES guilds ON DELETE CASCADE"
            ", UNIQUE(accountId, guildId) ON CONFLIT REPLACE"
            ")");
-    q.exec("CREATE TABLE IF NOT EXISTS rols ("
+    q.exec("CREATE TABLE IF NOT EXISTS roles ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
            ", role TEXT NOT NULL CHECK (role IN ('Master', 'Officier', 'Leader'))"
            ")");
