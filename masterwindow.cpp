@@ -3,6 +3,8 @@
 #include <QDesktopWidget>
 #include <QCloseEvent>
 #include <QToolBar>
+#include "accountmanager.h"
+
 
 MasterWindow::MasterWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,6 +14,13 @@ MasterWindow::MasterWindow(QWidget *parent)
 
     QToolBar *toolbar = createToolBar();
     addToolBar(toolbar);
+
+    /* CentralWidget is a QTabWidget */
+    mTabWidget = new QTabWidget(this);
+    mTabWidget->setDocumentMode(true);
+    this->setCentralWidget(mTabWidget);
+
+    mTabWidget->addTab(new AccountManager(this), "Account Manager");
 }
 
 MasterWindow::~MasterWindow()
@@ -35,7 +44,7 @@ QToolBar *MasterWindow::createToolBar()
 {
     QToolBar *browserBar = new QToolBar(tr("Browser"));
     browserBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
-    browserBar->toggleViewAction()->setEnabled(false);
+    browserBar->toggleViewAction()->setEnabled(true);
 
     return browserBar;
 }

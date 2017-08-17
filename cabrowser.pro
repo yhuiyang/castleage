@@ -23,10 +23,22 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     masterwindow.cpp \
     sqlitehelper.cpp \
-    main.cpp
+    main.cpp \
+    tabs/browser.cpp \
+    tabs/accountmanager.cpp \
+    dialogs/addaccountdialog.cpp
+
+INCLUDEPATH += \
+    $$PWD/tabs \
+    $$PWD/dialogs
 
 HEADERS += \
     sqlitehelper.h \
-    masterwindow.h
+    masterwindow.h \
+    tabs/browser.h \
+    tabs/accountmanager.h \
+    dialogs/addaccountdialog.h
 
-#FORMS += \
+FORMS += \
+    tabs/accountmanager.ui \
+    dialogs/addaccountdialog.ui

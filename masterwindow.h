@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+class QTabWidget;
+
 class MasterWindow : public QMainWindow
 {
     Q_OBJECT
@@ -22,6 +24,7 @@ private:
     QToolBar *createToolBar();
 
 private:
+    QTabWidget *mTabWidget;
 };
 
 #endif // MASTERWINDOW_H
