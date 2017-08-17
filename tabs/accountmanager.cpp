@@ -11,6 +11,7 @@ AccountManager::AccountManager(QWidget *parent) :
 
     mModel = new AccountModel(ui->tableView);
     ui->tableView->setModel(mModel);
+    ui->tableView->setColumnHidden(0, true);
     ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
@@ -99,7 +100,7 @@ AccountModel::AccountModel(QWidget *parent) :
     QSqlQueryModel(parent)
 {
     QString sql;
-    sql.append("SELECT a.email, i.ign, f.fbid, g.guildId, r.role FROM accounts AS a ");
+    sql.append("SELECT a._id, a.email, i.ign, f.fbid, g.guildId, r.role FROM accounts AS a ");
     sql.append("LEFT JOIN igns AS i ON i.accountId = a._id ");
     sql.append("LEFT JOIN fbids AS f ON f.accountId = a._id ");
     sql.append("LEFT JOIN account_guild_mappings AS g ON g.accountId == a._id ");
@@ -107,11 +108,12 @@ AccountModel::AccountModel(QWidget *parent) :
     sql.append("ORDER BY a.sequence");
     this->setQuery(sql);
 
-    this->setHeaderData(0, Qt::Horizontal, QString("Email address"));
-    this->setHeaderData(1, Qt::Horizontal, QString("In game name"));
-    this->setHeaderData(2, Qt::Horizontal, QString("Facebook id"));
-    this->setHeaderData(3, Qt::Horizontal, QString("Guild"));
-    this->setHeaderData(4, Qt::Horizontal, QString("Role"));
+    this->setHeaderData(0, Qt::Horizontal, QString("Id"));
+    this->setHeaderData(1, Qt::Horizontal, QString("Email address"));
+    this->setHeaderData(2, Qt::Horizontal, QString("In game name"));
+    this->setHeaderData(3, Qt::Horizontal, QString("Facebook id"));
+    this->setHeaderData(4, Qt::Horizontal, QString("Guild"));
+    this->setHeaderData(5, Qt::Horizontal, QString("Role"));
 }
 
 AccountModel::~AccountModel()
