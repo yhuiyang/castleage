@@ -26,7 +26,8 @@ SOURCES += \
     main.cpp \
     tabs/browser.cpp \
     tabs/accountmanager.cpp \
-    dialogs/addaccountdialog.cpp
+    dialogs/addaccountdialog.cpp \
+    dialogs/updateaccountdialog.cpp
 
 INCLUDEPATH += \
     $$PWD/tabs \
@@ -37,8 +38,10 @@ HEADERS += \
     masterwindow.h \
     tabs/browser.h \
     tabs/accountmanager.h \
-    dialogs/addaccountdialog.h
+    dialogs/addaccountdialog.h \
+    dialogs/updateaccountdialog.h
 
 FORMS += \
     tabs/accountmanager.ui \
-    dialogs/addaccountdialog.ui
+    dialogs/addaccountdialog.ui \
+    dialogs/updateaccountdialog.ui

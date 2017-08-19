@@ -31,6 +31,8 @@ private slots:
 
     void on_actionUpdateGuild_triggered();
 
+    void on_tableView_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::AccountManager *ui;
     AccountModel *mModel;

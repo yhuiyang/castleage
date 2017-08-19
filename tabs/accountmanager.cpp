@@ -1,6 +1,7 @@
 #include "accountmanager.h"
 #include "ui_accountmanager.h"
 #include "addaccountdialog.h"
+#include "updateaccountdialog.h"
 #include <QDebug>
 
 AccountManager::AccountManager(QWidget *parent) :
@@ -93,6 +94,41 @@ void AccountManager::on_actionUpdateGuild_triggered()
 void AccountManager::on_actionUpdateRole_triggered()
 {
 
+}
+
+void AccountManager::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    /* lookup model to retrieve the selected account id */
+    int accountId = mModel->data(mModel->index(index.row(), 0)).toInt();
+
+    /* query db to retrieve account data */
+    QString email;
+    QString password;
+    QSqlQuery query;
+    query.prepare("SELECT email, password FROM accounts WHERE _id = :accountId");
+    query.bindValue(":accountId", accountId);
+    if (query.exec() && query.next()) {
+        email = query.value("email").toString();
+        password = query.value("password").toString();
+    }
+
+    /* invoke update account dialog */
+    UpdateAccountDialog dlg(this, email, password, false);
+    if (dlg.exec() == QDialog::Accepted) {
+        QString updated_email = dlg.getEmail();
+        QString updated_password = dlg.getPassword();
+        if (updated_email.compare(email) || updated_password.compare(password)) {
+            query.prepare("UPDATE accounts SET email = :email, password = :password WHERE _id = :accountId");
+            query.bindValue(":email", updated_email);
+            query.bindValue(":password", updated_password);
+            query.bindValue(":accountId", accountId);
+            if (query.exec())
+                mModel->setQuery(mModel->query().executedQuery());
+            else
+                qDebug() << query.lastError();
+        } else
+            qDebug() << "No change on account data. Do nothing!";
+    }
 }
 
 // ----------------------------------------------------------------
