@@ -3,6 +3,7 @@
 #include "addaccountdialog.h"
 #include "updateaccountdialog.h"
 #include <QDebug>
+#include <QMessageBox>
 
 AccountManager::AccountManager(QWidget *parent) :
     QMainWindow(parent),
@@ -73,7 +74,66 @@ void AccountManager::on_actionAddAccount_triggered()
 
 void AccountManager::on_actionRemoveAccount_triggered()
 {
+    /*
+     * QItemSelectionModel store selection for every cell in our view (QTableView).
+     * We are only interested in the rows selection.
+     */
+    QVariantList selectedAccountIds;
+    QList<QString> selectedAccountEmails;
+    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
+    QModelIndexList selectionIndexList = selectionModel->selection().indexes();
+    for (QModelIndex index : selectionIndexList) {
+        int accountId = mModel->data(mModel->index(index.row(), 0)).toInt();
+        if (selectedAccountIds.contains(accountId))
+            continue;
+        selectedAccountIds << accountId;
+        selectedAccountEmails << mModel->data(mModel->index(index.row(), 1)).toString();
+    }
 
+    if (selectedAccountIds.isEmpty())
+        return;
+
+    /* confirm from user */
+    QString text;
+    QString informativeText;
+    int count = selectedAccountEmails.size();
+    if (count > 1) {
+        text = "Are you sure you want to remove the following accounts?";
+        for (QString email : selectedAccountEmails) {
+            informativeText += email;
+            informativeText += "\n";
+        }
+    } else {
+        text = "Are you sure you want to remove account?";
+        informativeText = selectedAccountEmails.at(0);
+    }
+    QMessageBox msgBox(this);
+    msgBox.setText(text);
+    msgBox.setInformativeText(informativeText);
+    if (count > 1)
+        msgBox.setStandardButtons(QMessageBox::YesToAll | QMessageBox::Cancel);
+    else
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    switch (msgBox.exec()) {
+    case QMessageBox::Yes:
+    case QMessageBox::YesToAll:
+        break;
+    default:
+        return;
+    }
+
+    /* remove selected account emails from database. */
+    QSqlQuery q;
+    q.prepare("DELETE FROM accounts WHERE _id = ?");
+    q.addBindValue(selectedAccountIds);
+    if (q.execBatch())
+        mModel->setQuery(mModel->query().executedQuery());
+    else {
+        QMessageBox notify(this);
+        notify.setText("Failed to remove selected accounts");
+        notify.setInformativeText(q.lastError().text());
+        notify.exec();
+    }
 }
 
 void AccountManager::on_actionUpdateIGN_triggered()
