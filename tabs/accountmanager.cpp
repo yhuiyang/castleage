@@ -43,7 +43,7 @@ void AccountManager::on_actionAddAccount_triggered()
             if (!new_email.isEmpty() && !new_password.isEmpty()) {
 
                 QSqlQuery query;
-                query.prepare("INSERT INTO accounts (email, password) VALUES (:email, :password)");
+                query.prepare("INSERT INTO accounts (email, password, sequence) SELECT :email, :password, ifnull(max(sequence), 0) + 1 FROM accounts");
                 query.bindValue(":email", new_email);
                 query.bindValue(":password", new_password);
                 if (query.exec()) {
