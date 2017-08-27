@@ -5,6 +5,10 @@
 #include <QToolBar>
 #include "accountmanager.h"
 
+enum TAB_PROPERTY {
+    ACCOUNT_MANAGER,
+};
+#define TAB_PROP "tabProp"
 
 MasterWindow::MasterWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -20,7 +24,6 @@ MasterWindow::MasterWindow(QWidget *parent)
     mTabWidget->setDocumentMode(true);
     this->setCentralWidget(mTabWidget);
 
-    mTabWidget->addTab(new AccountManager(this), "Account Manager");
 }
 
 MasterWindow::~MasterWindow()
@@ -44,7 +47,24 @@ QToolBar *MasterWindow::createToolBar()
 {
     QToolBar *browserBar = new QToolBar(tr("Browser"));
     browserBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
-    browserBar->toggleViewAction()->setEnabled(true);
+    browserBar->toggleViewAction()->setEnabled(false);
+
+    QAction *accountMgr = browserBar->addAction("Account Manager");
+    connect(accountMgr, &QAction::triggered, this, [this](){
+        /* activate old tab if already exists */
+        for (int i = 0; i < mTabWidget->count(); i++) {
+            QWidget *oldTab = mTabWidget->widget(i);
+            if (oldTab->property(TAB_PROP) == TAB_PROPERTY::ACCOUNT_MANAGER) {
+                mTabWidget->setCurrentWidget(oldTab);
+                return;
+            }
+        }
+
+        /* create new tab if not exists */
+        QWidget *newTab = new AccountManager(this);
+        newTab->setProperty(TAB_PROP, TAB_PROPERTY::ACCOUNT_MANAGER);
+        mTabWidget->addTab(newTab, "Account Manager");
+    });
 
     return browserBar;
 }
