@@ -48,7 +48,6 @@ void AccountManager::on_actionAddAccount_triggered()
                 query.bindValue(":password", new_password);
                 if (query.exec()) {
                     // refresh, how to do it?
-                    //emit mModel->dataChanged(QModelIndex(), QModelIndex());
                     mModel->setQuery(mModel->query().executedQuery());
                 } else {
                     qWarning() << "Failed to insert account to database. Reason: " << query.lastError();
