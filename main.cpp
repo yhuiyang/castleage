@@ -30,6 +30,7 @@ void CreateDatabaseV1(QSqlDatabase &db)
     q.exec("CREATE TABLE IF NOT EXISTS account_tag_mappings ("
            "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
            ", tagId INTEGER REFERENCES tags ON DELETE CASCADE"
+           ", sequence INTEGER"
            ", UNIQUE(accountId, tagId) ON CONFLICT IGNORE"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS cookies ("
