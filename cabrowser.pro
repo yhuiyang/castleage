@@ -28,7 +28,8 @@ SOURCES += \
     tabs/accountmanager.cpp \
     dialogs/addaccountdialog.cpp \
     dialogs/updateaccountdialog.cpp \
-    tabs/tagmanager.cpp
+    tabs/tagmanager.cpp \
+    dialogs/inputdialog.cpp
 
 INCLUDEPATH += \
     $$PWD/tabs \
@@ -41,10 +42,12 @@ HEADERS += \
     tabs/accountmanager.h \
     dialogs/addaccountdialog.h \
     dialogs/updateaccountdialog.h \
-    tabs/tagmanager.h
+    tabs/tagmanager.h \
+    dialogs/inputdialog.h
 
 FORMS += \
     tabs/accountmanager.ui \
     dialogs/addaccountdialog.ui \
     dialogs/updateaccountdialog.ui \
-    tabs/tagmanager.ui
+    tabs/tagmanager.ui \
+    dialogs/inputdialog.ui
