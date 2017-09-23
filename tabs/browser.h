@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QProgressBar>
 #include <QWebEngineView>
+#include <QLineEdit>
 
 class Browser : public QMainWindow
 {
@@ -22,6 +23,7 @@ private:
 private:
     QProgressBar *mProgressBar;
     QWebEngineView *mWebView;
+    QLineEdit *mLineEdit;
 };
 
 #endif // BROWSER_H

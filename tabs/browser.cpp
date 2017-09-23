@@ -3,6 +3,7 @@
 #include <QWebEngineView>
 #include <QWebEngineSettings>
 #include <QLabel>
+#include <QUrl>
 #include "browser.h"
 
 Browser::Browser(QWidget *parent) : QMainWindow(parent)
@@ -50,6 +51,13 @@ void Browser::setupToolBar()
 
     navigationToolBar->addAction(mWebView->pageAction(QWebEnginePage::Reload));
     navigationToolBar->addAction(mWebView->pageAction(QWebEnginePage::Stop));
+
+    mLineEdit = new QLineEdit(this);
+    navigationToolBar->addWidget(mLineEdit);
+
+    connect(mWebView, &QWebEngineView::urlChanged, [&](const QUrl &url){
+        mLineEdit->setText(url.toDisplayString());
+    });
 
     //navigationBar->addSeparator();
     addToolBarBreak();
