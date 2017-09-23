@@ -25,8 +25,11 @@ MasterWindow::MasterWindow(QWidget *parent)
     /* CentralWidget is a QTabWidget */
     mTabWidget = new QTabWidget(this);
     mTabWidget->setDocumentMode(true);
+    mTabWidget->setTabsClosable(true);
     this->setCentralWidget(mTabWidget);
 
+    /* handle the signal triggered by clicking cross button on tab. */
+    connect(mTabWidget, &QTabWidget::tabCloseRequested, mTabWidget, &QTabWidget::removeTab);
 }
 
 MasterWindow::~MasterWindow()
