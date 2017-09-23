@@ -92,6 +92,7 @@ void UpgradeDatabase(QSqlDatabase &db, int from, int to)
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL); // without this, QWebEngineView::load() seems to crash randomly.
 
     QApplication app(argc, argv);
 

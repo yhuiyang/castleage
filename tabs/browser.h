@@ -2,16 +2,26 @@
 #define BROWSER_H
 
 #include <QMainWindow>
+#include <QProgressBar>
+#include <QWebEngineView>
 
-class browser : public QMainWindow
+class Browser : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit browser(QWidget *parent = nullptr);
+    explicit Browser(QWidget *parent = nullptr);
+    ~Browser();
 
 signals:
 
 public slots:
+
+private:
+    void setupToolBar();
+
+private:
+    QProgressBar *mProgressBar;
+    QWebEngineView *mWebView;
 };
 
 #endif // BROWSER_H

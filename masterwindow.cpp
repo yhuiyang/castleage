@@ -3,6 +3,7 @@
 #include <QDesktopWidget>
 #include <QCloseEvent>
 #include <QToolBar>
+#include "browser.h"
 #include "accountmanager.h"
 #include "tagmanager.h"
 
@@ -47,9 +48,16 @@ void MasterWindow::closeEvent(QCloseEvent *event)
 
 QToolBar *MasterWindow::createToolBar()
 {
-    QToolBar *browserBar = new QToolBar(tr("Browser"));
+    QToolBar *browserBar = new QToolBar(tr("Main ToolBar"));
     browserBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
     browserBar->toggleViewAction()->setEnabled(false);
+
+    QAction *browser = browserBar->addAction("CaBrowser");
+    connect(browser, &QAction::triggered, this, [this](){
+        QWidget *newTab = new Browser(this);
+        mTabWidget->addTab(newTab, "Browser");
+        mTabWidget->setCurrentWidget(newTab);
+    });
 
     QAction *accountMgr = browserBar->addAction("Account Manager");
     connect(accountMgr, &QAction::triggered, this, [this](){
