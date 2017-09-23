@@ -5,6 +5,9 @@
 #include <QProgressBar>
 #include <QWebEngineView>
 #include <QLineEdit>
+#include <QComboBox>
+#include <QCheckBox>
+
 
 class Browser : public QMainWindow
 {
@@ -24,6 +27,9 @@ private:
     QProgressBar *mProgressBar;
     QWebEngineView *mWebView;
     QLineEdit *mLineEdit;
+    QComboBox *mAccountList;
+    QComboBox *mFilterList;
+    QCheckBox *mLockComboBox;
 };
 
 #endif // BROWSER_H

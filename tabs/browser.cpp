@@ -67,5 +67,11 @@ void Browser::setupToolBar()
     accountToolBar->toggleViewAction()->setEnabled(false);
 
     accountToolBar->addWidget(new QLabel("Account", accountToolBar));
+    mAccountList = new QComboBox(this);
+    accountToolBar->addWidget(mAccountList);
     accountToolBar->addWidget(new QLabel("Filter", accountToolBar));
+    mFilterList = new QComboBox(this);
+    accountToolBar->addWidget(mFilterList);
+    mLockComboBox = new QCheckBox("Lock drop down", this);
+    accountToolBar->addWidget(mLockComboBox);
 }
