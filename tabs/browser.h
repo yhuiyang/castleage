@@ -22,6 +22,9 @@ public slots:
 
 private:
     void setupToolBar();
+    void populateFilter();
+    void onFilterIndexChanged(int index);
+    void onAccountIndexChanged(int index);
 
 private:
     QProgressBar *mProgressBar;
