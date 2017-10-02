@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+LIBS += -lz
 
 SOURCES += \
     masterwindow.cpp \
@@ -31,7 +32,8 @@ SOURCES += \
     dialogs/addaccountdialog.cpp \
     dialogs/updateaccountdialog.cpp \
     tabs/tagmanager.cpp \
-    dialogs/inputdialog.cpp
+    dialogs/inputdialog.cpp \
+    castleagehttpclient.cpp
 
 INCLUDEPATH += \
     $$PWD/tabs \
@@ -45,7 +47,8 @@ HEADERS += \
     dialogs/addaccountdialog.h \
     dialogs/updateaccountdialog.h \
     tabs/tagmanager.h \
-    dialogs/inputdialog.h
+    dialogs/inputdialog.h \
+    castleagehttpclient.h
 
 FORMS += \
     tabs/accountmanager.ui \
