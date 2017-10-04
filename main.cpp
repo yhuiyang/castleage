@@ -46,6 +46,26 @@ void CreateDatabaseV1(QSqlDatabase &db)
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
            ", fbId TEXT NOT NULL"
            ")");
+    q.exec("CREATE TABLE IF NOT EXISTS armycodes ("
+           "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
+           ", armyCode TEXT NOT NULL"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS acapPool ("
+           "armyCode TEXT NOT NULL"
+           ", fbId TEXT NOT NULL"
+           ", UNIQUE(armyCode, fbId)"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS ownedArmies ("
+           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
+           ", fbId TEXT NOT NULL"
+           ", level INTEGER NOT NULL"
+           ", name TEXT NOT NULL"
+           ", UNIQUE(accountId, fbId"
+           ")");
+    q.exec("CREATE TABLE IF NOT EXISTS acapTimestamps ("
+           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
+           ", announceTimestamp DATETIME"
+           ")");
     q.exec("CREATE TABLE IF NOT EXISTS guilds ("
            "_id TEXT PRIMARY KEY"
            ", name TEXT NOT NULL"

@@ -33,7 +33,8 @@ SOURCES += \
     dialogs/updateaccountdialog.cpp \
     tabs/tagmanager.cpp \
     dialogs/inputdialog.cpp \
-    castleagehttpclient.cpp
+    castleagehttpclient.cpp \
+    tabs/armycodeannounceplan.cpp
 
 INCLUDEPATH += \
     $$PWD/tabs \
@@ -48,11 +49,13 @@ HEADERS += \
     dialogs/updateaccountdialog.h \
     tabs/tagmanager.h \
     dialogs/inputdialog.h \
-    castleagehttpclient.h
+    castleagehttpclient.h \
+    tabs/armycodeannounceplan.h
 
 FORMS += \
     tabs/accountmanager.ui \
     dialogs/addaccountdialog.ui \
     dialogs/updateaccountdialog.ui \
     tabs/tagmanager.ui \
-    dialogs/inputdialog.ui
+    dialogs/inputdialog.ui \
+    tabs/armycodeannounceplan.ui

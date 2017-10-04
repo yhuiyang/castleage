@@ -6,10 +6,12 @@
 #include "browser.h"
 #include "accountmanager.h"
 #include "tagmanager.h"
+#include "armycodeannounceplan.h"
 
 enum TAB_PROPERTY {
     ACCOUNT_MANAGER,
     TAG_MANAGER,
+    ACAP,
 };
 #define TAB_PROP "tabProp"
 
@@ -95,6 +97,24 @@ QToolBar *MasterWindow::createToolBar()
         QWidget *newTab = new TagManager(this);
         newTab->setProperty(TAB_PROP, TAB_PROPERTY::TAG_MANAGER);
         mTabWidget->addTab(newTab, "Tag Manager");
+        mTabWidget->setCurrentWidget(newTab);
+    });
+
+    QAction *acap = browserBar->addAction("ACAP");
+    connect(acap, &QAction::triggered, this, [this](){
+        /* activate old tab if already exists */
+        for (int i = 0; i < mTabWidget->count(); i++) {
+            QWidget *oldTab = mTabWidget->widget(i);
+            if (oldTab->property(TAB_PROP) == TAB_PROPERTY::ACAP) {
+                mTabWidget->setCurrentWidget(oldTab);
+                return;
+            }
+        }
+
+        /* create new tab if not exists */
+        QWidget *newTab = new ArmyCodeAnnouncePlan(this);
+        newTab->setProperty(TAB_PROP, TAB_PROPERTY::ACAP);
+        mTabWidget->addTab(newTab, "ACAP");
         mTabWidget->setCurrentWidget(newTab);
     });
 
