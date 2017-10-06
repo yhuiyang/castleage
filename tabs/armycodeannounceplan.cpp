@@ -2,6 +2,7 @@
 #include "armycodeannounceplan.h"
 #include "ui_armycodeannounceplan.h"
 #include "castleagehttpclient.h"
+#include "gaehttpclient.h"
 
 class ACAPModel : public QSqlQueryModel
 {
@@ -14,14 +15,14 @@ public:
         sql.append(", (IFNULL(i.ign, 'UnknownIGN') || ' - ' || a.email) AS 'IGN & Email'");
         sql.append(", c.armyCode AS 'Army Code'");
         sql.append(", f.fbId AS 'Facebook Id'");
-        sql.append(", GROUP_CONCAT(t.announceTimestamp) AS 'Announce Time' ");
+        sql.append(", datetime(MAX(t.announceTimestamp), 'localtime') AS 'Announce Time' ");
         sql.append("FROM accounts AS a ");
         sql.append("LEFT JOIN igns AS i ON i.accountId = a._id ");
         sql.append("LEFT JOIN armycodes AS c ON c.accountId = a._id ");
         sql.append("LEFT JOIN fbids AS f ON f.accountId = a._id ");
         sql.append("LEFT JOIN acapTimestamps AS t ON t.accountId = a._id ");
         sql.append("GROUP BY a._id ");
-        sql.append("ORDER BY a.sequence");
+        sql.append("ORDER BY announceTimestamp ASC");
         this->setQuery(sql);
     }
 
@@ -116,7 +117,7 @@ void ArmyCodeAnnouncePlan::on_actionUpdateFacebookId_triggered()
     QRegularExpression pattern("a href=\\\"keep\\.php\\?user=([0-9]+)\\\"");
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO fbids VALUES (:accountId, :fbId);");
-    CastleAgeHttpClient *caHttpClient = new CastleAgeHttpClient(0);
+    CastleAgeHttpClient *caHttpClient = new CastleAgeHttpClient(0, this);
     bool any_updated = false;
     for (int accountId : selectedAccountIds) {
         caHttpClient->switchAccount(accountId);
@@ -138,5 +139,35 @@ void ArmyCodeAnnouncePlan::on_actionUpdateFacebookId_triggered()
 
 void ArmyCodeAnnouncePlan::on_actionAnnounce_triggered()
 {
+    GAEHttpClient *gaeHttpClient = new GAEHttpClient(this);
+    QSqlQuery q;
+    q.prepare("INSERT OR IGNORE INTO acapTimestamps VALUES (:accountId, :announceTimestamp)");
 
+    /* find out selected accountId from QItemSelectionModel. */
+    QList<int> handledAccountIds;
+    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
+    QModelIndexList selectionIndexList = selectionModel->selection().indexes();
+    for (QModelIndex index : selectionIndexList) {
+        int accountId = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toInt();
+        if (handledAccountIds.contains(accountId))
+            continue;
+
+        QString armyCode = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 2)).toString();
+        QString facebookId = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 3)).toString();
+
+        if (armyCode.isEmpty() || facebookId.isEmpty())
+            continue;
+
+        QDateTime announceTimestamp = gaeHttpClient->acap_announce(armyCode, facebookId);
+        //qDebug() << "Announce datetime:" << announceTimestamp.toString(Qt::ISODate); // datetime in 8601 format. Ready to insert into database.
+        if (announceTimestamp.isValid()) {
+            q.bindValue(":accountId", accountId);
+            q.bindValue(":announceTimestamp", announceTimestamp.toString(Qt::ISODateWithMs));
+            if (q.exec()) {
+                ((QSqlQueryModel *) ui->tableView->model())->setQuery(((QSqlQueryModel *)ui->tableView->model())->query().executedQuery());
+            }
+        }
+
+        handledAccountIds << accountId;
+    }
 }

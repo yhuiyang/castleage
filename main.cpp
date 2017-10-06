@@ -65,6 +65,7 @@ void CreateDatabaseV1(QSqlDatabase &db)
     q.exec("CREATE TABLE IF NOT EXISTS acapTimestamps ("
            "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
            ", announceTimestamp DATETIME"
+           ", UNIQUE(accountId, announceTimestamp)"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS guilds ("
            "_id TEXT PRIMARY KEY"

@@ -21,7 +21,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-LIBS += -lz
+LIBS += -lz -L/usr/local/lib -lprotobuf
+QMAKE_CXXFLAGS += -isystem /usr/local/include
 
 SOURCES += \
     masterwindow.cpp \
@@ -34,11 +35,14 @@ SOURCES += \
     tabs/tagmanager.cpp \
     dialogs/inputdialog.cpp \
     castleagehttpclient.cpp \
-    tabs/armycodeannounceplan.cpp
+    tabs/armycodeannounceplan.cpp \
+    gaehttpclient.cpp \
+    protobuf/armycode.pb.cc
 
 INCLUDEPATH += \
     $$PWD/tabs \
-    $$PWD/dialogs
+    $$PWD/dialogs \
+    $$PWD/protobuf
 
 HEADERS += \
     sqlitehelper.h \
@@ -50,7 +54,9 @@ HEADERS += \
     tabs/tagmanager.h \
     dialogs/inputdialog.h \
     castleagehttpclient.h \
-    tabs/armycodeannounceplan.h
+    tabs/armycodeannounceplan.h \
+    gaehttpclient.h \
+    protobuf/armycode.pb.h
 
 FORMS += \
     tabs/accountmanager.ui \
