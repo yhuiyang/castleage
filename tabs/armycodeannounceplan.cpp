@@ -143,31 +143,40 @@ void ArmyCodeAnnouncePlan::on_actionAnnounce_triggered()
     QSqlQuery q;
     q.prepare("INSERT OR IGNORE INTO acapTimestamps VALUES (:accountId, :announceTimestamp)");
 
+    QList<QPair<QString, QString>> d;
     /* find out selected accountId from QItemSelectionModel. */
-    QList<int> handledAccountIds;
+    QList<int> selectedAccountIds;
     QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
     QModelIndexList selectionIndexList = selectionModel->selection().indexes();
     for (QModelIndex index : selectionIndexList) {
         int accountId = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toInt();
-        if (handledAccountIds.contains(accountId))
+        if (selectedAccountIds.contains(accountId))
             continue;
 
         QString armyCode = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 2)).toString();
         QString facebookId = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 3)).toString();
-
         if (armyCode.isEmpty() || facebookId.isEmpty())
             continue;
 
-        QDateTime announceTimestamp = gaeHttpClient->acap_announce(armyCode, facebookId);
-        //qDebug() << "Announce datetime:" << announceTimestamp.toString(Qt::ISODate); // datetime in 8601 format. Ready to insert into database.
+        selectedAccountIds << accountId;
+        d << QPair<QString, QString>(armyCode, facebookId);
+    }
+
+    /* do nothing if no selected */
+    if (selectedAccountIds.size() == 0)
+        return;
+
+    /* announce & update database & refresh ui */
+    for (int i = 0; i < selectedAccountIds.size(); i++) {
+        QDateTime announceTimestamp = gaeHttpClient->acap_announce(d.at(i).first, d.at(i).second);
+        qDebug() << "Announce datetime:" << announceTimestamp.toString(Qt::ISODateWithMs); // datetime in 8601 format. Ready to insert into database.
         if (announceTimestamp.isValid()) {
-            q.bindValue(":accountId", accountId);
+            q.bindValue(":accountId", selectedAccountIds.at(i));
             q.bindValue(":announceTimestamp", announceTimestamp.toString(Qt::ISODateWithMs));
             if (q.exec()) {
                 ((QSqlQueryModel *) ui->tableView->model())->setQuery(((QSqlQueryModel *)ui->tableView->model())->query().executedQuery());
             }
         }
-
-        handledAccountIds << accountId;
     }
+
 }

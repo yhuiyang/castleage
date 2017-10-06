@@ -9,7 +9,7 @@ public:
     GAEHttpClient(QObject *parent = Q_NULLPTR);
     virtual ~GAEHttpClient() {}
 
-    QDateTime acap_announce(QString &armyCode, QString &facebookId);
+    QDateTime acap_announce(const QString &armyCode, const QString &facebookId);
 };
 
 #endif // GAEHTTPCLIENT_H

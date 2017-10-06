@@ -12,7 +12,7 @@ GAEHttpClient::GAEHttpClient(QObject *parent)
 
 }
 
-QDateTime GAEHttpClient::acap_announce(QString &armyCode, QString &facebookId)
+QDateTime GAEHttpClient::acap_announce(const QString &armyCode, const QString &facebookId)
 {
     QNetworkRequest request(API_URL_ACAP_ANNOUNCE);
     request.setRawHeader("Accept", "application/x-protobuf");
