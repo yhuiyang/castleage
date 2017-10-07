@@ -25,6 +25,17 @@ LIBS += -lz -L/usr/local/lib -lprotobuf
 QMAKE_CXXFLAGS += -isystem /usr/local/include
 
 SOURCES += \
+    venders/gumbo-parser/src/attribute.c \
+    venders/gumbo-parser/src/char_ref.c \
+    venders/gumbo-parser/src/error.c \
+    venders/gumbo-parser/src/parser.c \
+    venders/gumbo-parser/src/string_buffer.c \
+    venders/gumbo-parser/src/string_piece.c \
+    venders/gumbo-parser/src/tag.c \
+    venders/gumbo-parser/src/tokenizer.c \
+    venders/gumbo-parser/src/utf8.c \
+    venders/gumbo-parser/src/util.c \
+    venders/gumbo-parser/src/vector.c \
     masterwindow.cpp \
     sqlitehelper.cpp \
     main.cpp \
@@ -37,7 +48,8 @@ SOURCES += \
     castleagehttpclient.cpp \
     tabs/armycodeannounceplan.cpp \
     gaehttpclient.cpp \
-    protobuf/armycode.pb.cc
+    protobuf/armycode.pb.cc \
+    tabs/armypool.cpp
 
 INCLUDEPATH += \
     $$PWD/tabs \
@@ -45,6 +57,24 @@ INCLUDEPATH += \
     $$PWD/protobuf
 
 HEADERS += \
+    venders/gumbo-parser/src/attribute.h \
+    venders/gumbo-parser/src/char_ref.h \
+    venders/gumbo-parser/src/error.h \
+    venders/gumbo-parser/src/gumbo.h \
+    venders/gumbo-parser/src/insertion_mode.h \
+    venders/gumbo-parser/src/parser.h \
+    venders/gumbo-parser/src/string_buffer.h \
+    venders/gumbo-parser/src/string_piece.h \
+    venders/gumbo-parser/src/tag_enum.h \
+    venders/gumbo-parser/src/tag_gperf.h \
+    venders/gumbo-parser/src/tag_sizes.h \
+    venders/gumbo-parser/src/tag_strings.h \
+    venders/gumbo-parser/src/token_type.h \
+    venders/gumbo-parser/src/tokenizer.h \
+    venders/gumbo-parser/src/tokenizer_states.h \
+    venders/gumbo-parser/src/utf8.h \
+    venders/gumbo-parser/src/util.h \
+    venders/gumbo-parser/src/vector.h \
     sqlitehelper.h \
     masterwindow.h \
     tabs/browser.h \
@@ -56,7 +86,8 @@ HEADERS += \
     castleagehttpclient.h \
     tabs/armycodeannounceplan.h \
     gaehttpclient.h \
-    protobuf/armycode.pb.h
+    protobuf/armycode.pb.h \
+    tabs/armypool.h
 
 FORMS += \
     tabs/accountmanager.ui \
@@ -64,4 +95,5 @@ FORMS += \
     dialogs/updateaccountdialog.ui \
     tabs/tagmanager.ui \
     dialogs/inputdialog.ui \
-    tabs/armycodeannounceplan.ui
+    tabs/armycodeannounceplan.ui \
+    tabs/armypool.ui

@@ -65,3 +65,31 @@ QDateTime GAEHttpClient::acap_announce(const QString &armyCode, const QString &f
 
     return QDateTime();
 }
+
+QList<QPair<QString, QString>> GAEHttpClient::acap_download_armypool()
+{
+    QNetworkRequest request(API_URL_ACAP_ANNOUNCE);
+    request.setRawHeader("Accept", "application/x-protobuf");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "CABrowser v2");
+
+    QEventLoop looper;
+    std::string payload;
+    QNetworkReply *reply = this->get(request);
+    connect(reply, &QNetworkReply::finished, &looper, &QEventLoop::quit);
+    looper.exec();
+
+    int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (status == 200) {
+        QList<QPair<QString, QString>> pool;
+        com::yhsoftlab::app::cahelper::protobuf::ArmyCodeReply armyPoolReply;
+        armyPoolReply.ParseFromString(reply->readAll().toStdString());
+        for (auto i = armyPoolReply.announces().cbegin(); i != armyPoolReply.announces().cend(); i++) {
+            pool.push_back(QPair<QString, QString>(QString::fromStdString(i->code()), QString::fromStdString(i->fbid())));
+        }
+        return pool;
+    } else {
+        qWarning() << "GAE GET /api/acap Response code:" << status;
+    }
+
+    return QList<QPair<QString, QString>>();
+}

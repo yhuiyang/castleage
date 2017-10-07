@@ -7,11 +7,13 @@
 #include "accountmanager.h"
 #include "tagmanager.h"
 #include "armycodeannounceplan.h"
+#include "armypool.h"
 
 enum TAB_PROPERTY {
     ACCOUNT_MANAGER,
     TAG_MANAGER,
     ACAP,
+    ARMY_POOL,
 };
 #define TAB_PROP "tabProp"
 
@@ -115,6 +117,24 @@ QToolBar *MasterWindow::createToolBar()
         QWidget *newTab = new ArmyCodeAnnouncePlan(this);
         newTab->setProperty(TAB_PROP, TAB_PROPERTY::ACAP);
         mTabWidget->addTab(newTab, "ACAP");
+        mTabWidget->setCurrentWidget(newTab);
+    });
+
+    QAction *armyPool = browserBar->addAction("Army Pool");
+    connect(armyPool, &QAction::triggered, this, [this](){
+        /* activate old tab if already exists */
+        for (int i = 0; i < mTabWidget->count(); i++) {
+            QWidget *oldTab = mTabWidget->widget(i);
+            if (oldTab->property(TAB_PROP) == TAB_PROPERTY::ARMY_POOL) {
+                mTabWidget->setCurrentWidget(oldTab);
+                return;
+            }
+        }
+
+        /* create new tab if not exists */
+        QWidget *newTab = new ArmyPool(this);
+        newTab->setProperty(TAB_PROP, TAB_PROPERTY::ARMY_POOL);
+        mTabWidget->addTab(newTab, "Army Pool");
         mTabWidget->setCurrentWidget(newTab);
     });
 
