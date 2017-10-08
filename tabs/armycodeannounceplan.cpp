@@ -29,6 +29,20 @@ public:
     ~ACAPModel() {
 
     }
+
+public:
+    QVariant data(const QModelIndex &index, int role) const override
+    {
+        if (index.column() == 4 && role == Qt::BackgroundColorRole) {
+            QDateTime previous = QDateTime::fromString(QSqlQueryModel::data(index, Qt::DisplayRole).toString(), Qt::ISODate); // display timestamp is localtime.
+            QDateTime now = QDateTime::currentDateTime();
+            if (previous.addDays(6) <= now)
+                return QVariant(QColor(Qt::yellow));
+            if (previous.addDays(7) <= now)
+                return QVariant(QColor(Qt::red));
+        }
+        return QSqlQueryModel::data(index, role);
+    }
 };
 
 // --------------------------------------------------------------------------------------------------
