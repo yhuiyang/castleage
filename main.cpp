@@ -60,7 +60,7 @@ void CreateDatabaseV1(QSqlDatabase &db)
            ", fbId TEXT NOT NULL"
            ", level INTEGER NOT NULL"
            ", name TEXT NOT NULL"
-           ", UNIQUE(accountId, fbId"
+           ", UNIQUE(accountId, fbId)"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS acapTimestamps ("
            "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
@@ -72,7 +72,7 @@ void CreateDatabaseV1(QSqlDatabase &db)
            ", name TEXT NOT NULL"
            ", creatorId TEXT NOT NULL"
            ", createdAt DATETIME"
-           ", UNIQUE(creatorId, createdAt) ON CONFLIT IGNORE"
+           ", UNIQUE(creatorId, createdAt) ON CONFLICT IGNORE"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS account_guild_mappings ("
            "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
