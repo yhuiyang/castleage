@@ -1,12 +1,122 @@
 #include <QVBoxLayout>
 #include <QToolBar>
-#include <QWebEngineView>
-#include <QWebEngineSettings>
+#include <QtWebEngineWidgets>
 #include <QLabel>
 #include <QUrl>
 #include <QtSql>
 #include "browser.h"
 
+
+class Interceptor : public QWebEngineUrlRequestInterceptor {
+public:
+    Interceptor(QObject *p = nullptr) : QWebEngineUrlRequestInterceptor(p) {}
+    void interceptRequest(QWebEngineUrlRequestInfo &info) override
+    {
+        qDebug() << "****** InterceptRequest ******" << info.requestMethod() << info.requestUrl();
+        dumpNavigationType(info);
+        dumpResourceType(info);
+
+        if (QString::compare("connect_login.php", info.requestUrl().fileName()) == 0
+                && QString::compare("GET", info.requestMethod(), Qt::CaseInsensitive) == 0) {
+            qDebug() << "Login is required.";
+
+            /* auto sign in by somehow... */
+        }
+    }
+
+    void dumpNavigationType(QWebEngineUrlRequestInfo &info) {
+        switch (info.navigationType()) {
+        case QWebEngineUrlRequestInfo::NavigationTypeLink:
+            qDebug() << "Navigation Type: initiated by clicking a link.";
+            break;
+        case QWebEngineUrlRequestInfo::NavigationTypeTyped:
+            qDebug() << "Navigation Type: explicity initated by typing a URL.";
+            break;
+        case QWebEngineUrlRequestInfo::NavigationTypeFormSubmitted:
+            qDebug() << "Navigation Type: submits a form.";
+            break;
+        case QWebEngineUrlRequestInfo::NavigationTypeBackForward:
+            qDebug() << "Navigation Type: initated by a history action.";
+            break;
+        case QWebEngineUrlRequestInfo::NavigationTypeReload:
+            qDebug() << "Navigation Type: initiated by refreshing the page.";
+            break;
+        case QWebEngineUrlRequestInfo::NavigationTypeOther:
+            qDebug() << "Navigation Type: None of the above.";
+            break;
+        default:
+            qDebug() << "Navigation Type: Unknown";
+            break;
+        }
+    }
+
+    void dumpResourceType(QWebEngineUrlRequestInfo &info) {
+        switch (info.resourceType()) {
+        case QWebEngineUrlRequestInfo::ResourceTypeMainFrame:
+            qDebug() << "Resource Type: top level page.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeSubFrame:
+            qDebug() << "Resource Type: frame or iframe.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeStylesheet:
+            qDebug() << "Resource Type: a CSS stylesheet.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeScript:
+            qDebug() << "Resource Type: an external script.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeImage:
+            qDebug() << "Resource Type: an image (jpg/gif/png/etc)";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeFontResource:
+            qDebug() << "Resource Type: a font";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeSubResource:
+            qDebug() << "Resource Type: an \"other\" subresource.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeObject:
+            qDebug() << "Resource Type: an object (or embed) tag for a plugin, or a resource that a plugin requested.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeMedia:
+            qDebug() << "Resource Type: a media resource.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeWorker:
+            qDebug() << "Resource Type: the main resource of a dedicated worker.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeSharedWorker:
+            qDebug() << "Resource Type: the main resource of a shared worker.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypePrefetch:
+            qDebug() << "Resource Type: an explicitly requested prefetch";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeFavicon:
+            qDebug() << "Resource Type: a favicon";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeXhr:
+            qDebug() << "Resource Type: a XMLHttpRequest";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypePing:
+            qDebug() << "Resource Type: a ping request for <a ping>";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeServiceWorker:
+            qDebug() << "Resource Type: the main resource of a service worker.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeCspReport:
+            qDebug() << "Resource Type: Content Security Policy (CSP) violation report";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypePluginResource:
+            qDebug() << "Resource Type: A resource requested by a plugin.";
+            break;
+        case QWebEngineUrlRequestInfo::ResourceTypeUnknown:
+            qDebug() << "Resource Type: Unknown.";
+        default:
+            qDebug() << "Resource Type: ??";
+            break;
+        }
+    }
+};
+
+
+// -------------------------------------------------------------------------------------
 Browser::Browser(QWidget *parent) : QMainWindow(parent)
 {
     QWidget *centralWidget = new QWidget(this);
@@ -35,7 +145,24 @@ Browser::Browser(QWidget *parent) : QMainWindow(parent)
     setupToolBar();
     populateFilter();
 
-    mWebView->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
+    mWebView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    mWebView->page()->profile()->setRequestInterceptor(new Interceptor(this));
+    /* cookie store */
+    QWebEngineCookieStore *store = mWebView->page()->profile()->cookieStore();
+    connect(store, &QWebEngineCookieStore::cookieAdded, [](const QNetworkCookie &cookie){
+        qDebug() << "Cookie added: " << cookie.toRawForm();
+    });
+    connect(store, &QWebEngineCookieStore::cookieRemoved, [](const QNetworkCookie &cookie){
+        qDebug() << "Cookie removed: " << cookie.name();
+    });
+    //store->loadAllCookies();
+
+    //mWebView->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
+    QWebEngineHttpRequest request = QWebEngineHttpRequest(QUrl("https://web3.castleagegame.com/castle_ws/index.php"), QWebEngineHttpRequest::Get);
+    if (!request.hasHeader("Cookie")) {
+        //request.setHeader("Cookie", "CA_46755028429=804f7a4ef5192d2493119b8755cc867ec5a0644558cecd30b4e05e6c846d75637edc11344129aee92728d9adbab2be0854c33091f51ce4991188aa08f96ccac9%3A116900752006833%3A1506337753");
+    }
+    mWebView->load(request);
     //mWebView->load(QUrl("https://www.google.com.tw"));
     mWebView->show();
 }
