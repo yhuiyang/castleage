@@ -195,7 +195,7 @@ AccountModel::AccountModel(QWidget *parent) :
     QSqlQueryModel(parent)
 {
     QString sql;
-    sql.append("SELECT a._id AS 'Id', a.email AS 'Email address', i.ign AS 'In game name', f.fbid AS 'Facebook id', g.guildId AS 'Guide', r.role AS 'Role' FROM accounts AS a ");
+    sql.append("SELECT a._id AS 'Id', a.email AS 'Email address', i.ign AS 'In game name', f.fbid AS 'Facebook id', g.guildId AS 'Guild', r.role AS 'Role' FROM accounts AS a ");
     sql.append("LEFT JOIN igns AS i ON i.accountId = a._id ");
     sql.append("LEFT JOIN fbids AS f ON f.accountId = a._id ");
     sql.append("LEFT JOIN account_guild_mappings AS g ON g.accountId == a._id ");
