@@ -46,6 +46,18 @@ bool travelTree(GumboNode *node, Func& functor) {
     return false;
 }
 
+template<typename Func>
+bool travelChildren(GumboNode *node, Func& functor) {
+    if (!node || node->type != GUMBO_NODE_ELEMENT)
+        return false;
+
+    for (unsigned int i = 0; i < node->v.element.children.length; i++)
+        if (functor(node))
+            return true;
+
+    return false;
+}
+
 // ----------------------------------------------------------------------------------
 AccountManager::AccountManager(QWidget *parent) :
     QMainWindow(parent),
@@ -294,7 +306,118 @@ void AccountManager::on_actionUpdateFBId_triggered()
 
 void AccountManager::on_actionUpdateGuild_triggered()
 {
+    QList<int> selectedAccountIds = this->selectedAccountIds();
+    QSqlQuery sqlGuild, sqlMapping;
+    sqlGuild.prepare("INSERT INTO guilds VALUES (:guildId, :guildName, :creatorFbId, :createdAt)");
+    sqlMapping.prepare("INSERT INTO account_guild_mappings VALUES (:accountId, :guildId)");
 
+    for (int selectedAccountId : selectedAccountIds) {
+        CastleAgeHttpClient client(selectedAccountId);
+        QByteArray keepPage = client.post_sync("keep.php");
+        if (keepPage.isEmpty())
+            continue;
+
+        GumboOutput *output = gumbo_parse(keepPage.data());
+
+        GumboNode *span = nullptr;
+        auto find_span_with_title = [&] (GumboNode *node) {
+            if (!node || node->type != GUMBO_NODE_ELEMENT)
+                return false;
+            GumboAttribute *attr = nullptr;
+            if (node->v.element.tag == GUMBO_TAG_SPAN
+                    && (attr = gumbo_get_attribute(&node->v.element.attributes, "title"))
+                    && endsWith(attr->value, "'s Guild")) {
+                span = node;
+                return true;
+            }
+            return false;
+        };
+        travelTree(output->root, find_span_with_title);
+
+        const char *pGuildId = nullptr;
+        const char *pGuildName = nullptr;
+        if (span != nullptr) {
+            auto find_a_href = [&] (GumboNode *node) {
+                if (!node || node->type != GUMBO_NODE_ELEMENT)
+                    return false;
+                GumboAttribute *attr;
+                if (node->v.element.tag == GUMBO_TAG_A
+                        && (attr = gumbo_get_attribute(&node->v.element.attributes, "href"))
+                        && startsWith(attr->value, "guildv2_home.php?guild_id=")) {
+                    pGuildId = &attr->value[strlen("guildv2_home.php?guild_id=")];
+                    if (node->v.element.children.length == 1) {
+                        GumboNode *firstChild = static_cast<GumboNode *>(node->v.element.children.data[0]);
+                        if (firstChild->type == GUMBO_NODE_TEXT) {
+                            pGuildName = firstChild->v.text.text;
+                        }
+                    }
+                    return true;
+                }
+                return false;
+            };
+            travelTree(span, find_a_href);
+        }
+
+        if (pGuildId != nullptr && pGuildName != nullptr) {
+            QString guildId = QString::fromUtf8(pGuildId);
+            QString guildName = QString::fromUtf8(pGuildName);
+
+            sqlGuild.bindValue(":guildId", guildId);
+            sqlGuild.bindValue(":guildName", guildName);
+            QStringList l = guildId.split("_");
+            sqlGuild.bindValue(":creatorFbId", l[0]);
+            sqlGuild.bindValue(":createdAt", l[1]);
+
+            sqlMapping.bindValue(":accountId", selectedAccountId);
+            sqlMapping.bindValue(":guildId", guildId);
+
+            if (sqlGuild.exec() && sqlMapping.exec())
+                refreshTable();
+        } else {
+            qDebug() << "Checking if account doesn't join any guild.";
+
+            GumboNode *node_a_guild_list = nullptr;
+            auto find_a_href_guild_list = [&] (GumboNode *node) {
+                if (!node || node->type != GUMBO_NODE_ELEMENT)
+                    return false;
+                GumboAttribute *attr = nullptr;
+                if (node->v.element.tag == GUMBO_TAG_A
+                        && (attr = gumbo_get_attribute(&node->v.element.attributes, "href"))
+                        && !strcmp(attr->value, "guildv2_list.php")) {
+                    node_a_guild_list = node;
+                    return true;
+                }
+                return false;
+            };
+            travelTree(output->root, find_a_href_guild_list);
+
+            if (node_a_guild_list) {
+                GumboNode *node_img_alt_join_guild = nullptr;
+                auto find_img_alt_join_guild = [&] (GumboNode * node) {
+                    if (!node || node->type != GUMBO_NODE_ELEMENT)
+                        return false;
+                    GumboAttribute *attr = nullptr;
+                    if (node->v.element.tag == GUMBO_TAG_IMG
+                            && (attr = gumbo_get_attribute(&node->v.element.attributes, "alt"))
+                            && startsWith(attr->value, "Join A Guild")) {
+                        node_img_alt_join_guild = node;
+                        return true;
+                    }
+                    return false;
+                };
+                travelChildren(node_a_guild_list, find_img_alt_join_guild);
+
+                if (node_img_alt_join_guild) {
+                    sqlMapping.bindValue(":accountId", selectedAccountId);
+                    sqlMapping.bindValue(":guildId", "");
+                    if (sqlMapping.exec())
+                        refreshTable();
+                }
+            }
+        }
+
+        gumbo_destroy_output(&kGumboDefaultOptions, output);
+    }
 }
 
 void AccountManager::on_actionUpdateRole_triggered()
@@ -365,10 +488,11 @@ AccountModel::AccountModel(QWidget *parent) :
     QSqlQueryModel(parent)
 {
     QString sql;
-    sql.append("SELECT a._id AS 'Id', a.email AS 'Email address', i.ign AS 'In game name', f.fbid AS 'Facebook id', g.guildId AS 'Guild', r.role AS 'Role' FROM accounts AS a ");
+    sql.append("SELECT a._id AS 'Id', a.email AS 'Email address', i.ign AS 'In game name', f.fbid AS 'Facebook id', g.name AS 'Guild', r.role AS 'Role' FROM accounts AS a ");
     sql.append("LEFT JOIN igns AS i ON i.accountId = a._id ");
     sql.append("LEFT JOIN fbids AS f ON f.accountId = a._id ");
-    sql.append("LEFT JOIN account_guild_mappings AS g ON g.accountId == a._id ");
+    sql.append("LEFT JOIN account_guild_mappings AS m ON m.accountId == a._id ");
+    sql.append("LEFT JOIN guilds AS g ON m.guildId = g._id ");
     sql.append("LEFT JOIN roles AS r ON r.accountId = a._id ");
     sql.append("ORDER BY a.sequence");
     this->setQuery(sql);
