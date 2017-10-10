@@ -68,16 +68,14 @@ void CreateDatabaseV1(QSqlDatabase &db)
            ", UNIQUE(accountId, announceTimestamp)"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS guilds ("
-           "_id TEXT PRIMARY KEY"
+           "_id TEXT UNIQUE PRIMARY KEY ON CONFLICT REPLACE"
            ", name TEXT NOT NULL"
            ", creatorId TEXT NOT NULL"
            ", createdAt DATETIME"
-           ", UNIQUE(creatorId, createdAt) ON CONFLICT IGNORE"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS account_guild_mappings ("
-           "accountId INTEGER REFERENCES accounts ON DELETE CASCADE"
-           ", guildId INTEGER REFERENCES guilds ON DELETE CASCADE"
-           ", UNIQUE(accountId, guildId) ON CONFLICT REPLACE"
+           "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
+           ", guildId TEXT REFERENCES guilds ON DELETE CASCADE"
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS roles ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
