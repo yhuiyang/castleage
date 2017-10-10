@@ -52,6 +52,7 @@ SOURCES += \
     tabs/armypool.cpp
 
 INCLUDEPATH += \
+    $$PWD/venders/gumbo-parser/src \
     $$PWD/tabs \
     $$PWD/dialogs \
     $$PWD/protobuf

@@ -1,10 +1,52 @@
+#include <QDebug>
+#include <QMessageBox>
+#include <string.h>
 #include "accountmanager.h"
 #include "ui_accountmanager.h"
 #include "addaccountdialog.h"
 #include "updateaccountdialog.h"
-#include <QDebug>
-#include <QMessageBox>
+#include "castleagehttpclient.h"
+#include "gumbo.h"
 
+static bool startsWith(const std::string & long_string, const std::string & short_string) {
+    return short_string.length() <= long_string.length()
+            && std::equal(short_string.begin(), short_string.end(), long_string.begin());
+}
+
+static bool startsWith(const char *_big, const char *_little) {
+    size_t big_length = strlen(_big);
+    size_t little_length = strlen(_little);
+    return (big_length >= little_length) && !strncmp(_big, _little, little_length);
+}
+
+static bool contains(const char *_big, const char *_little) {
+    size_t big_length = strlen(_big);
+    size_t little_length = strlen(_little);
+    return (little_length != 0) && (big_length >= little_length) && (strstr(_big, _little) != nullptr);
+}
+
+static bool endsWith(const char *_big, const char *_little) {
+    size_t big_length = strlen(_big);
+    size_t little_length = strlen(_little);
+    return (big_length >= little_length) && !strncmp(_big + big_length - little_length, _little, little_length);
+}
+
+template<typename Func>
+bool travelTree(GumboNode *node, Func& functor) {
+    if (!node || node->type != GUMBO_NODE_ELEMENT)
+        return false;
+
+    if (functor(node))
+        return true;
+
+    for (unsigned int i = 0; i < node->v.element.children.length; i++)
+        if (travelTree(static_cast<GumboNode *>(node->v.element.children.data[i]), functor))
+            return true;
+
+    return false;
+}
+
+// ----------------------------------------------------------------------------------
 AccountManager::AccountManager(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::AccountManager)
@@ -137,12 +179,117 @@ void AccountManager::on_actionRemoveAccount_triggered()
 
 void AccountManager::on_actionUpdateIGN_triggered()
 {
+    QList<int> selectedAccountIds = this->selectedAccountIds();
+    QSqlQuery q;
+    q.prepare("INSERT OR REPLACE INTO igns VALUES (:accountId, :ign)");
 
+    for (int selectedAccountId : selectedAccountIds) {
+        CastleAgeHttpClient client(selectedAccountId);
+
+        QByteArray keepPage = client.post_sync("keep.php");
+        if (!keepPage.isEmpty()) {
+            qint64 t = QDateTime::currentMSecsSinceEpoch();
+            GumboOutput *output = gumbo_parse(keepPage.data());
+            qDebug() << "parse & build tree" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
+
+            GumboNode *pDiv = nullptr;
+            auto find_div_withid_app_body = [&] (GumboNode *node) {
+                if (!node || node->type != GUMBO_NODE_ELEMENT)
+                    return false;
+                GumboAttribute *attr;
+                if (node->v.element.tag == GUMBO_TAG_DIV
+                        && (attr = gumbo_get_attribute(&node->v.element.attributes, "id"))
+                        && !strcmp(attr->value, "app_body")) {
+                    pDiv = node;
+                    return true;
+                }
+                return false;
+            };
+            travelTree(output->root, find_div_withid_app_body);
+
+            GumboNode *pDivBg = nullptr;
+            if (pDiv != nullptr) {
+                auto find_div_with_bg = [&] (GumboNode *node) {
+                    if (!node || node->type != GUMBO_NODE_ELEMENT)
+                        return false;
+                    GumboAttribute *attr;
+                    if (node->v.element.tag == GUMBO_TAG_DIV
+                            && (attr = gumbo_get_attribute(&node->v.element.attributes, "style"))
+                            && contains(attr->value, "keep_top.jpg")) {
+                        pDivBg = node;
+                        return true;
+                    }
+                    return false;
+                };
+                travelTree(pDiv, find_div_with_bg);
+            }
+
+            const char *pIgn = nullptr;
+            if (pDivBg != nullptr) {
+                auto find_div_with_title = [&] (GumboNode *node) {
+                    if (!node || node->type != GUMBO_NODE_ELEMENT)
+                        return false;
+                    GumboAttribute *attr;
+                    if (node->v.element.tag == GUMBO_TAG_DIV
+                            && (attr = gumbo_get_attribute(&node->v.element.attributes, "title"))
+                            && (strlen(attr->value) > 0)) {
+                        pIgn = attr->value;
+                        return true;
+                    }
+                    return false;
+                };
+                travelTree(pDivBg, find_div_with_title);
+            }
+
+            if (pIgn != nullptr) {
+                q.bindValue(":accountId", selectedAccountId);
+                q.bindValue(":ign", QString::fromUtf8(pIgn));
+                if (q.exec())
+                    refreshTable();
+            }
+
+            gumbo_destroy_output(&kGumboDefaultOptions, output);
+        }
+    }
 }
 
 void AccountManager::on_actionUpdateFBId_triggered()
 {
+    QList<int> selectedAccountIds = this->selectedAccountIds();
+    QSqlQuery q;
+    q.prepare("INSERT OR REPLACE INTO fbids VALUES (:accountId, :fbid)");
 
+    for (int selectedAccountId : selectedAccountIds) {
+        CastleAgeHttpClient client(selectedAccountId);
+
+        QByteArray keepPage = client.post_sync("keep.php");
+        if (!keepPage.isEmpty()) {
+            GumboOutput *output = gumbo_parse(keepPage.data());
+
+            const char *pFbid = nullptr;
+            auto find_fbid_in_a_href = [&] (GumboNode * node) {
+                if (!node || node->type != GUMBO_NODE_ELEMENT)
+                    return false;
+                GumboAttribute *attr;
+                if (node->v.element.tag == GUMBO_TAG_A
+                        && (attr = gumbo_get_attribute(&node->v.element.attributes, "href"))
+                        && startsWith(attr->value, "keep.php?user=")) {
+                    pFbid = &attr->value[strlen("keep.php?user=")];
+                    return true;
+                }
+                return false;
+            };
+            travelTree(output->root, find_fbid_in_a_href);
+            if (pFbid != nullptr) {
+                q.bindValue(":accountId", selectedAccountId);
+                q.bindValue(":fbid", QString::fromUtf8(pFbid));
+                if (q.exec())
+                    refreshTable();
+            }
+
+            gumbo_destroy_output(&kGumboDefaultOptions, output);
+        }
+    }
 }
 
 void AccountManager::on_actionUpdateGuild_triggered()
@@ -187,6 +334,29 @@ void AccountManager::on_tableView_doubleClicked(const QModelIndex &index)
                 qDebug() << query.lastError();
         } else
             qDebug() << "No change on account data. Do nothing!";
+    }
+}
+
+QList<int> AccountManager::selectedAccountIds()
+{
+    QList<int> selectedAccountIds;
+    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
+    QModelIndexList selectionIndexList = selectionModel->selection().indexes();
+    for (QModelIndex index : selectionIndexList) {
+        int accountId = mModel->data(mModel->index(index.row(), 0)).toInt();
+        if (selectedAccountIds.contains(accountId))
+            continue;
+        selectedAccountIds << accountId;
+    }
+    return selectedAccountIds;
+}
+
+void AccountManager::refreshTable()
+{
+    if (mModel != nullptr)
+        mModel->setQuery(mModel->query().executedQuery());
+    else {
+        ((QSqlQueryModel *) ui->tableView->model())->setQuery(((QSqlQueryModel *)ui->tableView->model())->query().executedQuery());
     }
 }
 

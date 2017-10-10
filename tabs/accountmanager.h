@@ -18,6 +18,10 @@ public:
     explicit AccountManager(QWidget *parent = 0);
     ~AccountManager();
 
+private:
+    QList<int> selectedAccountIds();
+    void refreshTable();
+
 private slots:
     void on_actionAddAccount_triggered();
 

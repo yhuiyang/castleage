@@ -270,18 +270,26 @@ QByteArray CastleAgeHttpClient::ungzip(const QByteArray &gzippedData)
 
 void CastleAgeHttpClient::dumpHeader(const QNetworkRequest &request)
 {
+#if 1
+    Q_UNUSED(request);
+#else
     qDebug() << ">>>>>> Request headers >>>>>>";
     for (QByteArray header : request.rawHeaderList())
         qDebug() << header << "=>" << request.rawHeader(header);
     qDebug() << ">>>>>> End of request headers >>>>>>";
+#endif
 }
 
 void CastleAgeHttpClient::dumpHeader(const QNetworkReply *reply)
 {
+#if 1
+    Q_UNUSED(reply);
+#else
     qDebug() << "<<<<<< Response headers <<<<<<";
     for (QByteArray header : reply->rawHeaderList())
         qDebug() << header << "=>" << reply->rawHeader(header);
     qDebug() << "<<<<<< End of response headers <<<<<<";
+#endif
 }
 
 QNetworkReply *CastleAgeHttpClient::createRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData)
