@@ -74,7 +74,7 @@ QByteArray CastleAgeHttpClient::get_sync(const QString &php, const QVector<QPair
         QNetworkReply *reply = this->get(request);
         connect(reply, &QNetworkReply::finished, &looper, &QEventLoop::quit, Qt::AutoConnection);
         looper.exec();
-        qDebug() << "GET spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
+        qDebug() << "GET" << path.toString() << "spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
         reply->deleteLater();
 
         dumpHeader(reply);
@@ -132,7 +132,7 @@ QByteArray CastleAgeHttpClient::post_sync(const QString &php, const QVector<QPai
         QNetworkReply *reply = this->post(request, body);
         connect(reply, &QNetworkReply::finished, &looper, &QEventLoop::quit, Qt::AutoConnection);
         looper.exec();
-         qDebug() << "POST spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
+         qDebug() << "POST" << path.toString() << "spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
         reply->deleteLater();
 
         dumpHeader(reply);
