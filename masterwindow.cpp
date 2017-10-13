@@ -8,12 +8,14 @@
 #include "tagmanager.h"
 #include "armycodeannounceplan.h"
 #include "armypool.h"
+#include "gumboparsertestbed.h"
 
 enum TAB_PROPERTY {
     ACCOUNT_MANAGER,
     TAG_MANAGER,
     ACAP,
     ARMY_POOL,
+    GUMBO_PARSER_TESTBED,
 };
 #define TAB_PROP "tabProp"
 
@@ -135,6 +137,24 @@ QToolBar *MasterWindow::createToolBar()
         QWidget *newTab = new ArmyPool(this);
         newTab->setProperty(TAB_PROP, TAB_PROPERTY::ARMY_POOL);
         mTabWidget->addTab(newTab, "Army Pool");
+        mTabWidget->setCurrentWidget(newTab);
+    });
+
+    QAction *gumboParserTestbed = browserBar->addAction("GumboParserTestbed");
+    connect(gumboParserTestbed, &QAction::triggered, this, [this] (){
+        /* activate old tab if already exists */
+        for (int i = 0; i < mTabWidget->count(); i++) {
+            QWidget *oldTab = mTabWidget->widget(i);
+            if (oldTab->property(TAB_PROP) == TAB_PROPERTY::GUMBO_PARSER_TESTBED) {
+                mTabWidget->setCurrentWidget(oldTab);
+                return;
+            }
+        }
+
+        /* create new tab if not exists */
+        QWidget *newTab = new GumboParserTestbed(this);
+        newTab->setProperty(TAB_PROP, TAB_PROPERTY::GUMBO_PARSER_TESTBED);
+        mTabWidget->addTab(newTab, "Gumbo Parser Testbed");
         mTabWidget->setCurrentWidget(newTab);
     });
 

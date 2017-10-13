@@ -49,7 +49,8 @@ SOURCES += \
     tabs/armycodeannounceplan.cpp \
     gaehttpclient.cpp \
     protobuf/armycode.pb.cc \
-    tabs/armypool.cpp
+    tabs/armypool.cpp \
+    tabs/gumboparsertestbed.cpp
 
 INCLUDEPATH += \
     $$PWD/venders/gumbo-parser/src \
@@ -88,7 +89,8 @@ HEADERS += \
     tabs/armycodeannounceplan.h \
     gaehttpclient.h \
     protobuf/armycode.pb.h \
-    tabs/armypool.h
+    tabs/armypool.h \
+    tabs/gumboparsertestbed.h
 
 FORMS += \
     tabs/accountmanager.ui \
@@ -97,4 +99,5 @@ FORMS += \
     tabs/tagmanager.ui \
     dialogs/inputdialog.ui \
     tabs/armycodeannounceplan.ui \
-    tabs/armypool.ui
+    tabs/armypool.ui \
+    tabs/gumboparsertestbed.ui
