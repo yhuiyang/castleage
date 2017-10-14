@@ -85,7 +85,51 @@ void GumboParserTestbed::on_actionPOST_triggered()
     QSqlQueryModel *m = static_cast<QSqlQueryModel *>(mComboBoxAccounts->model());
     int accountId = m->data(m->index(mComboBoxAccounts->currentIndex(), 0)).toInt();
 
-    qDebug() << "Current accountId" << accountId;
+    QString php = ui->lineEditPHP->text();
+    if (php.isEmpty() || !php.endsWith(".php")) {
+        qWarning() << "Invalid php file name.";
+        return;
+    }
+
+    QString qs_user = ui->lineEditQS->text();
+    QVector<QPair<QString, QString>> qs_gen;
+    if (!qs_user.isEmpty()) {
+        QStringList pairs = qs_user.split('&');
+        for (QString pair : pairs) {
+            QStringList kv = pair.split('=');
+            if (kv.length() == 2) {
+                qs_gen.push_back(QPair<QString, QString>(kv.at(0), kv.at(1)));
+            }
+        }
+    }
+
+    QString payload_user = ui->lineEditPayload->text();
+    QVector<QPair<QString, QString>> payload_gen;
+    if (!payload_user.isEmpty()) {
+        QStringList pairs = payload_user.split('&');
+        for (QString pair : pairs) {
+            QStringList kv = pair.split('=');
+            if (kv.length() == 2) {
+                payload_gen.push_back(QPair<QString, QString>(kv.at(0), kv.at(1)));
+            }
+        }
+    }
+
+    CastleAgeHttpClient client(accountId);
+    QByteArray response = client.post_sync(php, payload_gen, qs_gen);
+    if (response.isEmpty()) {
+        qWarning() << "Empty response...";
+        return;
+    }
+
+    /* update QPlainTextEdit */
+    ui->plainTextEdit->clear();
+    ui->plainTextEdit->appendPlainText(QString(response));
+
+    /* parsed by Gumbo */
+    GumboOutput *output = gumbo_parse(response.data());
+    populateTreeView(output);
+    gumbo_destroy_output(&kGumboDefaultOptions, output);
 }
 
 void GumboParserTestbed::populateTreeView(const GumboOutput *output)
@@ -152,7 +196,7 @@ void GumboParserTestbed::setupTreeNodeFromGumboNode(QStandardItem *treeNode, con
         children = gumboNode->v.document.children;
         treeNode->appendRow({childrenNode, new QStandardItem(QString("%1").arg(children.length))});
         for (unsigned int i = 0; i < children.length; i++) {
-            childNode = new QStandardItem(QString("child[%1]").arg(i));
+            childNode = new QStandardItem(QString("[%1]").arg(i));
             childrenNode->appendRow({childNode, new QStandardItem(dumpGumboNode(static_cast<GumboNode *>(children.data[i])))});
             setupTreeNodeFromGumboNode(childNode, static_cast<GumboNode *>(children.data[i]));
         }
@@ -183,7 +227,7 @@ void GumboParserTestbed::setupTreeNodeFromGumboNode(QStandardItem *treeNode, con
         children = gumboNode->v.element.children;
         treeNode->appendRow({childrenNode, new QStandardItem(QString("%1").arg(children.length))});
         for (unsigned int i = 0; i < children.length; i++) {
-            childNode = new QStandardItem(QString("child[%1]").arg(i));
+            childNode = new QStandardItem(QString("[%1]").arg(i));
             childrenNode->appendRow({childNode, new QStandardItem(dumpGumboNode(static_cast<GumboNode *>(children.data[i])))});
             setupTreeNodeFromGumboNode(childNode, static_cast<GumboNode *>(children.data[i]));
         }
