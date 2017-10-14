@@ -79,7 +79,7 @@ void CreateDatabaseV1(QSqlDatabase &db)
            ")");
     q.exec("CREATE TABLE IF NOT EXISTS roles ("
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
-           ", role TEXT NOT NULL CHECK (role IN ('Master', 'Officier', 'Leader'))"
+           ", role TEXT NOT NULL CHECK (role IN ('Master', 'Officer'))"
            ")");
 }
 
