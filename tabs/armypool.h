@@ -18,6 +18,8 @@ public:
 private slots:
     void on_actionDownloadArmy_triggered();
 
+    void on_actionUpdateIGN_triggered();
+
 private:
     Ui::ArmyPool *ui;
 };

@@ -28,7 +28,11 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QTableView" name="tableView"/>
+     <widget class="QTableView" name="tableView">
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -54,10 +58,16 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionDownloadArmy"/>
+   <addaction name="actionUpdateIGN"/>
   </widget>
   <action name="actionDownloadArmy">
    <property name="text">
     <string>DownloadArmy</string>
+   </property>
+  </action>
+  <action name="actionUpdateIGN">
+   <property name="text">
+    <string>Update IGN</string>
    </property>
   </action>
  </widget>
