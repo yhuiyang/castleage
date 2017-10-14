@@ -58,6 +58,21 @@ bool travelChildren(GumboNode *node, Func& functor) {
     return false;
 }
 
+QString whereami(GumboNode *node) {
+    QString out;
+    if (!node || !node->parent)
+        return out;
+
+    if (node->parent->parent) {
+        out += QString::number(node->index_within_parent, 10);
+        out += "->";
+    } else {
+        out += "root";
+    }
+
+    return out + whereami(node->parent);
+}
+
 // ----------------------------------------------------------------------------------
 AccountManager::AccountManager(QWidget *parent) :
     QMainWindow(parent),
@@ -422,7 +437,119 @@ void AccountManager::on_actionUpdateGuild_triggered()
 
 void AccountManager::on_actionUpdateRole_triggered()
 {
+    //
+    // Member html looks like
+    // <div id="guildv2_list_body style=...>
+    //    <div style=...>
+    //        <div style=...>
+    //            <div style=...>Do you want to leave this guild?</div>
+    // ...
+    //
+    // Officer html looks like
+    // <div id="guildv2_list_body style=...>
+    //    <div style=...>
+    //        <div style=...>
+    //            [Guild Officer] Control Panel<br />
+    //            (Only Guild Master and Officers have access to this Control Panel)
+    //        </div>
+    // ...
+    //
+    // Master html looks similar to Officer, but [Guild Officer] is changed to [Guild Master]
+    //
 
+    QList<int> accountIds = selectedAccountIds();
+    QSqlQuery q;
+    q.prepare("INSERT OR REPLACE INTO roles VALUES (:accountId, :role)");
+
+    for (int accountId: accountIds) {
+        CastleAgeHttpClient client(accountId);
+        QByteArray page = client.post_sync("guildv2_panel.php");
+        if (page.isEmpty())
+            continue;
+
+        GumboOutput *output = gumbo_parse(page.data());
+
+        GumboNode *master_text = nullptr;
+        GumboNode *officer_text = nullptr;
+        GumboNode *member_text = nullptr;
+        auto find_role = [&] (GumboNode *node) {
+            if (!node || node->type != GUMBO_NODE_ELEMENT)
+                return false;
+            GumboAttribute *attr = nullptr;
+            if (node->v.element.tag == GUMBO_TAG_DIV
+                    && (attr = gumbo_get_attribute(&node->v.element.attributes, "id"))
+                    && !strcmp(attr->value, "guildv2_list_body")) {
+                GumboNode *div1 = nullptr;
+                for (unsigned int c = 0; c < node->v.element.children.length; c++) {
+                    GumboNode *div = static_cast<GumboNode *>(node->v.element.children.data[c]);
+                    if (div && div->type == GUMBO_NODE_ELEMENT && div->v.element.tag == GUMBO_TAG_DIV) {
+                        div1 = div;
+                        break;
+                    }
+                }
+                if (div1) {
+                    GumboNode *div11 = nullptr;
+                    for (unsigned int c = 0; c < div1->v.element.children.length; c++) {
+                        GumboNode *div = static_cast<GumboNode *>(div1->v.element.children.data[c]);
+                        if (div && div->type == GUMBO_NODE_ELEMENT && div->v.element.tag == GUMBO_TAG_DIV) {
+                            div11 = div;
+                            break;
+                        }
+                    }
+
+                    if (div11) {
+                        GumboNode *div111 = nullptr;
+                        for (unsigned int c = 0; c < div11->v.element.children.length; c++) {
+                            GumboNode *t = static_cast<GumboNode *>(div11->v.element.children.data[c]);
+                            if (t && t->type == GUMBO_NODE_TEXT) {
+                                //qDebug() << "Found role text" << QString::fromUtf8(t->v.text.text);
+                                if (contains(t->v.text.text, "[Guild Master]")) {
+                                    master_text = t;
+                                    return true;
+                                } else if (contains(t->v.text.text, "[Guild Officer]")) {
+                                    officer_text = t;
+                                    return true;
+                                }
+                            } else if (t && t->type == GUMBO_NODE_ELEMENT && t->v.element.tag == GUMBO_TAG_DIV) {
+                                div111 = t;
+                                break;
+                            }
+                        }
+
+                        if (div111) {
+                            qDebug() << whereami(div111);
+                            for (unsigned int c = 0; c < div111->v.element.children.length; c++) {
+                                GumboNode *t = static_cast<GumboNode *>(div111->v.element.children.data[c]);
+                                //qDebug() << QString::fromUtf8(t->v.text.text);
+                                if (t && t->type == GUMBO_NODE_TEXT && contains(t->v.text.text, "Do you want to leave this guild?")) {
+                                    member_text = t;
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        };
+        travelTree(output->root, find_role);
+        if (master_text) {
+            q.bindValue(":accountId", accountId);
+            q.bindValue(":role", "Master");
+        } else if (officer_text) {
+            q.bindValue(":accountId", accountId);
+            q.bindValue(":role", "Officer");
+        } else if (member_text) {
+        } else {
+            qWarning() << "Unknown role.";
+        }
+
+        if (master_text || officer_text)
+            if (q.exec())
+                refreshTable();
+
+        gumbo_destroy_output(&kGumboDefaultOptions, output);
+    }
 }
 
 void AccountManager::on_tableView_doubleClicked(const QModelIndex &index)
