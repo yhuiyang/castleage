@@ -63,15 +63,15 @@
   </widget>
   <action name="actionUpdateArmyCode">
    <property name="text">
-    <string>Update army code</string>
+    <string>Fix Missed Army Code</string>
    </property>
   </action>
   <action name="actionUpdateFacebookId">
    <property name="text">
-    <string>Update facebook id</string>
+    <string>Fix Missed Facebook Id</string>
    </property>
    <property name="toolTip">
-    <string>Update facebook id</string>
+    <string>Fix Missed Facebook Id</string>
    </property>
   </action>
   <action name="actionAnnounce">

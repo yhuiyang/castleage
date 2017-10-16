@@ -65,33 +65,25 @@ ArmyCodeAnnouncePlan::~ArmyCodeAnnouncePlan()
 
 void ArmyCodeAnnouncePlan::on_actionUpdateArmyCode_triggered()
 {
-    /* find out selected accountId from QItemSelectionModel. */
-    QList<int> selectedAccountIds;
-    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
-    QModelIndexList selectionIndexList = selectionModel->selection().indexes();
-    for (QModelIndex index : selectionIndexList) {
-        int accountId = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toInt();
-        if (selectedAccountIds.contains(accountId))
-            continue;
-        selectedAccountIds << accountId;
+    /* only update accounts with empty army code. */
+    QList<int> emptyArmyCodeAccountIds;
+    QSqlQueryModel *m = static_cast<QSqlQueryModel *>(ui->tableView->model());
+    for (int row = 0; row < m->rowCount(); row++) {
+        QString armyCode = m->data(m->index(row, 2)).toString();
+        if (armyCode.isEmpty())
+            emptyArmyCodeAccountIds << m->data(m->index(row, 0)).toInt();
     }
 
-    // if none selected, treat this case as all accounts are selected.
-    if (selectedAccountIds.size() == 0) {
-        int rowCount = ui->tableView->model()->rowCount();
-        for (int row = 0; row < rowCount; row++) {
-            selectedAccountIds << ui->tableView->model()->data(ui->tableView->model()->index(row, 0)).toInt();
-        }
-    }
+    qDebug() << "Required to update army code accounts:" << emptyArmyCodeAccountIds.size();
 
+    /* check army code from CA server. */
     QRegularExpression pattern("Your army code:\\s+([0-9A-F]{6,})");
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO armycodes VALUES (:accountId, :armyCode);");
-    CastleAgeHttpClient *caHttpClient = new CastleAgeHttpClient(0);
     bool any_updated = false;
-    for (int accountId : selectedAccountIds) {
-        caHttpClient->switchAccount(accountId);
-        QByteArray response = caHttpClient->post_sync("army.php");
+    for (int accountId : emptyArmyCodeAccountIds) {
+        CastleAgeHttpClient client(accountId);
+        QByteArray response = client.post_sync("army.php");
 
         QRegularExpressionMatch m = pattern.match(response);
         if (m.hasMatch()) {
@@ -109,33 +101,25 @@ void ArmyCodeAnnouncePlan::on_actionUpdateArmyCode_triggered()
 
 void ArmyCodeAnnouncePlan::on_actionUpdateFacebookId_triggered()
 {
-    /* find out selected accountId from QItemSelectionModel. */
-    QList<int> selectedAccountIds;
-    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
-    QModelIndexList selectionIndexList = selectionModel->selection().indexes();
-    for (QModelIndex index : selectionIndexList) {
-        int accountId = ui->tableView->model()->data(ui->tableView->model()->index(index.row(), 0)).toInt();
-        if (selectedAccountIds.contains(accountId))
-            continue;
-        selectedAccountIds << accountId;
+    /* only update accounts with empty facebook id */
+    QList<int> emptyFacebookIdAccountIds;
+    QSqlQueryModel *m = static_cast<QSqlQueryModel *>(ui->tableView->model());
+    for (int row = 0; row < m->rowCount(); row++) {
+        QString facebookId = m->data(m->index(row, 3)).toString();
+        if (facebookId.isEmpty())
+            emptyFacebookIdAccountIds << m->data(m->index(row, 0)).toInt();
     }
 
-    // if none selected, treat this case as all accounts are selected.
-    if (selectedAccountIds.size() == 0) {
-        int rowCount = ui->tableView->model()->rowCount();
-        for (int row = 0; row < rowCount; row++) {
-            selectedAccountIds << ui->tableView->model()->data(ui->tableView->model()->index(row, 0)).toInt();
-        }
-    }
+    qDebug() << "Required to update facebook id accounts:" << emptyFacebookIdAccountIds.size();
 
+    /* check facebook id from CA server. */  /* facebook id may also be found from cookie. */
     QRegularExpression pattern("a href=\\\"keep\\.php\\?user=([0-9]+)\\\"");
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO fbids VALUES (:accountId, :fbId);");
-    CastleAgeHttpClient *caHttpClient = new CastleAgeHttpClient(0, this);
     bool any_updated = false;
-    for (int accountId : selectedAccountIds) {
-        caHttpClient->switchAccount(accountId);
-        QByteArray response = caHttpClient->post_sync("keep.php");
+    for (int accountId : emptyFacebookIdAccountIds) {
+        CastleAgeHttpClient client(accountId);
+        QByteArray response = client.post_sync("keep.php");
 
         QRegularExpressionMatch m = pattern.match(response);
         if (m.hasMatch()) {
