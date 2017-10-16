@@ -67,7 +67,10 @@
   </action>
   <action name="actionUpdateIGN">
    <property name="text">
-    <string>Update IGN</string>
+    <string>Update Missed IGN</string>
+   </property>
+   <property name="toolTip">
+    <string>Update missed ign</string>
    </property>
   </action>
  </widget>

@@ -83,11 +83,13 @@ void ArmyPool::on_actionDownloadArmy_triggered()
 
 void ArmyPool::on_actionUpdateIGN_triggered()
 {
-    QList<QString> selectedFbIds;
-    QItemSelectionModel *selectionModel = ui->tableView->selectionModel();
-    QModelIndexList selectedRows = selectionModel->selectedRows(1);
-    for (QModelIndex selectedRowModelIndex : selectedRows) {
-        selectedFbIds << ui->tableView->model()->data(selectedRowModelIndex).toString();
+    /* only update ign missed accounts */
+    QList<QString> ignMissedFbIds;
+    for (int row = 0; row < ui->tableView->model()->rowCount(); row++) {
+        QAbstractItemModel *m = ui->tableView->model();
+        QString ign = m->data(m->index(row, 2)).toString();
+        if (ign.isEmpty())
+            ignMissedFbIds << ui->tableView->model()->data(ui->tableView->model()->index(row, 1)).toString();
     }
 
     QSqlQuery q;
@@ -95,7 +97,7 @@ void ArmyPool::on_actionUpdateIGN_triggered()
     CastleAgeHttpClient client(1);
     QVector<QPair<QString,QString>> qs;
 
-    for (QString fbid : selectedFbIds) {
+    for (QString fbid : ignMissedFbIds) {
         qs.clear();
         qs.push_back({"user", fbid});
 
