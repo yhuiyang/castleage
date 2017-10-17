@@ -81,9 +81,10 @@ void CreateDatabaseV1(QSqlDatabase &db)
            "accountId INTEGER UNIQUE REFERENCES accounts ON DELETE CASCADE"
            ", role TEXT NOT NULL CHECK (role IN ('Master', 'Officer'))"
            ")");
-    q.exec("CREATE TABLE IF NOT EXISTS fbid2igns ("
+    q.exec("CREATE TABLE IF NOT EXISTS fbidAccounts ("
            "fbId TEXT UNIQUE ON CONFLICT REPLACE NOT NULL ON CONFLICT IGNORE"
            ", ign TEXT NOT NULL"
+           ", level INTEGER"
            ")");
 }
 

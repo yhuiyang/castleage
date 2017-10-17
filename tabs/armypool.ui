@@ -58,19 +58,19 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionDownloadArmy"/>
-   <addaction name="actionUpdateIGN"/>
+   <addaction name="actionUpdateIgnLvl"/>
   </widget>
   <action name="actionDownloadArmy">
    <property name="text">
     <string>DownloadArmy</string>
    </property>
   </action>
-  <action name="actionUpdateIGN">
+  <action name="actionUpdateIgnLvl">
    <property name="text">
-    <string>Update Missed IGN</string>
+    <string>Update Missed Ign &amp;&amp; Level</string>
    </property>
    <property name="toolTip">
-    <string>Update missed ign</string>
+    <string>Update missed ign &amp; lvl</string>
    </property>
   </action>
  </widget>
