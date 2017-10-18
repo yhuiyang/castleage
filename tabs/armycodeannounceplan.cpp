@@ -16,7 +16,8 @@ public:
         sql.append(", a.ign AS 'IGN' ");
         sql.append("FROM ownedArmies AS o ");
         sql.append("LEFT JOIN fbIdAccounts AS a ON o.fbId = a.fbId ");
-        sql.append("WHERE o.accountId = %1");
+        sql.append("WHERE o.accountId = %1 ");
+        sql.append("ORDER BY length(o.fbId) ASC, o.fbId ASC"); // this is same order as members in ca army page.
         this->setQuery(sql.arg(accountId));
     }
 
