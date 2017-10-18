@@ -50,7 +50,8 @@ SOURCES += \
     gaehttpclient.cpp \
     protobuf/armycode.pb.cc \
     tabs/armypool.cpp \
-    tabs/gumboparsertestbed.cpp
+    tabs/gumboparsertestbed.cpp \
+    qgumboparser.cpp
 
 INCLUDEPATH += \
     $$PWD/venders/gumbo-parser/src \
@@ -90,7 +91,8 @@ HEADERS += \
     gaehttpclient.h \
     protobuf/armycode.pb.h \
     tabs/armypool.h \
-    tabs/gumboparsertestbed.h
+    tabs/gumboparsertestbed.h \
+    qgumboparser.h
 
 FORMS += \
     tabs/accountmanager.ui \
