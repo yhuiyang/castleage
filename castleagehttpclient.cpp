@@ -123,7 +123,6 @@ QByteArray CastleAgeHttpClient::post_sync(const QString &php, const QVector<QPai
     for (QPair<QString, QString> d : form)
         payload.addQueryItem(d.first, d.second);
     QByteArray body = payload.toString(QUrl::FullyEncoded).toUtf8();
-    qDebug() << "POST body" << body;
 
     /* create local event loop to wait asyncronized network response */
     QEventLoop looper;
@@ -132,7 +131,7 @@ QByteArray CastleAgeHttpClient::post_sync(const QString &php, const QVector<QPai
         QNetworkReply *reply = this->post(request, body);
         connect(reply, &QNetworkReply::finished, &looper, &QEventLoop::quit, Qt::AutoConnection);
         looper.exec();
-         qDebug() << "POST" << path.toString() << "spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
+        qDebug() << QString("POST[%1]").arg(mAccountId) << path.toString() << body  << "time spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
         reply->deleteLater();
 
         dumpHeader(reply);
@@ -147,6 +146,12 @@ QByteArray CastleAgeHttpClient::post_sync(const QString &php, const QVector<QPai
             qDebug() << "302 Found: Redirect location" << location;
             if (QString::compare("connect_login.php", location) == 0) {
                 qDebug() << "executing login procedure...";
+                if (!execute_login()) {
+                    qWarning() << "Login failed!";
+                    return "";
+                }
+            } else if (location.endsWith("connect_login.php")) {
+                qDebug() << "*** CA server try to redirect us to web4, however we insist on try login on web3... ***";
                 if (!execute_login()) {
                     qWarning() << "Login failed!";
                     return "";
