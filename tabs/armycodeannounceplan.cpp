@@ -163,25 +163,35 @@ void ArmyCodeAnnouncePlan::on_actionUpdateFacebookId_triggered()
     qDebug() << "Required to update facebook id accounts:" << emptyFacebookIdAccountIds.size();
 
     /* check facebook id from CA server. */  /* facebook id may also be found from cookie. */
-    QRegularExpression pattern("a href=\\\"keep\\.php\\?user=([0-9]+)\\\"");
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO fbids VALUES (:accountId, :fbId);");
-    bool any_updated = false;
     for (int accountId : emptyFacebookIdAccountIds) {
         CastleAgeHttpClient client(accountId);
         QByteArray response = client.post_sync("keep.php");
 
-        QRegularExpressionMatch m = pattern.match(response);
-        if (m.hasMatch()) {
-            q.bindValue(":accountId", accountId);
-            q.bindValue(":fbId", m.captured(1));
-            any_updated |= q.exec();
-        }
-    }
+        if (response.isEmpty())
+            continue;
 
-    /* if any update successful, refresh */
-    if (any_updated) {
-        refreshAccountTable();
+        // note: we can not only find <a href="keep.php?user=..." ...>
+        // because when someone leave message on the wall, that will be first matched.
+        // need to check if there is <img> child or not...
+        // <img title="view your stats and use the treasury on this page" src="....tab_stats_on.gif">
+        QGumboParser gumbo(response.data());
+
+        QList<GumboNode *> keepLinks = gumbo.findNodes(GUMBO_TAG_A, "href", "keep.php?user=", StartsWith);
+        for (GumboNode *keepLink : keepLinks) {
+            GumboNode *img = gumbo.findNode(keepLink, GUMBO_TAG_IMG, "src", "tab_stats_on.gif", EndsWith);
+            if (img != nullptr) {
+                QString fbid = QString::fromUtf8(gumbo.attributeValue(keepLink, "href")).mid(strlen("keep.php?user="));
+
+                q.bindValue(":accountId", accountId);
+                q.bindValue(":fbid", fbid);
+                if (q.exec())
+                    refreshAccountTable();
+
+                break;
+            }
+        }
     }
 }
 
