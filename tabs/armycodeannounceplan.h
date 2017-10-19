@@ -29,6 +29,8 @@ private slots:
 
     void on_actionDownloadArmyMembers_triggered();
 
+    void on_actionFix_Missed_Ign_level_Army_Member_triggered();
+
 private:
     Ui::ArmyCodeAnnouncePlan *ui;
 };

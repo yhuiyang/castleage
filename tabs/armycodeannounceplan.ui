@@ -54,9 +54,12 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QToolBar" name="toolBar">
+  <widget class="QToolBar" name="AccountToolBar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>Account ToolBar</string>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomToolBarArea|Qt::TopToolBarArea</set>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -68,6 +71,25 @@
    <addaction name="actionUpdateFacebookId"/>
    <addaction name="actionAnnounce"/>
    <addaction name="actionDownloadArmyMembers"/>
+  </widget>
+  <widget class="QToolBar" name="ArmyMemberToolBar">
+   <property name="windowTitle">
+    <string>Army Member ToolBar</string>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::RightToLeft</enum>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::BottomToolBarArea|Qt::TopToolBarArea</set>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFix_Missed_Ign_level_Army_Member"/>
+   <addaction name="separator"/>
   </widget>
   <action name="actionUpdateArmyCode">
    <property name="text">
@@ -96,6 +118,11 @@
    </property>
    <property name="toolTip">
     <string>Download army members from CA server</string>
+   </property>
+  </action>
+  <action name="actionFix_Missed_Ign_level_Army_Member">
+   <property name="text">
+    <string>Fix Missed Ign &amp; level Army Member</string>
    </property>
   </action>
  </widget>
