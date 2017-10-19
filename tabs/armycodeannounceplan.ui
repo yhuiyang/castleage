@@ -29,6 +29,9 @@
     </property>
     <item>
      <widget class="QTableView" name="tableViewAccounts">
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
       <property name="selectionBehavior">
        <enum>QAbstractItemView::SelectRows</enum>
       </property>
@@ -36,8 +39,14 @@
     </item>
     <item>
      <widget class="QTableView" name="tableViewArmyMembers">
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::NoSelection</enum>
+       <enum>QAbstractItemView::ExtendedSelection</enum>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
       </property>
      </widget>
     </item>
@@ -88,7 +97,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionFix_Missed_Ign_level_Army_Member"/>
+   <addaction name="actionUpdate_Ign_level_Army_Member"/>
    <addaction name="separator"/>
   </widget>
   <action name="actionUpdateArmyCode">
@@ -120,9 +129,12 @@
     <string>Download army members from CA server</string>
    </property>
   </action>
-  <action name="actionFix_Missed_Ign_level_Army_Member">
+  <action name="actionUpdate_Ign_level_Army_Member">
    <property name="text">
-    <string>Fix Missed Ign &amp; level Army Member</string>
+    <string>Update Ign &amp; level for Army Member</string>
+   </property>
+   <property name="toolTip">
+    <string>Update Ign and level for Army Member</string>
    </property>
   </action>
  </widget>

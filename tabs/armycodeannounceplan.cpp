@@ -69,7 +69,8 @@ public:
 // --------------------------------------------------------------------------------------------------
 ArmyCodeAnnouncePlan::ArmyCodeAnnouncePlan(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::ArmyCodeAnnouncePlan)
+    ui(new Ui::ArmyCodeAnnouncePlan),
+    mActivedAccountId(0)
 {
     ui->setupUi(this);
 
@@ -100,6 +101,7 @@ void ArmyCodeAnnouncePlan::onAccountTableCurrentRowChanged(const QModelIndex &cu
 
 void ArmyCodeAnnouncePlan::activeAccountChanged(const int accountId)
 {
+    mActivedAccountId = accountId;
     QAbstractItemModel *m = ui->tableViewArmyMembers->model();
     if (m != nullptr)
         m->deleteLater();
@@ -305,9 +307,9 @@ void ArmyCodeAnnouncePlan::on_actionDownloadArmyMembers_triggered()
     }
 }
 
-void ArmyCodeAnnouncePlan::on_actionFix_Missed_Ign_level_Army_Member_triggered()
+void ArmyCodeAnnouncePlan::on_actionUpdate_Ign_level_Army_Member_triggered()
 {
-    /* use first account as observer */
+    /* observer - user first account */
     int observerAccountId = 0;
     QSqlQuery qObserver("SELECT _id FROM accounts LIMIT 1");
     if (qObserver.exec() && qObserver.first())
@@ -322,49 +324,68 @@ void ArmyCodeAnnouncePlan::on_actionFix_Missed_Ign_level_Army_Member_triggered()
     q.prepare("INSERT INTO fbidAccounts VALUES (:fbId, :ign, :level)");
     QVector<QPair<QString,QString>> qs;
     QRegularExpression pattern("Level ([0-9]+) -");
+    QList<QString> lookupFbids;
 
-    QAbstractItemModel *m = ui->tableViewArmyMembers->model();
-    for (int row = 0; row < m->rowCount(); row++) {
-        // col 0: fbid, 1: level, 2: ign
-        QString level = m->data(m->index(row, 1)).toString();
-        QString ign = m->data(m->index(row, 2)).toString();
-        if (level.isEmpty() || ign.isEmpty()) {
-            QString fbId = m->data(m->index(row, 0)).toString();
+    /* check if there is any row selected..., update selected or update army member with emtpy ign or level. */
+    /* NOTE: https://bugreports.qt.io/browse/QTBUG-30443, When we want to find out empty ign or level army members,
+       do NOT walking through model, because model may only contain fewer prefetch rows instead of all army member rows. */
+    QItemSelectionModel *selection = ui->tableViewArmyMembers->selectionModel();
+    QModelIndexList selectedRows = selection->selectedRows();
+    for (QModelIndex selectedRow : selectedRows)
+        lookupFbids << ui->tableViewArmyMembers->model()->data(selectedRow).toString();
+    if (lookupFbids.isEmpty()) {
+        // query fbid with empty ign or level from db.
+        QString sqlEmpty;
+        sqlEmpty.append("SELECT o.fbId FROM ownedArmies AS o ");
+        sqlEmpty.append("LEFT JOIN fbIdAccounts AS a ");
+        sqlEmpty.append("ON o.fbId = a.fbId ");
+        sqlEmpty.append("WHERE o.accountId = %1 AND (IFNULL(a.ign, '') = '' OR IFNULL(a.level, '') = '')");
+        QSqlQuery qEmpty(sqlEmpty.arg(mActivedAccountId));
+        if (qEmpty.exec())
+            while (qEmpty.next())
+                lookupFbids << qEmpty.value(0).toString();
+    }
 
-            qs.clear();
-            qs.push_back({"user", fbId});
+    qDebug() << "Prepare to update" << lookupFbids.size() << "accounts";
 
-            QByteArray response = client.get_sync("keep.php", qs);
-            if (response.isEmpty())
-                continue;
+    for (QString fbId : lookupFbids) {
+        qs.clear();
+        qs.push_back({"user", fbId});
 
-            QGumboParser gumbo(response.data());
+        QByteArray response = client.get_sync("keep.php", qs);
+        if (response.isEmpty())
+            continue;
 
-            QString ign, levelText;
-            int level = 0;
-            GumboNode *div_bg = gumbo.findNode(GUMBO_TAG_DIV, "style", "keep_top.jpg", Contains);
-            GumboNode *div_ign = gumbo.findNode(div_bg, GUMBO_TAG_DIV, "title", nullptr, Exists);
-            const char *title = gumbo.attributeValue(div_ign, "title");
-            if (title != nullptr)
-                ign = QString::fromUtf8(title);
+        QGumboParser gumbo(response.data());
 
-            QList<GumboNode *> divs_style = gumbo.findNodes(div_bg, GUMBO_TAG_DIV, "style", nullptr, Exists);
-            if (divs_style.size() > 0) {
-                levelText = gumbo.textContent(divs_style.last()); // original level text = "\n        Level XX - battle rank name     "
-                QRegularExpressionMatch m = pattern.match(levelText);
-                if (m.hasMatch())
-                    level = m.captured(1).toInt();
+        GumboNode *div_bg = gumbo.findNode(GUMBO_TAG_DIV, "style", "keep_top.jpg", Contains);
+        GumboNode *div_ign = gumbo.findNode(div_bg, GUMBO_TAG_DIV, "title", nullptr, Exists);
+        QString ign = QString::fromUtf8(gumbo.attributeValue(div_ign, "title"));
+        if (ign.isEmpty()) { // if there is special character in ign, for example fbid = 561660077, ign = "Fre'de'ric", <div title="..."> will be broken, need to find child <a href="#">ign</a>
+            GumboNode *a = gumbo.findNode(div_ign, GUMBO_TAG_A, "href", "#", Equals);
+            ign = gumbo.textContent(a);
+        }
+
+        QString levelText;
+        int level = 0;
+        QList<GumboNode *> divs_style = gumbo.findNodes(div_bg, GUMBO_TAG_DIV, "style", nullptr, Exists);
+        if (divs_style.size() > 0) {
+            levelText = gumbo.textContent(divs_style.last()); // original level text = "\n        Level XX - battle rank name     "
+            QRegularExpressionMatch m = pattern.match(levelText);
+            if (m.hasMatch())
+                level = m.captured(1).toInt();
+        }
+
+        if (!ign.isEmpty()) {
+            q.bindValue(":fbId", fbId);
+            q.bindValue(":ign", ign);
+            q.bindValue(":level", level);
+            if (q.exec()) {
+                QSqlQueryModel *qm = static_cast<QSqlQueryModel *>(ui->tableViewArmyMembers->model());
+                qm->setQuery(qm->query().executedQuery());
             }
-
-            if (!ign.isEmpty()) {
-                q.bindValue(":fbId", fbId);
-                q.bindValue(":ign", ign);
-                q.bindValue(":level", level);
-                if (q.exec()) {
-                    QSqlQueryModel *qm = static_cast<QSqlQueryModel *>(ui->tableViewArmyMembers->model());
-                    qm->setQuery(qm->query().executedQuery());
-                }
-            }
+        } else {
+            qWarning() << "IGN not found";
         }
     }
 }
