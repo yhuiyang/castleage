@@ -12,7 +12,7 @@ class UpdateAccountDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit UpdateAccountDialog(QWidget *parent = 0, QString email = QString(), QString password = QString(), bool reveal = false);
+    explicit UpdateAccountDialog(const int accountId, const QString &email, const QString &password, bool reveal = false, QWidget *parent = nullptr);
     ~UpdateAccountDialog();
 
     QString getEmail();

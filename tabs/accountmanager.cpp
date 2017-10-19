@@ -567,7 +567,7 @@ void AccountManager::on_tableView_doubleClicked(const QModelIndex &index)
     }
 
     /* invoke update account dialog */
-    UpdateAccountDialog dlg(this, email, password, false);
+    UpdateAccountDialog dlg(accountId, email, password, false, this);
     if (dlg.exec() == QDialog::Accepted) {
         QString updated_email = dlg.getEmail();
         QString updated_password = dlg.getPassword();

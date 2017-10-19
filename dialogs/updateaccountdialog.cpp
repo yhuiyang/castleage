@@ -1,12 +1,13 @@
 #include "updateaccountdialog.h"
 #include "ui_updateaccountdialog.h"
 
-UpdateAccountDialog::UpdateAccountDialog(QWidget *parent, QString email, QString password, bool reveal) :
+UpdateAccountDialog::UpdateAccountDialog(const int accountId, const QString &email, const QString &password, bool reveal, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::UpdateAccountDialog)
 {
     ui->setupUi(this);
 
+    ui->lineEditAccountId->setText(QString::number(accountId));
     ui->lineEditEmail->setText(email);
     ui->lineEditPassword->setText(password);
     ui->lineEditPassword->setEchoMode(reveal ? QLineEdit::Normal : QLineEdit::Password);
