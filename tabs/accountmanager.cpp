@@ -7,6 +7,7 @@
 #include "updateaccountdialog.h"
 #include "castleagehttpclient.h"
 #include "gumbo.h"
+#include "qgumboparser.h"
 
 static bool startsWith(const std::string & long_string, const std::string & short_string) {
     return short_string.length() <= long_string.length()
@@ -290,31 +291,28 @@ void AccountManager::on_actionUpdateFBId_triggered()
         CastleAgeHttpClient client(selectedAccountId);
 
         QByteArray keepPage = client.post_sync("keep.php");
-        if (!keepPage.isEmpty()) {
-            GumboOutput *output = gumbo_parse(keepPage.data());
+        if (keepPage.isEmpty())
+            continue;
 
-            const char *pFbid = nullptr;
-            auto find_fbid_in_a_href = [&] (GumboNode * node) {
-                if (!node || node->type != GUMBO_NODE_ELEMENT)
-                    return false;
-                GumboAttribute *attr;
-                if (node->v.element.tag == GUMBO_TAG_A
-                        && (attr = gumbo_get_attribute(&node->v.element.attributes, "href"))
-                        && startsWith(attr->value, "keep.php?user=")) {
-                    pFbid = &attr->value[strlen("keep.php?user=")];
-                    return true;
-                }
-                return false;
-            };
-            travelTree(output->root, find_fbid_in_a_href);
-            if (pFbid != nullptr) {
+        // note: we can not only find <a href="keep.php?user=..." ...>
+        // because when someone leave message on the wall, that will be first matched.
+        // need to check if there is <img> child or not...
+        // <img title="view your stats and use the treasury on this page" src="....tab_stats_on.gif">
+        QGumboParser gumbo(keepPage.data());
+
+        QList<GumboNode *> keepLinks = gumbo.findNodes(GUMBO_TAG_A, "href", "keep.php?user=", StartsWith);
+        for (GumboNode *keepLink : keepLinks) {
+            GumboNode *img = gumbo.findNode(keepLink, GUMBO_TAG_IMG, "src", "tab_stats_on.gif", EndsWith);
+            if (img != nullptr) {
+                QString fbid = QString::fromUtf8(gumbo.attributeValue(keepLink, "href")).mid(strlen("keep.php?user="));
+
                 q.bindValue(":accountId", selectedAccountId);
-                q.bindValue(":fbid", QString::fromUtf8(pFbid));
+                q.bindValue(":fbid", fbid);
                 if (q.exec())
                     refreshTable();
-            }
 
-            gumbo_destroy_output(&kGumboDefaultOptions, output);
+                break;
+            }
         }
     }
 }
