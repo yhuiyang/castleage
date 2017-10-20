@@ -365,6 +365,7 @@ void ArmyCodeAnnouncePlan::on_actionUpdate_Ign_level_Army_Member_triggered()
             GumboNode *a = gumbo.findNode(div_ign, GUMBO_TAG_A, "href", "#", Equals);
             ign = gumbo.textContent(a);
         }
+        // there is still account without ign, for example fbid = '1099873004', no ign, level 1, there is nothing we can do...
 
         QString levelText;
         int level = 0;
