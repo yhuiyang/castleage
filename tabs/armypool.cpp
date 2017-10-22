@@ -45,8 +45,9 @@ void ArmyPool::on_actionDownloadArmy_triggered()
     auto pool = client.acap_download_armypool();
 
     if (pool.size() > 0) {
-        q.exec("DELETE FROM acapPool");
         qDebug() << "Prepare to recreate army pool, total" << pool.size();
+        if (!q.exec("DELETE FROM acapPool"))
+            qWarning() << "Database Error:" << q.lastError().databaseText();
     }
     q.prepare("INSERT INTO acapPool VALUES (:armyCode, :fbId)");
     bool any = false;
