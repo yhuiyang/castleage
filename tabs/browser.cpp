@@ -211,11 +211,12 @@ void Browser::populateFilter()
 {
     QSqlQueryModel *filterModel = new QSqlQueryModel(this);
     filterModel->setQuery(
-                "SELECT 'No filter', 0 "
+                "SELECT 'No filter', 0 AS _id "
                 "UNION "
-                "SELECT 'Guild: ' || name, _id * -1 FROM guilds "
+                "SELECT 'Tag: ' || name, _id FROM tags "
                 "UNION "
-                "SELECT 'Tag: ' || name, _id FROM tags"
+                "SELECT 'Guild: ' || name, _id FROM guilds "
+                "ORDER BY _id ASC"
                 );
     mFilterList->setModel(filterModel);
 }
@@ -225,38 +226,45 @@ void Browser::onFilterIndexChanged(int filterIndex)
     qDebug() << "filter index changes to" << filterIndex << ", update account ComboBox.";
 
     /* index -> filter id */
-    int filterId = mFilterList->model()->data(mFilterList->model()->index(filterIndex, 1)).toInt();
+    QVariant filter = mFilterList->model()->data(mFilterList->model()->index(filterIndex, 1));
 
     /* update account list */
     QSqlQueryModel *accountModel = new QSqlQueryModel;
-    if (filterId == 0) { // All
-        accountModel->setQuery(
-                    "SELECT '------ Select Account ------' AS account, 0 AS _id, 0 AS sequence "
-                    "UNION "
-                    "SELECT IFNULL(i.ign, 'Unknown IGN') || ' - ' || email AS account, _id, sequence "
-                    "FROM accounts AS a "
-                    "LEFT JOIN igns AS i ON i.accountId = a._id "
-                    "ORDER BY a.sequence"  // Note 'ORDER BY' executes _AFTER_ 'UNION', so first query must also contains sequence column.
-                    );
-    } else if (filterId < 0) { // by selected guild
-        QString sql;
-        sql.append("SELECT '------ Select Account ------' AS account, 0 AS _id ");
-        sql.append("UNION ");
-        sql.append("SELECT IFNULL(i.ign, 'UnknownIGN') || ' - ' || a.email AS account, a._id FROM account_guild_mappings AS m ");
-        sql.append("INNER JOIN accounts AS a ON a._id = m.accountId ");
-        sql.append("LEFT JOIN igns AS i ON i.accountId = m.accountId ");
-        sql.append("WHERE m.guildId = %1 ");
-        accountModel->setQuery(sql.arg(-filterId));
-    } else { // by selected tag
-        QString sql;
+    QString sql;
+    switch (filter.type()) {
+    case QMetaType::QString:
         sql.append("SELECT '------ Select Account ------' AS account, 0 AS _id, 0 AS sequence ");
         sql.append("UNION ");
-        sql.append("SELECT IFNULL(i.ign, 'UnknownIGN') || ' - ' || a.email AS account, a._id, m.sequence FROM account_tag_mappings AS m ");
+        sql.append("SELECT IFNULL(i.ign, 'UnknownIGN') || ' - ' || a.email AS account, a._id, a.sequence FROM account_guild_mappings AS m ");
         sql.append("INNER JOIN accounts AS a ON a._id = m.accountId ");
         sql.append("LEFT JOIN igns AS i ON i.accountId = m.accountId ");
-        sql.append("WHERE m.tagId = %1 ");
-        sql.append("ORDER BY m.sequence");
-        accountModel->setQuery(sql.arg(filterId));
+        sql.append("WHERE m.guildId = '").append(filter.toString()).append("' ");
+        sql.append("ORDER BY sequence");
+        accountModel->setQuery(sql);
+        break;
+    case QMetaType::LongLong:
+        if (filter.toInt() == 0) {
+            sql.append("SELECT '------ Select Account ------' AS account, 0 AS _id, 0 AS sequence ");
+            sql.append("UNION ");
+            sql.append("SELECT IFNULL(i.ign, 'Unknown IGN') || ' - ' || email AS account, _id, sequence ");
+            sql.append("FROM accounts AS a ");
+            sql.append("LEFT JOIN igns AS i ON i.accountId = a._id ");
+            sql.append("ORDER BY a.sequence"); // Note 'ORDER BY' executes _AFTER_ 'UNION', so first query must also contains sequence column.
+            accountModel->setQuery(sql);
+        } else {
+            sql.append("SELECT '------ Select Account ------' AS account, 0 AS _id, 0 AS sequence ");
+            sql.append("UNION ");
+            sql.append("SELECT IFNULL(i.ign, 'UnknownIGN') || ' - ' || a.email AS account, a._id, m.sequence FROM account_tag_mappings AS m ");
+            sql.append("INNER JOIN accounts AS a ON a._id = m.accountId ");
+            sql.append("LEFT JOIN igns AS i ON i.accountId = m.accountId ");
+            sql.append("WHERE m.tagId = %1 ");
+            sql.append("ORDER BY m.sequence");
+            accountModel->setQuery(sql.arg(filter.toInt()));
+        }
+        break;
+    default:
+        qDebug() << "Unsupported filter!";
+        break;
     }
 
     mAccountList->setModel(accountModel);
