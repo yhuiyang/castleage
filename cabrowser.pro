@@ -51,13 +51,16 @@ SOURCES += \
     protobuf/armycode.pb.cc \
     tabs/armypool.cpp \
     tabs/gumboparsertestbed.cpp \
-    qgumboparser.cpp
+    qgumboparser.cpp \
+    dialogs/armymemberdialog.cpp \
+    item/armyinvitation.cpp
 
 INCLUDEPATH += \
     $$PWD/venders/gumbo-parser/src \
     $$PWD/tabs \
     $$PWD/dialogs \
-    $$PWD/protobuf
+    $$PWD/protobuf \
+    $$PWD/item
 
 HEADERS += \
     venders/gumbo-parser/src/attribute.h \
@@ -92,7 +95,9 @@ HEADERS += \
     protobuf/armycode.pb.h \
     tabs/armypool.h \
     tabs/gumboparsertestbed.h \
-    qgumboparser.h
+    qgumboparser.h \
+    dialogs/armymemberdialog.h \
+    item/armyinvitation.h
 
 FORMS += \
     tabs/accountmanager.ui \
@@ -102,4 +107,6 @@ FORMS += \
     dialogs/inputdialog.ui \
     tabs/armycodeannounceplan.ui \
     tabs/armypool.ui \
-    tabs/gumboparsertestbed.ui
+    tabs/gumboparsertestbed.ui \
+    dialogs/armymemberdialog.ui \
+    item/armyinvitation.ui

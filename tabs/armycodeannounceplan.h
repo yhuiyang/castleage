@@ -31,6 +31,8 @@ private slots:
 
     void on_actionUpdate_Ign_level_Army_Member_triggered();
 
+    void on_tableViewAccounts_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::ArmyCodeAnnouncePlan *ui;
     int mActivedAccountId;

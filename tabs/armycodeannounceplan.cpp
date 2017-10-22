@@ -4,6 +4,7 @@
 #include "castleagehttpclient.h"
 #include "gaehttpclient.h"
 #include "qgumboparser.h"
+#include "armymemberdialog.h"
 
 class ArmyMemberModel : public QSqlQueryModel
 {
@@ -389,4 +390,12 @@ void ArmyCodeAnnouncePlan::on_actionUpdate_Ign_level_Army_Member_triggered()
             qWarning() << "IGN not found";
         }
     }
+}
+
+void ArmyCodeAnnouncePlan::on_tableViewAccounts_doubleClicked(const QModelIndex &index)
+{
+    int accountId = ui->tableViewAccounts->model()->data(ui->tableViewAccounts->model()->index(index.row(), 0)).toInt();
+
+    ArmyMemberDialog *dlg = new ArmyMemberDialog(accountId, this);
+    dlg->open();
 }
