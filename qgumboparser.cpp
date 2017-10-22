@@ -94,6 +94,25 @@ const char *QGumboParser::attributeValue(const GumboNode *node, const char *name
     return nullptr;
 }
 
+const GumboNode *QGumboParser::getChildByTag(const GumboNode *node, const GumboTag tag, const int childIndex)
+{
+    if (!node || node->type != GUMBO_NODE_ELEMENT)
+        return nullptr;
+
+    GumboVector children = node->v.element.children;
+    for (unsigned int idx = 0, found = 0; idx < children.length; idx++) {
+        GumboNode *child = static_cast<GumboNode *>(children.data[idx]);
+        if (child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == tag) { // tag matched
+            if (found == childIndex)
+                return child;
+            else
+                found++;
+        }
+    }
+
+    return nullptr;
+}
+
 QString QGumboParser::textContent(const GumboNode *node)
 {
     QString contents;

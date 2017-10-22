@@ -33,6 +33,9 @@ public:
     /* node attribute query */
     const static char *attributeValue(const GumboNode *node, const char *name);
 
+    /* node child query */
+    const static GumboNode *getChildByTag(const GumboNode *node, const GumboTag tag, const int childIndex);
+
     /* node text */
     static QString textContent(const GumboNode *node);
 
