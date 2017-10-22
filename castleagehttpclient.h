@@ -17,6 +17,12 @@ public:
 
     QByteArray get_sync(const QString &php, const QVector<QPair<QString, QString>> &qs = QVector<QPair<QString, QString>>());
     QByteArray post_sync(const QString &php, const QVector<QPair<QString, QString>> &form = QVector<QPair<QString, QString>>(), const QVector<QPair<QString, QString>> &qs = QVector<QPair<QString, QString>>());
+    void get_async(const QString &php, const QVector<QPair<QString, QString>> &qs = QVector<QPair<QString, QString>>());
+    void post_async(const QString &php, const QVector<QPair<QString, QString>> &form = QVector<QPair<QString, QString>>(), const QVector<QPair<QString, QString>> &qs = QVector<QPair<QString, QString>>());
+
+Q_SIGNALS:
+    void get_async_response(const QByteArray &response);
+    void post_async_response(const QByteArray &response);
 
 protected:
     QNetworkReply *createRequest(Operation op, const QNetworkRequest &request, QIODevice *outgoingData = Q_NULLPTR) override;

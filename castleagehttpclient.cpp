@@ -74,7 +74,7 @@ QByteArray CastleAgeHttpClient::get_sync(const QString &php, const QVector<QPair
         QNetworkReply *reply = this->get(request);
         connect(reply, &QNetworkReply::finished, &looper, &QEventLoop::quit, Qt::AutoConnection);
         looper.exec();
-        qDebug() << "GET" << path.toString() << "spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
+        qDebug() << QString("GET[%1]").arg(mAccountId) << path.toString() << "spends" << (QDateTime::currentMSecsSinceEpoch() - t) << "ms";
         reply->deleteLater();
 
         dumpHeader(reply);
@@ -161,6 +161,125 @@ QByteArray CastleAgeHttpClient::post_sync(const QString &php, const QVector<QPai
     }
 
     return "";
+}
+
+void CastleAgeHttpClient::get_async(const QString &php, const QVector<QPair<QString, QString>> &qs)
+{
+    /* prepare the destination url path */
+    QUrl path = URL_BASE.resolved(QUrl(php));
+    if (qs.size() > 0) {
+        QUrlQuery q;
+        for (QPair<QString, QString> d : qs)
+            q.addQueryItem(d.first, d.second);
+        path.setQuery(q);
+    }
+
+    /* setup request header: enable gzip compression */
+    QNetworkRequest request(path);
+    request.setRawHeader("Accept-Encoding", "gzip, deflate");
+    dumpHeader(request);
+
+    qDebug() << QString("GET[%1]").arg(mAccountId) << path.toString();
+    /* send request */
+    QNetworkReply *reply = this->get(request);
+    connect(reply, &QNetworkReply::finished, [=](){
+        int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status_code == 200) {
+            if (reply->hasRawHeader("Content-Encoding") && !QString::compare(reply->rawHeader("Content-Encoding"), "gzip"))
+                emit get_async_response(this->ungzip(reply->readAll()));
+            else
+                emit get_async_response(reply->readAll());
+        } else if (status_code == 302) {
+            QString location = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+            qDebug() << "302 Found: Redirect location" << location;
+            if (location.contains("connect_login.php")) {
+                qDebug() << "executing login procedure...";
+                if (!execute_login()) {
+                    qWarning() << "Login failed!";
+                    emit get_async_response("");
+                } else {
+                    qDebug() << "resend GET request after auto login...";
+                    QNetworkReply *retry_reply = this->get(request);
+                    connect(retry_reply, &QNetworkReply::finished, [=](){
+                        int retry_status_code = retry_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                        if (retry_status_code == 200) {
+                            if (retry_reply->hasRawHeader("Content-Encoding") && !QString::compare(retry_reply->rawHeader("Content-Encoding"), "gzip"))
+                                emit get_async_response(this->ungzip(retry_reply->readAll()));
+                            else
+                                emit get_async_response(retry_reply->readAll());
+                        } else {
+                            emit get_async_response("");
+                        }
+                    });
+                }
+            } else {
+                emit get_async_response("");
+            }
+        }
+    });
+}
+
+void CastleAgeHttpClient::post_async(const QString &php, const QVector<QPair<QString, QString>> &form, const QVector<QPair<QString, QString>> &qs)
+{
+    /* prepare the destination url path */
+    QUrl path = URL_BASE.resolved(QUrl(php));
+    if (qs.size() > 0) {
+        QUrlQuery q;
+        for (QPair<QString, QString> d : qs)
+            q.addQueryItem(d.first, d.second);
+        path.setQuery(q);
+    }
+
+    /* setup request header: enable gzip compression */
+    QNetworkRequest request(path);
+    request.setRawHeader("Accept-Encoding", "gzip, deflate");
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    dumpHeader(request);
+
+    /* prepare request body */
+    QUrlQuery payload;
+    payload.addQueryItem("ajax", "1");
+    for (QPair<QString, QString> d : form)
+        payload.addQueryItem(d.first, d.second);
+    QByteArray body = payload.toString(QUrl::FullyEncoded).toUtf8();
+
+    qDebug() << QString("POST[%1]").arg(mAccountId) << path.toString() << body;
+    /* send request */
+    QNetworkReply *reply = this->post(request, body);
+    connect(reply, &QNetworkReply::finished, [=](){
+        int status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (status_code == 200) {
+            if (reply->hasRawHeader("Content-Encoding") && !QString::compare(reply->rawHeader("Content-Encoding"), "gzip"))
+                emit post_async_response(ungzip(reply->readAll()));
+            else
+                emit post_async_response(reply->readAll());
+        } else if (status_code == 302) {
+            QString location = reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
+            qDebug() << "302 Found: Redirect location" << location;
+            if (location.contains("connect_login.php")) {
+                qDebug() << "executing login procedure...";
+                if (!execute_login()) {
+                    qWarning() << "Login failed!";
+                    emit post_async_response("");
+                } else {
+                    qDebug() << "resend POST request after auto login...";
+                    QNetworkReply *retry_reply = this->post(request, body);
+                    connect(retry_reply, &QNetworkReply::finished, [=](){
+                        int retry_status_code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+                        if (retry_status_code == 200) {
+                            if (retry_reply->hasRawHeader("Content-Encoding") && !QString::compare(retry_reply->rawHeader("Content-Encoding"), "gzip"))
+                                emit post_async_response(ungzip(retry_reply->readAll()));
+                            else
+                                emit post_async_response(retry_reply->readAll());
+                        } else
+                            emit post_async_response("");
+                    });
+                }
+            } else {
+                emit post_async_response("");
+            }
+        }
+    });
 }
 
 bool CastleAgeHttpClient::execute_login()
