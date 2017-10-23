@@ -58,10 +58,10 @@ public:
         if (index.column() == 4 && role == Qt::BackgroundColorRole) {
             QDateTime previous = QDateTime::fromString(QSqlQueryModel::data(index, Qt::DisplayRole).toString(), Qt::ISODate); // display timestamp is localtime.
             QDateTime now = QDateTime::currentDateTime();
-            if (previous.addDays(6) <= now)
-                return QVariant(QColor(Qt::yellow));
             if (previous.addDays(7) <= now)
                 return QVariant(QColor(Qt::red));
+            if (previous.addDays(6) <= now)
+                return QVariant(QColor(Qt::yellow));
         }
         return QSqlQueryModel::data(index, role);
     }
