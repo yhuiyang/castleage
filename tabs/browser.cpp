@@ -170,7 +170,6 @@ static void setupCustomWebEnginePage(QWebEngineView *webEngineView, const int ac
         QCryptographicHash crypto(QCryptographicHash::Sha256);
         crypto.addData(email.toUtf8());
         QWebEngineProfile *profile = new QWebEngineProfile(crypto.result().toHex());
-        profile->setProperty("", "");
         page = new QWebEnginePage(profile, webEngineView);
         profile->setParent(page);
         profile->setPersistentCookiesPolicy(QWebEngineProfile::AllowPersistentCookies);
