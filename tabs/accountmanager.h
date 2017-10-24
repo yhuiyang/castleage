@@ -9,6 +9,7 @@ class AccountManager;
 }
 
 class AccountModel;
+class QProgressBar;
 
 class AccountManager : public QMainWindow
 {
@@ -40,6 +41,7 @@ private slots:
 private:
     Ui::AccountManager *ui;
     AccountModel *mModel;
+    QProgressBar *mProgressBar;
 };
 
 class AccountModel : public QSqlQueryModel

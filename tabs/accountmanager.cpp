@@ -1,5 +1,6 @@
 #include <QDebug>
 #include <QMessageBox>
+#include <QProgressBar>
 #include <string.h>
 #include "accountmanager.h"
 #include "ui_accountmanager.h"
@@ -80,6 +81,10 @@ AccountManager::AccountManager(QWidget *parent) :
     ui(new Ui::AccountManager)
 {
     ui->setupUi(this);
+
+    ui->statusbar->addPermanentWidget(mProgressBar = new QProgressBar(ui->statusbar));
+    mProgressBar->setRange(0, 100);
+    mProgressBar->setValue(100);
 
     mModel = new AccountModel(ui->tableView);
     ui->tableView->setModel(mModel);
@@ -211,7 +216,14 @@ void AccountManager::on_actionUpdateIGN_triggered()
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO igns VALUES (:accountId, :ign)");
 
-    for (int selectedAccountId : selectedAccountIds) {
+    ui->statusbar->showMessage("Updating account IGN...");
+
+    int count = selectedAccountIds.size();
+    mProgressBar->setRange(0, count - 1);
+
+    for (int idx = 0; idx < count; idx++) {
+        mProgressBar->setValue(idx);
+        int selectedAccountId = selectedAccountIds.at(idx);
         CastleAgeHttpClient client(selectedAccountId);
 
         QByteArray keepPage = client.post_sync("keep.php");
@@ -279,6 +291,8 @@ void AccountManager::on_actionUpdateIGN_triggered()
             gumbo_destroy_output(&kGumboDefaultOptions, output);
         }
     }
+
+    ui->statusbar->showMessage("");
 }
 
 void AccountManager::on_actionUpdateFBId_triggered()
@@ -287,7 +301,14 @@ void AccountManager::on_actionUpdateFBId_triggered()
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO fbids VALUES (:accountId, :fbid)");
 
-    for (int selectedAccountId : selectedAccountIds) {
+    ui->statusbar->showMessage("Updating account FbId...");
+
+    int count = selectedAccountIds.size();
+    mProgressBar->setRange(0, count - 1);
+
+    for (int idx = 0; idx < count; idx++) {
+        mProgressBar->setValue(idx);
+        int selectedAccountId = selectedAccountIds.at(idx);
         CastleAgeHttpClient client(selectedAccountId);
 
         QByteArray keepPage = client.post_sync("keep.php");
@@ -315,6 +336,8 @@ void AccountManager::on_actionUpdateFBId_triggered()
             }
         }
     }
+
+    ui->statusbar->showMessage("");
 }
 
 void AccountManager::on_actionUpdateGuild_triggered()
@@ -324,7 +347,14 @@ void AccountManager::on_actionUpdateGuild_triggered()
     sqlGuild.prepare("INSERT INTO guilds VALUES (:guildId, :guildName, :creatorFbId, :createdAt)");
     sqlMapping.prepare("INSERT INTO account_guild_mappings VALUES (:accountId, :guildId)");
 
-    for (int selectedAccountId : selectedAccountIds) {
+    ui->statusbar->showMessage("Updating account guild...");
+
+    int count = selectedAccountIds.size();
+    mProgressBar->setRange(0, count - 1);
+
+    for (int idx = 0; idx < count; idx++) {
+        mProgressBar->setValue(idx);
+        int selectedAccountId = selectedAccountIds.at(idx);
         CastleAgeHttpClient client(selectedAccountId);
         QByteArray keepPage = client.post_sync("keep.php");
         if (keepPage.isEmpty())
@@ -431,6 +461,8 @@ void AccountManager::on_actionUpdateGuild_triggered()
 
         gumbo_destroy_output(&kGumboDefaultOptions, output);
     }
+
+    ui->statusbar->showMessage("");
 }
 
 void AccountManager::on_actionUpdateRole_triggered()
@@ -459,7 +491,14 @@ void AccountManager::on_actionUpdateRole_triggered()
     QSqlQuery q;
     q.prepare("INSERT OR REPLACE INTO roles VALUES (:accountId, :role)");
 
-    for (int accountId: accountIds) {
+    ui->statusbar->showMessage("Updating account Role...");
+
+    int count = accountIds.size();
+    mProgressBar->setRange(0, count - 1);
+
+    for (int idx = 0; idx < count; idx++) {
+        mProgressBar->setValue(idx);
+        int accountId = accountIds.at(idx);
         CastleAgeHttpClient client(accountId);
         QByteArray page = client.post_sync("guildv2_panel.php");
         if (page.isEmpty())
@@ -548,6 +587,8 @@ void AccountManager::on_actionUpdateRole_triggered()
 
         gumbo_destroy_output(&kGumboDefaultOptions, output);
     }
+
+    ui->statusbar->showMessage("");
 }
 
 void AccountManager::on_tableView_doubleClicked(const QModelIndex &index)
