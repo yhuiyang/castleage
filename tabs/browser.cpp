@@ -4,23 +4,58 @@
 #include <QLabel>
 #include <QUrl>
 #include <QtSql>
+#include <QCryptographicHash>
 #include "browser.h"
 
+const QUrl WEB3_BASE("https://web3.castleagegame.com/castle_ws/");
+const QUrl LOGIN_URL("connect_login.php");
+// -----------------------------------------------------------------------------
 
 class Interceptor : public QWebEngineUrlRequestInterceptor {
 public:
-    Interceptor(QObject *p = nullptr) : QWebEngineUrlRequestInterceptor(p) {}
+    Interceptor(QWebEngineView *webView, int accountId, QObject *p = nullptr)
+        : QWebEngineUrlRequestInterceptor(p),
+          mAccountId(accountId),
+          mWebView(webView)
+    {
+
+    }
+
     void interceptRequest(QWebEngineUrlRequestInfo &info) override
     {
+        if (info.requestUrl().fileName().endsWith(".php"))
         qDebug() << "****** InterceptRequest ******" << info.requestMethod() << info.requestUrl();
-        dumpNavigationType(info);
-        dumpResourceType(info);
+//        dumpNavigationType(info);
+//        dumpResourceType(info);
 
         if (QString::compare("connect_login.php", info.requestUrl().fileName()) == 0
                 && QString::compare("GET", info.requestMethod(), Qt::CaseInsensitive) == 0) {
             qDebug() << "Login is required.";
 
             /* auto sign in by somehow... */
+            QSqlQuery sql;
+            sql.prepare("SELECT email, password FROM accounts WHERE _id = :accountId");
+            sql.bindValue(":accountId", mAccountId);
+            if (sql.exec() && sql.first()) {
+                QByteArray email = sql.value("email").toByteArray();
+                QByteArray password = sql.value("password").toByteArray();
+                if (!email.isEmpty() && !password.isEmpty()) {
+                    QUrlQuery body;
+                    body.addQueryItem("platform_action", "CA_web3_login");
+                    body.addQueryItem("player_email", email);
+                    body.addQueryItem("player_password", password);
+                    body.addQueryItem("x", QString::number(10 + rand() % 120));
+                    body.addQueryItem("y", QString::number(5 + rand() % 50));
+                    QByteArray post_body = body.toString().toUtf8();
+                    qDebug() << post_body;
+
+                    info.block(true);
+                    QWebEngineHttpRequest login_request(WEB3_BASE.resolved(LOGIN_URL), QWebEngineHttpRequest::Post);
+                    login_request.setPostData(post_body);
+                    login_request.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                    mWebView->load(login_request);
+                }
+            }
         }
     }
 
@@ -113,8 +148,41 @@ public:
             break;
         }
     }
+
+private:
+    QWebEngineView *mWebView;
+    int mAccountId;
 };
 
+static void setupCustomWebEnginePage(QWebEngineView *webEngineView, const int accountId) {
+    QString email;
+    QSqlQuery sql;
+    sql.prepare("SELECT email FROM accounts WHERE _id = :accountId");
+    sql.bindValue(":accountId", accountId);
+    if (sql.exec() && sql.first())
+        email = sql.value(0).toString();
+    sql.finish();
+
+    QWebEnginePage *page;
+    if (email.isEmpty()) {
+        page = new QWebEnginePage(QWebEngineProfile::defaultProfile(), webEngineView);
+    } else {
+        QCryptographicHash crypto(QCryptographicHash::Sha256);
+        crypto.addData(email.toUtf8());
+        QWebEngineProfile *profile = new QWebEngineProfile(crypto.result().toHex());
+        profile->setProperty("", "");
+        page = new QWebEnginePage(profile, webEngineView);
+        profile->setParent(page);
+        profile->setPersistentCookiesPolicy(QWebEngineProfile::AllowPersistentCookies);
+        profile->setRequestInterceptor(new Interceptor(webEngineView, accountId, page));
+        webEngineView->setPage(page);
+    }
+    webEngineView->setPage(page);
+
+    QWebEngineHttpRequest request(WEB3_BASE.resolved(QUrl("index.php")), QWebEngineHttpRequest::Get);
+
+    webEngineView->load(request);
+}
 
 // -------------------------------------------------------------------------------------
 Browser::Browser(QWidget *parent) : QMainWindow(parent)
@@ -145,26 +213,26 @@ Browser::Browser(QWidget *parent) : QMainWindow(parent)
     setupToolBar();
     populateFilter();
 
-    mWebView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
-    mWebView->page()->profile()->setRequestInterceptor(new Interceptor(this));
+    //mWebView->page()->profile()->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+    //mWebView->page()->profile()->setRequestInterceptor(new Interceptor(this));
     /* cookie store */
-    QWebEngineCookieStore *store = mWebView->page()->profile()->cookieStore();
-    connect(store, &QWebEngineCookieStore::cookieAdded, [](const QNetworkCookie &cookie){
-        qDebug() << "Cookie added: " << cookie.toRawForm();
-    });
-    connect(store, &QWebEngineCookieStore::cookieRemoved, [](const QNetworkCookie &cookie){
-        qDebug() << "Cookie removed: " << cookie.name();
-    });
+    //QWebEngineCookieStore *store = mWebView->page()->profile()->cookieStore();
+    //connect(store, &QWebEngineCookieStore::cookieAdded, [](const QNetworkCookie &cookie){
+    //    qDebug() << "Cookie added: " << cookie.toRawForm();
+    //});
+    //connect(store, &QWebEngineCookieStore::cookieRemoved, [](const QNetworkCookie &cookie){
+    //    qDebug() << "Cookie removed: " << cookie.name();
+    //});
     //store->loadAllCookies();
 
     //mWebView->load(QUrl("https://web3.castleagegame.com/castle_ws/index.php"));
-    QWebEngineHttpRequest request = QWebEngineHttpRequest(QUrl("https://web3.castleagegame.com/castle_ws/index.php"), QWebEngineHttpRequest::Get);
-    if (!request.hasHeader("Cookie")) {
+    //QWebEngineHttpRequest request = QWebEngineHttpRequest(WEB3_BASE.resolved(QUrl("index.php")), /* QUrl("https://web3.castleagegame.com/castle_ws/index.php"),*/ QWebEngineHttpRequest::Get);
+    //if (!request.hasHeader("Cookie")) {
         //request.setHeader("Cookie", "CA_46755028429=804f7a4ef5192d2493119b8755cc867ec5a0644558cecd30b4e05e6c846d75637edc11344129aee92728d9adbab2be0854c33091f51ce4991188aa08f96ccac9%3A116900752006833%3A1506337753");
-    }
-    mWebView->load(request);
+    //}
+    //mWebView->load(request);
     //mWebView->load(QUrl("https://www.google.com.tw"));
-    mWebView->show();
+    //mWebView->show();
 }
 
 Browser::~Browser()
@@ -223,7 +291,7 @@ void Browser::populateFilter()
 
 void Browser::onFilterIndexChanged(int filterIndex)
 {
-    qDebug() << "filter index changes to" << filterIndex << ", update account ComboBox.";
+    //qDebug() << "filter index changes to" << filterIndex << ", update account ComboBox.";
 
     /* index -> filter id */
     QVariant filter = mFilterList->model()->data(mFilterList->model()->index(filterIndex, 1));
@@ -272,10 +340,11 @@ void Browser::onFilterIndexChanged(int filterIndex)
 
 void Browser::onAccountIndexChanged(int accountIndex)
 {
-    qDebug() << "account index changes to" << accountIndex;
+    //qDebug() << "account index changes to" << accountIndex;
 
     /* index -> account id */
     int accountId = mAccountList->model()->data(mAccountList->model()->index(accountIndex, 1)).toInt();
+    setupCustomWebEnginePage(mWebView, accountId);
 
-    qDebug() << "accountId =" << accountId;
+    //qDebug() << "accountId =" << accountId;
 }
