@@ -255,6 +255,10 @@ void Browser::setupToolBar()
     connect(mWebView, &QWebEngineView::urlChanged, [&](const QUrl &url){
         mLineEdit->setText(url.toDisplayString());
     });
+    connect(mLineEdit, &QLineEdit::returnPressed, [&] () {
+        mWebView->load(QUrl(mLineEdit->text()));
+    });
+
 
     //navigationBar->addSeparator();
     addToolBarBreak();
