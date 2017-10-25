@@ -5,6 +5,7 @@
 #include <QUrl>
 #include <QtSql>
 #include <QCryptographicHash>
+#include <QStyle>
 #include "browser.h"
 
 const QUrl WEB3_BASE("https://web3.castleagegame.com/castle_ws/");
@@ -245,8 +246,11 @@ void Browser::setupToolBar()
     navigationToolBar->setAllowedAreas(Qt::TopToolBarArea | Qt::BottomToolBarArea);
     navigationToolBar->toggleViewAction()->setEnabled(false);
 
-    navigationToolBar->addAction(mWebView->pageAction(QWebEnginePage::Reload));
-    navigationToolBar->addAction(mWebView->pageAction(QWebEnginePage::Stop));
+    QStyle *style = this->style();
+    if (!style)
+        style = qApp->style();
+    navigationToolBar->addAction(style->standardIcon(QStyle::SP_BrowserReload), tr("Reload"), [=] () { mWebView->reload(); });
+    navigationToolBar->addAction(style->standardIcon(QStyle::SP_BrowserStop), tr("Stop"), [=] () { mWebView->stop(); });
 
     mLineEdit = new QLineEdit(this);
     navigationToolBar->addWidget(mLineEdit);
@@ -257,7 +261,6 @@ void Browser::setupToolBar()
     connect(mLineEdit, &QLineEdit::returnPressed, [&] () {
         mWebView->load(QUrl(mLineEdit->text()));
     });
-
 
     //navigationBar->addSeparator();
     addToolBarBreak();
@@ -270,7 +273,7 @@ void Browser::setupToolBar()
     accountToolBar->addWidget(mAccountList = new QComboBox);
     accountToolBar->addWidget(new QLabel("Filter", accountToolBar));
     accountToolBar->addWidget(mFilterList = new QComboBox);
-    accountToolBar->addWidget(mLockComboBox = new QCheckBox("Lock Account & Filter"));
+    accountToolBar->addWidget(mLockComboBox = new QCheckBox("Lock?"));
 
     //connect(mFilterList, &QComboBox::currentIndexChanged, this, &Browser::onFilterIndexChanged);  // this fails due to there is other overload function of currentIndexChanged, need to cast
     //connect(mFilterList, SIGNAL(currentIndexChanged(int)), this, SLOT(onFilterIndexChanged(int)));  // old connect way (string base) works
