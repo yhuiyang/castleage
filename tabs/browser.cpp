@@ -16,8 +16,8 @@ class Interceptor : public QWebEngineUrlRequestInterceptor {
 public:
     Interceptor(QWebEngineView *webView, int accountId, QObject *p = nullptr)
         : QWebEngineUrlRequestInterceptor(p),
-          mAccountId(accountId),
-          mWebView(webView)
+          mWebView(webView),
+          mAccountId(accountId)
     {
 
     }
